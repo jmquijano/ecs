@@ -1,0 +1,20 @@
+.app-logo-title, .app-logo-title:hover {
+    color: #5e5e5e;
+    font-weight: bold;
+}
+
+.login-panel {
+    display: flex;
+    height: 90vh;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box {
+    background: #fff;
+}
+
+.login-text-title {
+    font-weight:bold;
+    font-size: 140%;
+}

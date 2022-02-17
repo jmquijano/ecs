@@ -1,0 +1,8 @@
+body {
+    background: #e6e6e6 !important;
+}
+
+.app-header {
+    background: #fff;
+    border-top: 5px solid #fc7f03;
+}
