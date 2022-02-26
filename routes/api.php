@@ -17,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::prefix(env("APPLICANT_API_PREFIX", "applicant") . "/" . env("APPLICANT_API_VERSION", "v1"))->group(base_path('routes/api/applicant.php'));
