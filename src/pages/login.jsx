@@ -15,7 +15,7 @@ export default function Login() {
                     <Row>
                         <Col>
                             <Navbar.Brand className={'app-logo-title'} href={'/'}>
-                                Electronic Certification System (ECS)
+                                eFSIC
                             </Navbar.Brand>
                         </Col>
                         <Col>
@@ -25,9 +25,10 @@ export default function Login() {
             </div>
             <Container>
                 <div className={'d-flex login-panel'}>
-                    <div className={'login-box px-5 py-5'}>
-                        <h1 className={'login-text-title'}>Sign In</h1>
-                        <hr />
+                    <div className={'login-box rounded-custom'}>
+                        <span className={'text-center login-text-title py-4'}>Sign In</span>
+                        <div className={'login-line-division'}></div>
+                        <div className={'py-5'}></div>
                     </div>
                 </div>
             </Container>

@@ -1,8 +1,16 @@
 body {
-    background: #e6e6e6 !important;
+    font-family: 'Roboto', sans-serif;
 }
 
 .app-header {
     background: #fff;
     border-top: 5px solid #fc7f03;
+}
+
+.rounded-custom {
+    border-radius: 10px;
+}
+
+hr {
+    margin: 0px;
 }
