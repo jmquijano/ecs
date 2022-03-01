@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Applicant\Auth\Enrollment;
+use App\Http\Controllers\Applicant\Auth\Registration;
+use App\Http\Controllers\Applicant\Auth\Token;
 use App\Http\Controllers\Basedata\RevenueDistrictOffice;
 use App\Http\Controllers\Boundaries;
 use Illuminate\Http\Request;
@@ -27,9 +28,17 @@ Route::prefix('basedata')->group(function () {
  */
 Route::prefix('auth')->group(function () {
     /**
+     * Login & Tokens
+     */
+    Route::prefix('token')->group(function () {
+        Route::post('/', [Token::class, 'Login']);
+        Route::get('/validate', [Token::class, 'ValidateToken']);
+    });
+
+    /**
      * Registration
      */
-    Route::prefix('enrollment')->group(function () {
-        Route::post('/', [Enrollment::class, 'Details']);
+    Route::prefix('registration')->group(function () {
+        Route::post('/otp', [Registration::class, 'CreateOTP']);
     });
 });

@@ -77,7 +77,7 @@ return [
             'search_path' => 'public',
             'sslmode' => 'disable',
             'options' => [
-                PDO::ATTR_PERSISTENT => false
+                PDO::ATTR_PERSISTENT => true
             ]
         ],
 
