@@ -1,5 +1,5 @@
+import { Pane, Text } from 'evergreen-ui';
 import React, { Component, Fragment } from 'react';
-import { Paper, Box, Typography, CircularProgress } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import ecslogo from '../assets/images/ECS-Logo-300dpi.png';
 
@@ -9,26 +9,9 @@ function Splash() {
             <Helmet>
                 <title>ECS</title>
             </Helmet>
-            <Paper sx={{
-                display: 'flex',
-                height: '100vh',
-                width: '100%',
-                background: `#fff`,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <Box sx={{
-                    textAlign: 'center'
-                }}>
-                    <img src={ecslogo} width={'auto'} height={50} />
-                    
-                    <Box sx={{
-                        marginTop: 2
-                    }}>
-                        <CircularProgress />
-                    </Box>
-                </Box>
-            </Paper>
+            <Pane width={'100%'} height={'100vh'} background={'#F9F9FB'} display="flex" alignItems="center" justifyContent="center" border="default">
+                <Text>Loading</Text>
+            </Pane>
         </Fragment>
     );
 }
