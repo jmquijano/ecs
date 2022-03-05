@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Paper, Box, Typography, CircularProgress } from '@mui/material';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import ecslogo from '../assets/images/ECS-Logo-300dpi.png';
 
 function Splash() {

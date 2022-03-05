@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ApiBaseUrl, PageBaseUrl } from './urlbase';
 
 import { Splash } from '../components/splash';
-import { Navigate } from "react-router-dom";
+import { Navigate, matchPath, useLocation} from "react-router-dom";
+
 
 const HandleTokenValidation = (callback) => {
     const token = localStorage.getItem('token');
@@ -75,11 +76,12 @@ const PrivateRoute = ({children}) => {
             SetLoading(false);
         });
     }, [])
-    
+    const { pathname } = useLocation();
+    const redirect_url = pathname ?? '/';
 
     return !Loading ? Exception ? <Navigate to={`${PageBaseUrl.Error.InternalServerError}`} /> :
         (
-            Authenticated ? children : <Navigate to={`${PageBaseUrl.Auth.Login}?prompt=true&next=${PageBaseUrl.Auth.Login}`} />
+            Authenticated ? children : <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
         ) : <Splash text="Fetching resources"/>;
 }
 
