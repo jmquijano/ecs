@@ -9,7 +9,13 @@ const ApiBaseUrl = {
 
 const PageBaseUrl = {
     Auth: {
-        Login: '/login'
+        Login: '/login',
+        Register: '/register',
+        ResetPassword: '/reset-password',
+        Verify: '/verify'
+    },
+    Onboarding: {
+        
     },
     Error: {
         InternalServerError: '/error/500'
