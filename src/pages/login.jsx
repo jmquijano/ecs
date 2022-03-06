@@ -8,7 +8,6 @@ import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
 import { PulseLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { PageBaseUrl } from '../utils/urlbase';
-import { Redirect } from '../utils/router';
 
 
 export default function Login() {

@@ -1,5 +1,7 @@
 import { extendTheme } from "@chakra-ui/react"
 import { createBreakpoints } from "@chakra-ui/theme-tools"
+import { StepsStyleConfig as Steps } from 'chakra-ui-steps';
+
 
 const breakpoints = createBreakpoints({
   xs:"0em", //0px
@@ -69,7 +71,8 @@ const theme = extendTheme({
     Link: { baseStyle: { _focus: { boxShadow: 'none' } } }, 
     Button,
     Select: { baseStyle: { _focus: { boxShadow: 'none' } } },
-    Input
+    Input,
+    Steps
   },
   breakpoints,
   config: {

@@ -1,8 +1,8 @@
-import logo from './logo.svg';
 import AppRoutes from './routes';
 import { HelmetProvider } from 'react-helmet-async';
 import theme from './utils/theme';
 import { ChakraProvider } from '@chakra-ui/react';
+import '@fontsource/poppins';
 
 function App() {
   

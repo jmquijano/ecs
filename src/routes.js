@@ -5,6 +5,7 @@ import Login from './pages/login';
 import { Helmet } from "react-helmet-async";
 import { ApiBaseUrl, PageBaseUrl } from "./utils/urlbase";
 import { InternalServerError } from "./pages/error";
+import Register from "./pages/register";
 
 export default function AppRoutes() {
     return (
@@ -26,6 +27,11 @@ export default function AppRoutes() {
                         path={PageBaseUrl.Auth.Login}
                         element={<Login />} 
                     />
+                    <Route 
+                        path={PageBaseUrl.Auth.Register} 
+                        element={<Register />}
+                    />
+
 
                     {/** Errors */}
                     <Route
