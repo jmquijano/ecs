@@ -8,15 +8,21 @@ import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
 import { PulseLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { PageBaseUrl } from '../utils/urlbase';
+import { Redirect } from '../utils/router';
+// import Maps from '../components/Maps';
+// import Pin from '../components/Maps/Pin';
 
 
 export default function Login() {
     const navigate = useNavigate();
     const [loadingState, setLoadingState] = useState(false);
 
+    
+  
+  
     const authFromBackend = () => {
 
-    }
+        }
 
     return (
         <React.Fragment>
@@ -24,6 +30,20 @@ export default function Login() {
                 <Helmet title={'Login'}></Helmet>
             </div>
             <Center bg={'gray.50'} height={'100vh'}>
+                
+            {/* <div style={{height:"800px",width:"800px"}}>
+                    <Maps 
+                        center={{ lat: 51.505, lng: -0.09 }}
+                        zoom={17}
+                        scrollWheelZoom={false}
+                    >
+                        <Pin 
+                        position={{ lat: 51.505, lng: -0.09 }}
+                        PopupMessage={'Your are located here'}
+                        />
+                    </Maps>
+                
+            </div>   */}
                 <Box 
                     width={'100%'}
                     maxWidth={500} 
