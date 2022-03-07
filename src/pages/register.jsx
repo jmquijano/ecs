@@ -24,10 +24,13 @@ export default function Register() {
     return (
         <React.Fragment>
             <div>
-                <Helmet title={'Register'}></Helmet>
+                <Helmet title={'Register'}>
+                    <body id={'register'}></body>
+                </Helmet>
             </div>
             <Center bg={'gray.50'} py={10}>
                 <Box 
+                    minHeight={'100vh'}
                     width={'100%'}
                     maxWidth={500} 
                     textAlign={'center'}

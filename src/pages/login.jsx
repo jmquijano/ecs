@@ -25,7 +25,7 @@ export default function Login() {
             </div>
             <Center bg={'gray.50'} height={'100vh'}>
                 
-                <div style={{height:"800px",width:"800px"}}>
+                {/* <div style={{height:"800px",width:"800px"}}>
                     <Maps 
                         center={{ lat: 51.505, lng: -0.09 }}
                         zoom={17}
@@ -38,7 +38,7 @@ export default function Login() {
                         />
                     </Maps>
                     
-                </div>
+                </div> */}
                 <Box 
                     width={'100%'}
                     maxWidth={500} 
