@@ -1,22 +1,125 @@
-import React, { Component, Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from "react-helmet-async";
-import { Badge, Box, Button, Center, Divider, FormControl, FormLabel, Image, Input, Text, VStack, HStack, Stack, Container, SimpleGrid, Grid, GridItem, Flex } from "@chakra-ui/react";
+import { Badge, Box, Button, Center, Divider, Image, Text, VStack, Stack, Grid, GridItem } from "@chakra-ui/react";
 import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
 import { PulseLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
-import { PageBaseUrl } from '../utils/urlbase';
+import { ApiBaseUrl, PageBaseUrl } from '../utils/urlbase';
 import { Step, Steps, useSteps } from "chakra-ui-steps"
+import { UserCredentials, UserInformation, VerifySMS } from '../components/register';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 
 export default function Register() {
     const navigate = useNavigate();
     const [loadingState, setLoadingState] = useState(false);
 
-    const steps = [{ label: "Step 1" }, { label: "Step 2" }, { label: "Step 3" }]
-
     const { nextStep, prevStep, reset, activeStep } = useSteps({
         initialStep: 0,
     })
+
+    /**
+     * validateEmailFormat
+     */
+    const validateEmailFormat = (email) => {
+        return email?.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+    
+    /**
+     * formikValidationSchema
+     */
+    const formikValidationSchema = {
+        UserCredentials: Yup.object().shape({
+            username: Yup.string()
+                .max(50, 'User ID length too long.')
+                .required('User ID is a mandatory field.'),
+            password: Yup.string().required('Password is a mandatory field.'),
+            confirmpassword: Yup.string().required('Confirm password is a mandatory field.'),
+            mobilenumber: Yup.string().required('Mobile Number is a mandatory field.'),
+            emailaddress: Yup.string().required('Email address is a mandatory field.')
+        })
+    }
+
+    /**
+     * formikInitialValues
+     */
+    const formikInitialValues = {
+        UserCredentials: {
+            username: '',
+            password: '',
+            confirmpassword: '',
+            emailaddress: '',
+            mobilenumber: ''
+        }
+    }
+
+    /**
+     * formikSubmitHandler
+     */
+    const formikSubmitHandler = {
+        UserCredentials: async (values, { setErrors, resetForm }) => {
+            setLoadingState(true);
+            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(values)
+            })
+            .then(response => response.json())
+            .then((res) => {
+                if (res.status) {
+                    nextStep();
+                    console.log('true');
+                    
+                }
+                setErrors(res.errordata)
+            })
+            .finally((res) => {
+                setLoadingState(false);
+            });
+        }
+    }
+
+    /**
+     * formik
+     */
+    const formik = {
+        UserCredentials: useFormik({
+            initialValues: formikInitialValues.UserCredentials,
+            validationSchema: formikValidationSchema.UserCredentials,
+            onSubmit: formikSubmitHandler.UserCredentials
+        })
+    };
+
+    const registrationSteps = [
+        {
+            label: 'Step 1',
+            description: 'User Credentials and Contact',
+            component: <UserCredentials formik={formik.UserCredentials} loading={loadingState} />
+        }, 
+        {
+            label: 'Step 2',
+            description: 'Basic Information',
+            component: <UserInformation />
+        },
+        {
+            label: 'Step 3',
+            description: 'Verify Phone Number',
+            component: <VerifySMS />
+        },
+        {
+            label: 'Step 4',
+            description: 'Verify Email Address',
+            component: <VerifySMS />
+        }
+    ];
+
+    
 
     return (
         <React.Fragment>
@@ -27,7 +130,6 @@ export default function Register() {
             </div>
             <Center 
                bg={'gray.50'} 
-               height={'100vh'} 
                py={10}
 
             >
@@ -82,90 +184,14 @@ export default function Register() {
                         >
                             <Box flexDir={'column'} width={'100%'} justifyContent={'start'}>
                                 <Steps orientation={'vertical'} colorScheme={'brand'} activeStep={activeStep} justifyContent={'start'} marginY={5}>
-                                    <Step label={'Step 1'} key={1}>
-                                        <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
-                                            <GridItem colSpan={12}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'UserID'}>User ID</FormLabel>
-                                                        <Input id={'UserID'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={12}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'Email'}>Email address</FormLabel>
-                                                        <Input id={'Email'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={12}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'Mobile'}>Mobile Number</FormLabel>
-                                                        <Input id={'Mobile'} type={'tel'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={[12,12,12,6]}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'Password'}>Password</FormLabel>
-                                                        <Input id={'Password'} type={'password'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={[12,12,12,6]}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'ConfirmPassword'}>Confirm Password</FormLabel>
-                                                        <Input id={'ConfirmPassword'} type={'password'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                        </Grid>
-                                    </Step>
-                                    <Step label={'Step 2'} key={2}>
-                                        <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
-                                            <GridItem colSpan={12}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'FirstName'}>Salutation</FormLabel>
-                                                        <Input id={'FirstName'} type={'text'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={[12,12,12,6]}>
-                                                <Box width={'100%'}>
-                                                    <FormControl isRequired>
-                                                        <FormLabel htmlFor={'FirstName'}>First name</FormLabel>
-                                                        <Input id={'FirstName'} type={'text'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={[12,12,12,6]}>
-                                                <Box width={'100%'}>
-                                                    <FormControl>
-                                                        <FormLabel htmlFor={'MiddleName'}>Middle name</FormLabel>
-                                                        <Input id={'MiddleName'} type={'text'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            <GridItem colSpan={12}>
-                                                <Box width={'100%'}>
-                                                    <FormControl>
-                                                        <FormLabel htmlFor={'LastName'}>Last name</FormLabel>
-                                                        <Input id={'LastName'} type={'text'} />
-                                                    </FormControl>
-                                                </Box>
-                                            </GridItem>
-                                            
-                                        </Grid>
-                                    </Step>
-                                    <Step label={'Step 3'} key={3}>
+                                    {registrationSteps.map(({label, description, component}, i) => (
                                         
-                                    </Step>
+                                        <Step label={label} description={description}>
+                                            {component}
+                                        </Step>
+                                    ))}
+                                    
+                                    
                                 </Steps>
                                 
                             </Box>
@@ -196,11 +222,12 @@ export default function Register() {
                                             colorScheme={'brand'} 
                                             width={'100%'}
                                             onClick={() => {
-                                                nextStep();
-                                                if (activeStep >= 2) {
-    
-                                                } else {
-    
+                                                console.log(activeStep);
+
+                                                switch (activeStep) {
+                                                    case 0:
+                                                        formik.UserCredentials.submitForm();
+                                                    break;
                                                 }
                                             }}
                                             
@@ -216,29 +243,25 @@ export default function Register() {
                             <Divider marginY={5} color={'gray.100'} />
 
                             <Stack spacing={2} justifyContent={'center'}>
-                                <Box width={'100%'}>
+                                <Box>
                                     <Text
+                                        display={'inline'}
                                         fontSize={12}
                                         color={'blackAlpha.600'}
                                     >
                                         Already have an account?
                                     </Text>
-                                    
-                                </Box>
-                                <Box>
-                                    
                                     <Button 
-                                        isLoading={loadingState}
-                                        spinner={<PulseLoader size={8} color='white' />}
                                         variant={'outline'}
                                         size={'sm'}
-                                        paddingX={5}
-                                        paddingY={5}
+                                        fontSize={12}
                                         onClick={(e) => navigate(PageBaseUrl.Auth.Login)}
+                                        mx={2}
                                     >
-                                        Login
+                                        Back to login
                                     </Button>
                                 </Box>
+                                
                             </Stack>
                         </Box>
                     </Box> 
@@ -263,10 +286,6 @@ export default function Register() {
                             my={1}
                             
                         >
-                            {/**
-                            <Text display={'inline'}>Developer Information</Text>
-                            <Text display={'inline'}> - </Text>
-                            */}
                             <Badge colorScheme={'green'} textTransform={'none'}>v{process.env.REACT_APP_VERSION}</Badge>
                             
                         </Box>

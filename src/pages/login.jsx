@@ -12,8 +12,9 @@ import { useAuth } from '../libs/auth';
 
 export default function Login() {
     const navigate = useNavigate();
-    const [loadingState, setLoadingState] = useState(false);
-    const {Login} = useAuth()
+    const [ loadingState, setLoadingState ] = useState(false);
+    const { Login } = useAuth()
+
     const authFromBackend = () => {
        setLoadingState(true)
        Login({userId:"test",password:"tests"})
@@ -132,8 +133,7 @@ export default function Login() {
                                 </Box>
                                 <Box>
                                     <Button 
-                                        isLoading={loadingState}
-                                        spinner={<PulseLoader size={8} color='white' />}
+                                        disabled={loadingState}
                                         variant={'outline'}
                                         size={'sm'}
                                         paddingX={5}

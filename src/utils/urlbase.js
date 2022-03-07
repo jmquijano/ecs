@@ -2,7 +2,8 @@ const ApiBaseUrl = {
     Applicant: { 
         Base: 'http://api-dev.bfp-ecs.com/applicant/v1/',
         Auth: {
-            ValidateToken: 'auth/token/validate'
+            ValidateToken: 'auth/token/validate',
+            RegistrationValidationFromBackend: 'auth/register/check'
         }
     }
 };
