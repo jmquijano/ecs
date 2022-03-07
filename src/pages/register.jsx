@@ -1,7 +1,4 @@
 import React, { Component, Fragment, useState } from 'react';
-import '../css/login.css';
-import '../css/app.css';
-import '../libs/bootstrap/css/bootstrap.min.css';
 import { Helmet } from "react-helmet-async";
 import { Badge, Box, Button, Center, Divider, FormControl, FormLabel, Image, Input, Text, VStack, HStack, Stack, Container, SimpleGrid, Grid, GridItem, Flex } from "@chakra-ui/react";
 import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
@@ -26,9 +23,17 @@ export default function Register() {
             <div>
                 <Helmet title={'Register'}></Helmet>
             </div>
-            <Center bg={'gray.50'} py={10}>
+            <Center 
+               bg={'gray.50'} 
+               height={'100vh'} 
+               py={10}
+
+            >
                 <Box 
                     width={'100%'}
+                    // para ma scroll sa gamay nga device
+                    maxH="100%"
+                     // para ma scroll sa gamay nga device
                     maxWidth={500} 
                     textAlign={'center'}
                 >
@@ -73,7 +78,7 @@ export default function Register() {
                             }}
                         >
                             <Box flexDir={'column'} width={'100%'} justifyContent={'start'}>
-                                <Steps orientation={'horizontal'} colorScheme={'brand'} activeStep={activeStep} justifyContent={'start'} marginY={5}>
+                                <Steps orientation={'vertical'} colorScheme={'brand'} activeStep={activeStep} justifyContent={'start'} marginY={5}>
                                     <Step label={'Step 1'} key={1}>
                                         <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
                                             <GridItem colSpan={12}>
@@ -100,7 +105,7 @@ export default function Register() {
                                                     </FormControl>
                                                 </Box>
                                             </GridItem>
-                                            <GridItem colSpan={6}>
+                                            <GridItem colSpan={[12,12,12,6]}>
                                                 <Box width={'100%'}>
                                                     <FormControl isRequired>
                                                         <FormLabel htmlFor={'Password'}>Password</FormLabel>
@@ -108,7 +113,7 @@ export default function Register() {
                                                     </FormControl>
                                                 </Box>
                                             </GridItem>
-                                            <GridItem colSpan={6}>
+                                            <GridItem colSpan={[12,12,12,6]}>
                                                 <Box width={'100%'}>
                                                     <FormControl isRequired>
                                                         <FormLabel htmlFor={'ConfirmPassword'}>Confirm Password</FormLabel>
@@ -128,7 +133,7 @@ export default function Register() {
                                                     </FormControl>
                                                 </Box>
                                             </GridItem>
-                                            <GridItem colSpan={6}>
+                                            <GridItem colSpan={[12,12,12,6]}>
                                                 <Box width={'100%'}>
                                                     <FormControl isRequired>
                                                         <FormLabel htmlFor={'FirstName'}>First name</FormLabel>
@@ -136,7 +141,7 @@ export default function Register() {
                                                     </FormControl>
                                                 </Box>
                                             </GridItem>
-                                            <GridItem colSpan={6}>
+                                            <GridItem colSpan={[12,12,12,6]}>
                                                 <Box width={'100%'}>
                                                     <FormControl>
                                                         <FormLabel htmlFor={'MiddleName'}>Middle name</FormLabel>
