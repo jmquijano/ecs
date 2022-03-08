@@ -40,6 +40,12 @@ export default function Register() {
             confirmpassword: Yup.string().required('Confirm password is a mandatory field.'),
             mobilenumber: Yup.string().required('Mobile Number is a mandatory field.'),
             emailaddress: Yup.string().required('Email address is a mandatory field.')
+        }),
+        BasicInformation: Yup.object().shape({
+            salutation: Yup.string().nullable(true),
+            firstname: Yup.string().required('Firt name is a mandatory field.'),
+            middlename: Yup.string().nullable(true),
+            lastname: Yup.string().required('Last name is a mandatory field.')
         })
     }
 
@@ -53,6 +59,12 @@ export default function Register() {
             confirmpassword: '',
             emailaddress: '',
             mobilenumber: ''
+        },
+        BasicInformation: {
+            salutation: '',
+            firstname: '',
+            middlename: '',
+            lastname: ''
         }
     }
 
@@ -82,6 +94,9 @@ export default function Register() {
             .finally((res) => {
                 setLoadingState(false);
             });
+        },
+        BasicInformation: async (values, { setErrors, resetForm }) => {
+
         }
     }
 
@@ -92,6 +107,11 @@ export default function Register() {
         UserCredentials: useFormik({
             initialValues: formikInitialValues.UserCredentials,
             validationSchema: formikValidationSchema.UserCredentials,
+            onSubmit: formikSubmitHandler.UserCredentials
+        }),
+        BasicInformation: useFormik({
+            initialValues: formikInitialValues.BasicInformation,
+            validationSchema: formikValidationSchema.BasicInformation,
             onSubmit: formikSubmitHandler.UserCredentials
         })
     };
@@ -105,7 +125,7 @@ export default function Register() {
         {
             label: 'Step 2',
             description: 'Basic Information',
-            component: <UserInformation />
+            component: <UserInformation formik={formik.BasicInformation} loading={loadingState} />
         },
         {
             label: 'Step 3',
@@ -186,7 +206,7 @@ export default function Register() {
                                 <Steps orientation={'vertical'} colorScheme={'brand'} activeStep={activeStep} justifyContent={'start'} marginY={5}>
                                     {registrationSteps.map(({label, description, component}, i) => (
                                         
-                                        <Step label={label} description={description}>
+                                        <Step label={label} description={description} key={label}>
                                             {component}
                                         </Step>
                                     ))}
