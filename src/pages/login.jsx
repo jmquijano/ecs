@@ -10,6 +10,10 @@ import { useAuth } from '../libs/auth';
 import {Previewer} from '../components/pdf';
 import FsedOneOfFour from '../components/fsed-forms/FsedOneOfFour';
 import Sampleform from '../components/Sampleform';
+import FsedTwoOfFour from '../components/fsed-forms/FsedTwoOfFour';
+import { useFsed } from '../libs/fsed';
+import FsedThreeOfFour from '../components/fsed-forms/FsedThreeOfFour';
+import {  Document} from '@react-pdf/renderer';
 
 
 
@@ -17,6 +21,7 @@ export default function Login() {
     const navigate = useNavigate();
     const [ loadingState, setLoadingState ] = useState(false);
     const { Login } = useAuth()
+    const {fsedValue} = useFsed()
     const [pdfValue,setPdfValue]= useState({})
 
     const authFromBackend = () => {
@@ -26,7 +31,7 @@ export default function Login() {
     }
 
 
-
+    console.log(fsedValue)
 
     return (
         <React.Fragment>
@@ -39,9 +44,13 @@ export default function Login() {
                display="flex"
                margin={"30px"}
             >
-                 <Sampleform  setPdfValue={setPdfValue}/>
+                 {/* <Sampleform  setPdfValue={setPdfValue}/> */}
                      <Previewer pdfTitle={"FSED_Page 1 of 4"}>
-                         <FsedOneOfFour pdfValue={pdfValue}/>
+                         {/* <FsedOneOfFour pdfValue={pdfValue}/> */}
+                         <Document>
+                         {/* <FsedTwoOfFour pdfValue={fsedValue}/> */}
+                            <FsedThreeOfFour pdfValue={fsedValue}/>
+                            </Document>
                      </Previewer>
                 
                 {/* <div style={{height:"800px",width:"800px"}}>

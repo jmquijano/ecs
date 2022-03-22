@@ -103,6 +103,7 @@ const Sampleform = ({setPdfValue}) => {
 
     const onSubmit = (e)=>{
       e.preventDefault()
+      console.log(formValue)
       setPdfValue(formValue)
     }
   return (
@@ -126,6 +127,8 @@ const Sampleform = ({setPdfValue}) => {
         <label>INSPECTION ORDER NO.</label>
         <input onChange={(e)=>setFormValue({...formValue,sectionOne:{...formValue.sectionOne,inspectionOrderNo:e.target.value}})}/>
         <label>DATE ISSUED</label>
+        <input onChange={(e)=>setFormValue({...formValue,sectionOne:{...formValue.sectionOne,dateIssued:e.target.value}})}/>
+        <label>DATE OF INSPECTION</label>
         <input onChange={(e)=>setFormValue({...formValue,sectionOne:{...formValue.sectionOne,dateOfInspection:e.target.value}})}/>
 
         <p>Section 2</p>
@@ -134,19 +137,19 @@ const Sampleform = ({setPdfValue}) => {
         <label>Building Under Construction</label>
         <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.buildingUnderConstruction}})}/>
         <label>Periodic Inspection of Occupancy</label>
-        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.periodicInspectionOfOccupancy}})}/>
+        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,periodicInspectionOfOccupancy:!formValue.sectionTwo.periodicInspectionOfOccupancy}})}/>
         <label>Application for Occupancy Permit</label>
-        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.applicationForOccupancyPermit}})}/>
+        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,applicationForOccupancyPermit:!formValue.sectionTwo.applicationForOccupancyPermit}})}/>
         <label>Verification Inspection of Compliance to NTCV</label>
-        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.verificationinspectionOfcomplianceToNTCV}})}/>
+        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,verificationinspectionOfcomplianceToNTCV:!formValue.sectionTwo.verificationinspectionOfcomplianceToNTCV}})}/>
         <label>Application for Business Permit</label>
-        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.applicationForBusinessPermit}})}/>
+        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,applicationForBusinessPermit:!formValue.sectionTwo.applicationForBusinessPermit}})}/>
         <label>Verification Inspection of Complaint Received</label>
-        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.verificationinspectionOfComplaintReceived}})}/>
+        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,verificationinspectionOfComplaintReceived:!formValue.sectionTwo.verificationinspectionOfComplaintReceived}})}/>
         <label>Others </label>
-        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:!formValue.sectionTwo.others}})}/>
+        <input type={"checkbox"} onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,others:!formValue.sectionTwo.others}})}/>
         <label>(Specify)</label>
-        <input onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,buildingUnderConstruction:e.target.value}})}/>
+        <input onChange={(e)=>setFormValue({...formValue,sectionTwo:{...formValue.sectionTwo,specify:e.target.value}})}/>
 
         <p>section 3</p>
         <label>Name of Building</label>
@@ -228,7 +231,7 @@ const Sampleform = ({setPdfValue}) => {
         <label>Latest Certificate of Electrical Inspection No. </label>
         <input onChange={(e)=>setFormValue({...formValue,sectionThree:{...formValue.sectionThree,LatestCertificateofElectricalInspectionNo:e.target.value}})}/>
         <label>Date Issued</label>
-        <input onChange={(e)=>setFormValue({...formValue,sectionThree:{...formValue.sectionThree,dateIssued7:e.target.value}})}/>
+        <input onChange={(e)=>setFormValue({...formValue,sectionThree:{...formValue.sectionThree,dateIssued8:e.target.value}})}/>
 
         <label>Other Information</label>
         <input onChange={(e)=>setFormValue({...formValue,sectionThree:{...formValue.sectionThree,otherInformation:e.target.value}})}/>

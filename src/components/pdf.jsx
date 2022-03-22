@@ -3,7 +3,51 @@ import { Page, Text, View, Document, StyleSheet, PDFViewer, PDFDownloadLink,Blob
 
 
 
-
+ const styles = StyleSheet.create({
+  choicesStyle:{
+      marginHorizontal:"5px"
+  },
+  spacedChoices:{
+   display:"flex",
+   flexDirection:"row",
+   justifyContent:"space-between",
+   width:"48%"
+  },
+  rowItem:{
+     display:"flex",
+     flexDirection:"row",
+     width:"100%",
+     marginTop:0.5,
+     justifyContent:"space-between"
+  },
+  italicText:{
+      fontFamily:"Open Sans",
+      fontStyle:"italic"
+  },
+  textHeading:{
+      fontFamily:"Open Sans",
+      fontSize:"10px",
+      fontWeight:"bold",
+      marginLeft:"20px"
+  },
+  numberedHeading:{
+    fontFamily:"Open Sans",
+    fontSize:"11px",
+    fontWeight:"bold"
+  },
+  inputRowStyle:{
+     height:"12px"
+  },
+  inputRowContentStyle:{
+     fontSize:"9px",
+     fontStyle:"italic"
+  },
+  inputRowSuffixStyle:{
+     fontSize:"7px",
+     fontStyle:"italic"
+ }
+  
+})
 
 Font.register({
   family: 'Open Sans',
@@ -82,34 +126,27 @@ const TextAreaPdf=(props)=>(
     style={{
       display:"flex",
       flexDirection:"row",
-      ...props.noLabelInputStyle
+      paddingHorizontal:"5px",
+      width:"100%",
+      ...props.textAreaPdfStyle
     }}
   >
     
     
     {/* Input */}
-    <View  
-       style={{
-          display:"flex",
-          flexDirection:"column",
-          flexGrow:8,
-          borderBottom:"1px solid black",
-          position:"relative",
-          overflow:"hidden",
-          ...props.inputStyle
-      }}>
+   
           <Text 
              style={{
-                overflow:"hidden",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
-                marginHorizontal:"5px",
-                position:"absolute",
+                // overflow:"hidden",
+                // whiteSpace: "nowrap",
+                // textOverflow: "ellipsis",
+                textDecoration:"underline",
+                width:"100%",
                 ...props.inputContentStyle
             }}>
-            {props.inputContent}
+            {props.inputContent.substring(0, props.characterLimit || 250)}
           </Text> 
-    </View>
+   
   
    
     
@@ -171,6 +208,94 @@ const InputRow = (props) => (
   </View>
 )
 
+const DoubleInputRow = (props) => (
+
+  <View 
+      style={{
+        display:"flex",
+        flexDirection:"row",
+        ...props.inputRowViewStyle
+      }}
+  >
+    {/* Label 1 */}
+      <Text
+          style={{
+             ...props.inputRowLabelOneStyle
+          }}
+      >
+        {props.inputOneLabel}
+      </Text>
+      
+      {/* Input 1 */}
+      <View  
+         style={{
+            display:"flex",
+            flexDirection:"column",
+            flexGrow:8,
+            borderBottom:"1px solid black",
+            position:"relative",
+            overflow:"hidden",
+            ...props.inputRowOneStyle
+        }}>
+            <Text 
+               style={{
+                  overflow:"hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  marginHorizontal:"5px",
+                  position:"absolute",
+                  ...props.inputRowOneContentStyle
+              }}>
+              {props.inputOneContent}
+            </Text> 
+      </View>
+
+      {/* Label 2 */}
+      <Text
+          style={{
+             ...props.inputRowLabelTwoStyle
+          }}
+      >
+        {props.inputTwoLabel}
+      </Text>
+
+      {/* Input 2 */}
+      <View  
+         style={{
+            display:"flex",
+            flexDirection:"column",
+            flexGrow:8,
+            borderBottom:"1px solid black",
+            position:"relative",
+            overflow:"hidden",
+            ...props.inputRowTwoStyle
+        }}>
+            <Text 
+               style={{
+                  overflow:"hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  marginHorizontal:"5px",
+                  position:"absolute",
+                  ...props.inputRowTwoContentStyle
+              }}>
+              {props.inputTwoContent}
+            </Text> 
+      </View>
+
+      {/* Label 3 */}
+      <Text
+          style={{
+             ...props.inputRowLabelThreeStyle
+          }}
+      >
+        {props.inputThreeLabel}
+      </Text>
+      
+  </View>
+)
+
+
 const InputColumn = (props) => (
 
   <View 
@@ -197,7 +322,7 @@ const InputColumn = (props) => (
                   overflow:"hidden",
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
-                  marginHorizontal:"5px",
+                  alignSelf:"center",
                   position:"absolute",
                   ...props.inputColumnContentStyle
               }}>
@@ -313,11 +438,14 @@ const ChoicesCheckBox = (props) => (
                   ...props.choicesCheckBoxStyle
                 }}
               >
-                  <Text
-                    style={{
-                      ...props.checkBoxLabelStyle
-                    }}
-                  >{i.label}</Text> 
+                 {props.checkBoxLabelFirst &&
+                      <Text
+                      style={{
+                        ...props.checkBoxLabelStyle
+                      }}
+                    >{i.label}</Text> 
+                 }
+                  
                   <Image 
                     src={i.checked ? "https://i.ibb.co/ssYc0hJ/Checked-Checkbox.png" : "https://i.ibb.co/sHJvRRp/un-Checked-Checkbox.png"}
                     style={{
@@ -325,6 +453,14 @@ const ChoicesCheckBox = (props) => (
                       ...props.checkBoxStyle
                     }}
                     />
+
+                 {props.checkBoxLabelFirst === false &&
+                      <Text
+                      style={{
+                        ...props.checkBoxLabelStyle
+                      }}
+                    >{i.label}</Text> 
+                 }  
               </View>
             ))
       }  
@@ -361,4 +497,4 @@ const ChoicesCheckBox = (props) => (
 
 
 
-export {NoLabelInput,InputRow,InputColumn,RegularCheckBox,ChoicesCheckBox,Previewer} 
+export {NoLabelInput,InputRow,InputColumn,RegularCheckBox,ChoicesCheckBox,TextAreaPdf,Previewer,DoubleInputRow,styles} 

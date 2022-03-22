@@ -1,6 +1,8 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, PDFViewer, PDFDownloadLink,BlobProvider,Font,Image } from '@react-pdf/renderer';
-import {NoLabelInput,InputRow,InputColumn,RegularCheckBox,ChoicesCheckBox} from '../pdf'
+import {  Text, View, Font } from '@react-pdf/renderer';
+import {NoLabelInput,InputRow,InputColumn,RegularCheckBox,TextAreaPdf,ChoicesCheckBox} from '../pdf'
+import FormHeader from './FormHeader';
+import PageWrapper from './PageWrapper';
 
 Font.register({
     family: 'Open Sans',
@@ -15,28 +17,9 @@ Font.register({
 
 const FsedOneOfFour = ({pdfValue}) => {
     const {sectionOne,sectionTwo,sectionThree,sectionFour,sectionFive,sectionSix,sectionSeven} = pdfValue
-    console.log(sectionOne)
 
     return (
-<Document>
-      <Page 
-        size='LEGAL'
-        style={{
-            display: 'flex',
-            flexDirection: 'row',
-            fontSize:"9px",
-            fontFamily:"Open Sans",
-        }}
-      >
-          <View
-            style={{
-                margin:25,
-                width: '100%',
-                display:"flex",
-                flexDirection: "column", 
-                fontFamily:"Open Sans",
-            }}
-          >
+    <PageWrapper> 
               <View
                 style={{
                     width: '100%',
@@ -53,60 +36,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                     }}
                     >
                         {/* Logo */}
-                        <View
-                        style={{
-                            display:"flex",
-                            flexDirection: "row",
-                            justifyContent:"space-between",
-                            alignItems:"center",
-                            fontSize:"12px"
-                        }}
-                        >
-                            <Image
-                                src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdwzfqKrifKq6tGo02GF6S-MDtb7OBZqkRlg&usqp=CAU"}
-                                style={{
-                                width:"65px"
-                                }}
-                            />
-                            <View
-                                style={{
-                                width:"300px",
-                                textAlign:"center"
-                                }}
-                            >
-                                    <Text
-                                    style={{
-                                        color:"gray"
-                                    }}
-                                    >
-                                        Republic of the Philippines
-                                    </Text>
-                                    <Text
-                                        style={{
-                                        color:"gray",
-                                        fontFamily:"Open Sans",
-                                        fontWeight:"bold"
-                                        }}
-                                    >
-                                        Department of the Interior and Local Government 
-                                    </Text>
-                                    <Text
-                                    style={{
-                                        color:"gray",
-                                        fontFamily:"Open Sans",
-                                        fontWeight:"bold"
-                                    }}
-                                    >
-                                        Bureau of Fire Protection 
-                                    </Text>
-                            </View>
-                            <Image
-                                src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdwzfqKrifKq6tGo02GF6S-MDtb7OBZqkRlg&usqp=CAU"}
-                                style={{
-                                width:"65px"
-                                }}
-                            />
-                        </View>
+                        <FormHeader/>
 
                         {/* 2 row */}
                         <View
@@ -294,7 +224,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                             <RegularCheckBox 
                                                 regularCheckBoxLabel={"Building Under Construction"}
-                                                checked={sectionTwo && sectionTwo.buildingUnderConstruction || false}
+                                                checked={sectionTwo && sectionTwo.buildingUnderConstruction}
                                                 checkBoxFirst={true}
                                                 regularCheckBoxStyle={{width:"300px"}}
                                                 checkBoxStyle={{marginHorizontal:"2px"}}
@@ -305,7 +235,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             />
                                             <RegularCheckBox 
                                                 regularCheckBoxLabel={"Periodic Inspection of Occupancy"}
-                                                checked={sectionTwo && sectionTwo.periodicInspectionOfOccupancy || false}
+                                                checked={sectionTwo && sectionTwo.periodicInspectionOfOccupancy}
                                                 checkBoxFirst={true}
                                                 regularCheckBoxStyle={{width:"300px"}}
                                                 checkBoxStyle={{marginHorizontal:"2px"}}
@@ -323,7 +253,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Application for Occupancy Permit"}
-                                            checked={sectionTwo && sectionTwo.applicationForOccupancyPermit || false}
+                                            checked={sectionTwo && sectionTwo.applicationForOccupancyPermit}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -334,7 +264,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                         />
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Verification Inspection of Compliance to NTCV"}
-                                            checked={sectionTwo && sectionTwo.verificationinspectionOfcomplianceToNTCV || false}
+                                            checked={sectionTwo && sectionTwo.verificationinspectionOfcomplianceToNTCV}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -352,7 +282,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Application for Business Permit"}
-                                            checked={sectionTwo && sectionTwo.applicationForBusinessPermit || false}
+                                            checked={sectionTwo && sectionTwo.applicationForBusinessPermit}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -363,7 +293,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             />
                                             <RegularCheckBox 
                                             regularCheckBoxLabel={"Verification Inspection of Complaint Received"}
-                                            checked={sectionTwo && sectionTwo.verificationinspectionOfComplaintReceived || false}
+                                            checked={sectionTwo && sectionTwo.verificationinspectionOfComplaintReceived}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -381,7 +311,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Others (Specify)"}
-                                            checked={sectionTwo && sectionTwo.others || false}
+                                            checked={sectionTwo && sectionTwo.others}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"20%"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -1135,7 +1065,17 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     >
                                     III. SECTIONAL OCCUPANCY (Note: Indicate specific usage of each floor, section or rooms)
                                     </Text>
+                                {
+                                   sectionFive ? 
 
+                                   <TextAreaPdf
+                                   textAreaPdfStyle={{}}
+                                   inputContentStyle={{}}
+                                   characterLimit={350}
+                                   inputContent={sectionFive && sectionFive.sectionalOccupancy}
+                                   />
+                                  :
+                                  <View>
                                     <NoLabelInput 
                                     inputStyle={{
                                     width:"100%",
@@ -1161,8 +1101,12 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     }}
                                     inputContent={""}
                                     inputContentStyle={{fontSize:"8px"}}
-                                />  
+                                />   
 
+                                </View>
+                                }
+                                  
+                                   
                             </View>
 
                             {/* 10 row */}
@@ -1361,10 +1305,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                color:"gray"
              }}
             >BFP-QSF-FSED-027 Rev. 01 (07.05.19) Page 1 of 4</Text>
-          </View>
-
-      </Page>
- </Document>
+       </PageWrapper>  
  )
  
    
