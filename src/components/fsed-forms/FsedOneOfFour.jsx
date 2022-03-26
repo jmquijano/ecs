@@ -1,6 +1,6 @@
 import React from 'react';
 import {  Text, View, Font } from '@react-pdf/renderer';
-import {NoLabelInput,InputRow,InputColumn,RegularCheckBox,TextAreaPdf,ChoicesCheckBox} from '../pdf'
+import {styles,NoLabelInput,InputRow,InputColumn,RegularCheckBox,TextAreaPdf,ChoicesCheckBox} from '../pdf'
 import FormHeader from './FormHeader';
 import PageWrapper from './PageWrapper';
 
@@ -16,8 +16,8 @@ Font.register({
 // KAILANGAN PA NIG CLEAN UP 
 
 const FsedOneOfFour = ({pdfValue}) => {
-    const {sectionOne,sectionTwo,sectionThree,sectionFour,sectionFive,sectionSix,sectionSeven} = pdfValue
-
+    const {prelude,generalInformation,buildingConstruction,sectionalOccupancy,classification,exitDetails} = pdfValue
+    const {rowOne,rowTwo,rowThree} = prelude
     return (
     <PageWrapper> 
               <View
@@ -38,7 +38,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                         {/* Logo */}
                         <FormHeader/>
 
-                        {/* 2 row */}
+                        {/* Region */}
                         <View
                         style={{
                             textAlign:"center",
@@ -63,23 +63,17 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 </Text>
                         </View>
 
-                        {/* 3 row */}
-                        <View
-                        >
-                            <View
-                                style={{
-                                display:"flex",
-                                flexDirection:"row",
-                                justifyContent:"space-between",
-                                
-                                }}
-                            >
+                        {/* Prelude */}
+
+                        {/* Row One */}
+                        <View>
+                            <View style={styles.rowItem}>
                                     <InputColumn
                                         inputColumnViewStyle={{width:"40%"}}
                                         inputColumnLabelStyle={{fontSize:"9px",marginHorizontal:"auto",fontFamily:"Open Sans",fontStyle:"italic"}}
                                         inputColumnStyle={{ height:"11px" }} 
                                         inputColumnContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionOne && sectionOne.nameOfOwner} 
+                                        inputContent={rowOne && rowOne.nameOfOwner} 
                                         inputLabel="(Name of Owner)"
                                     />
                                     <InputColumn
@@ -87,7 +81,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                         inputColumnLabelStyle={{fontSize:"9px",marginHorizontal:"auto"}}
                                         inputColumnStyle={{ height:"11px" }} 
                                         inputColumnContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionOne && sectionOne.date}  
+                                        inputContent={rowOne && rowOne.date}  
                                         inputLabel="DATE"
                                     />
                             </View>
@@ -96,7 +90,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             inputColumnLabelStyle={{fontSize:"9px",marginHorizontal:"auto",fontFamily:"Open Sans",fontStyle:"italic"}}
                                             inputColumnStyle={{ height:"11px" }} 
                                             inputColumnContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                            inputContent={sectionOne && sectionOne.nameOfEstablishment} 
+                                            inputContent={rowOne && rowOne.nameOfEstablishment} 
                                             inputLabel="(Name of Establishment)"
                                         />
                             
@@ -105,29 +99,24 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             inputColumnLabelStyle={{fontSize:"9px",marginHorizontal:"auto",fontFamily:"Open Sans",fontStyle:"italic"}}
                                             inputColumnStyle={{ height:"11px" }} 
                                             inputColumnContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                            inputContent={sectionOne && sectionOne.address} 
+                                            inputContent={rowOne && rowOne.address} 
                                             inputLabel="(Address)"
                                         />
                         </View>
      
 
-                            {/* 4 row */}
+                            {/* Row Two*/}
                         <View
                         style={{
-                            fontSize:"11px",
+                            fontSize:"9px",
                             marginTop:"10px"
                         }}
                         >
-                                <Text
-                                style={{
-                                    fontFamily:"Open Sans",
-                                    fontWeight:"bold"
-                                }}
-                                >FOR	 : CITY/MUNICIPAL FIRE MARSHAL</Text>
+                                <Text style={styles.noMarginTextHeading}>FOR	 : CITY/MUNICIPAL FIRE MARSHAL</Text>
                                 <Text>ATTN 	 : CHIEF, FIRE SAFETY ENFORCEMENT SECTION</Text>
                         </View>
 
-                        {/* 5 row */}
+                        {/* Row Two*/}
                         <View
                             style={{
                                 marginTop:"10px"
@@ -140,33 +129,25 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     alignItems:"center",
                                 }}
                             >
-                                        <Text
-                                        style={{ 
-                                            fontSize:"11px",
-                                            fontFamily:"Open Sans",
-                                            fontWeight:"bold",
-                                            width:"20%",
-                                            marginRight:"5px"
-                                        }}
-                                        >
+                                        <Text style={[styles.noMarginTextHeading,{width:"20%"}]} >
                                             REFENCE:
                                         </Text>
                                         <InputRow 
                                             inputRowViewStyle={{width:"95%"}}
-                                            inputRowLabelStyle={{fontSize:"11px"}}
-                                            inputRowStyle={{ height:"13px" }} 
-                                            inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                            inputContent={sectionOne && sectionOne.inspectionOrderNo}  
+                                            // inputRowLabelStyle={{fontSize:"11px"}}
+                                            inputRowStyle={styles.inputRowStyle} 
+                                            inputRowContentStyle={styles.inputRowContentStyle}
+                                            inputContent={rowTwo && rowTwo.inspectionOrderNo}  
                                             inputLabel="INSPECTION ORDER NO."
                                             // inputSuffix="(123)"
-                                            inputRowSuffixStyle={{fontSize:"6px",fontWeight:"bold"}}
+                                            inputRowSuffixStyle={styles.inputRowSuffixStyle}
                                         />
                                         <InputRow 
                                             inputRowViewStyle={{width:"95%"}}
-                                            inputRowLabelStyle={{fontSize:"11px"}}
-                                            inputRowStyle={{ height:"13px" }} 
-                                            inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                            inputContent={sectionOne && sectionOne.dateIssued} 
+                                            // inputRowLabelStyle={{fontSize:"11px"}}
+                                            inputRowStyle={styles.inputRowStyle} 
+                                            inputRowContentStyle={styles.inputRowContentStyle}
+                                            inputContent={rowTwo && rowTwo.dateIssued} 
                                             inputLabel="DATE ISSUED"
                                             // inputSuffix="(123)"
                                             inputRowSuffixStyle={{fontSize:"6px",fontWeight:"bold"}}
@@ -174,18 +155,18 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     </View>
                                     <InputRow 
                                             inputRowViewStyle={{width:"100%"}}
-                                            inputRowLabelStyle={{fontSize:"11px"}}
-                                            inputRowStyle={{ height:"13px" }} 
-                                            inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                            inputContent={sectionOne && sectionOne.dateOfInspection} 
+                                            // inputRowLabelStyle={{fontSize:"11px"}}
+                                            inputRowStyle={styles.inputRowStyle} 
+                                            inputRowContentStyle={styles.inputRowContentStyle}
+                                            inputContent={rowTwo && rowTwo.dateOfInspection} 
                                             inputLabel="DATE OF INSPECTION:"
                                             // inputSuffix="(123)"
                                             inputRowSuffixStyle={{fontSize:"6px",fontWeight:"bold"}}
                                         />
                         </View>
 
-                        {/* 6 row */}
-                        <View
+                        {/* Row Three */}
+                         <View
                             style={{
                             marginTop:"10px"
                             }}
@@ -197,12 +178,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     flexDirection:"row"
                                 }}
                             >
-                                        <Text
-                                            style={{
-                                                fontFamily:"Open Sans",
-                                                fontWeight:"bold"
-                                            }}
-                                        >NATURE OF INSPECT ION CONDUCTED:</Text>
+                                        <Text style={styles.noMarginTextHeading}>NATURE OF INSPECT ION CONDUCTED:</Text>
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Check Appropriate Box"}
                                             checked={false}
@@ -224,7 +200,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                             <RegularCheckBox 
                                                 regularCheckBoxLabel={"Building Under Construction"}
-                                                checked={sectionTwo && sectionTwo.buildingUnderConstruction}
+                                                checked={rowThree && rowThree.buildingUnderConstruction}
                                                 checkBoxFirst={true}
                                                 regularCheckBoxStyle={{width:"300px"}}
                                                 checkBoxStyle={{marginHorizontal:"2px"}}
@@ -235,7 +211,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             />
                                             <RegularCheckBox 
                                                 regularCheckBoxLabel={"Periodic Inspection of Occupancy"}
-                                                checked={sectionTwo && sectionTwo.periodicInspectionOfOccupancy}
+                                                checked={rowThree && rowThree.periodicInspectionOfOccupancy}
                                                 checkBoxFirst={true}
                                                 regularCheckBoxStyle={{width:"300px"}}
                                                 checkBoxStyle={{marginHorizontal:"2px"}}
@@ -245,6 +221,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                                 }}
                                             />
                             </View>
+
                             <View
                                 style={{
                                     display:"flex",
@@ -253,7 +230,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Application for Occupancy Permit"}
-                                            checked={sectionTwo && sectionTwo.applicationForOccupancyPermit}
+                                            checked={rowThree && rowThree.applicationForOccupancyPermit}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -264,7 +241,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                         />
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Verification Inspection of Compliance to NTCV"}
-                                            checked={sectionTwo && sectionTwo.verificationinspectionOfcomplianceToNTCV}
+                                            checked={rowThree && rowThree.verificationinspectionOfcomplianceToNTCV}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -274,6 +251,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             }}
                                         />
                             </View>
+
                             <View
                             style={{
                                 display:"flex",
@@ -282,7 +260,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Application for Business Permit"}
-                                            checked={sectionTwo && sectionTwo.applicationForBusinessPermit}
+                                            checked={rowThree && rowThree.applicationForBusinessPermit}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -293,7 +271,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             />
                                             <RegularCheckBox 
                                             regularCheckBoxLabel={"Verification Inspection of Complaint Received"}
-                                            checked={sectionTwo && sectionTwo.verificationinspectionOfComplaintReceived}
+                                            checked={rowThree && rowThree.verificationinspectionOfComplaintReceived}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"300px"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -303,6 +281,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             }}
                                             />
                             </View>
+
                             <View
                                 style={{
                                     display:"flex",
@@ -311,7 +290,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                             >
                                         <RegularCheckBox 
                                             regularCheckBoxLabel={"Others (Specify)"}
-                                            checked={sectionTwo && sectionTwo.others}
+                                            checked={rowThree && rowThree.others}
                                             checkBoxFirst={true}
                                             regularCheckBoxStyle={{width:"20%"}}
                                             checkBoxStyle={{marginHorizontal:"2px"}}
@@ -325,14 +304,14 @@ const FsedOneOfFour = ({pdfValue}) => {
                                             width:"100%",
                                             height:"12px"
                                             }}
-                                            inputContent={sectionTwo && sectionTwo.specify}
+                                            inputContent={rowThree && rowThree.specify}
                                             inputContentStyle={{fontSize:"8px"}}
                                         /> 
                             </View>
 
-                        </View>
+                        </View> 
 
-                            {/* 7 row */}
+                            {/* I. GENERAL INFORMATION */}
                             <View
                                 style={{
                                 marginTop:"10px"
@@ -343,69 +322,63 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     fontFamily:"Open Sans",
                                     fontWeight:"bold",
                                     textDecoration:"underline",
-                                    textAlign:"center"
+                                    textAlign:"center",
+                                    fontSize:"11px",
+                                    marginTop:"10px",
                                 }}
                                 >
                                 PLACES OF ASSEMBLY OCCUPANCY CHECKLIST
                                 </Text>
 
                                 <Text
-                                    style={{
-                                    fontFamily:"Open Sans",
-                                    fontWeight:"bold",
-                                    marginTop:"5px"
-                                    
-                                    }}
+                                    style={[styles.noMarginTextHeading,{marginTop:"5px"}]}
                                 >
                                     I. GENERAL INFORMATION
                                 </Text>
 
                                 <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"10px" }} 
-                                    inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                    inputContent={sectionThree && sectionThree.nameOfBuilding} 
+                                    // inputRowLabelStyle={{fontSize:"10px"}}
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={generalInformation && generalInformation.nameOfBuilding} 
                                     inputLabel="Name of Building"
                                     // inputSuffix="(123)"
-                                    inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                    inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                 />
 
                                 <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"10px" }} 
-                                    inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                    inputContent={sectionThree && sectionThree.businessName} 
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={generalInformation && generalInformation.businessName} 
                                     inputLabel="Business Name"
                                     // inputSuffix="(123)"
-                                    inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                    inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                 />
                                 
 
                                 <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"10px" }} 
-                                    inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                    inputContent={sectionThree && sectionThree.address}  
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={generalInformation && generalInformation.address}  
                                     inputLabel="Address"
                                     // inputSuffix="(123)"
-                                    inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                    inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                 />
 
                                 <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"10px" }} 
-                                    inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                    inputContent={sectionThree && sectionThree.natureOfBusiness} 
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={generalInformation && generalInformation.natureOfBusiness} 
                                     inputLabel="Nature of Business"
                                     // inputSuffix="(123)"
-                                    inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                    inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                 />
 
@@ -417,24 +390,22 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.nameOfOwnerOrOccupant} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.nameOfOwnerOrOccupant} 
                                         inputLabel="Name of Owner/Occupant"
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.contactNo}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.contactNo}
                                         inputLabel="Contact No."
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                 </View>
@@ -447,24 +418,22 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.nameOfRepresentative}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.nameOfRepresentative}
                                         inputLabel="Name of Representative"
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.contactNo2} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.contactNo2} 
                                         inputLabel="Contact No."
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                 </View>
@@ -477,35 +446,32 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.noOfStorey}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.noOfStorey}  
                                         inputLabel="No. of Storey"
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.heightOfBldg}   
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.heightOfBldg}   
                                         inputLabel="Height of B1dg"
                                         inputSuffix="(m)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.portionOccupied}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.portionOccupied}  
                                         inputLabel="Portion Occupied"
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                 </View>
@@ -518,24 +484,22 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.areaPerFlr} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.areaPerFlr} 
                                         inputLabel="Area per flr"
                                         inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.totalFlrArea}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.totalFlrArea}  
                                         inputLabel="Total Flr. Area"
                                         inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -549,46 +513,42 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.buildingPermitNo} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.buildingPermitNo} 
                                         inputLabel="Building Permit No"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssue}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssue}  
                                         inputLabel="Date Issue"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.occupancyPermitNo}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.occupancyPermitNo}  
                                         inputLabel="Occupancy Permit No."
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued} 
                                         inputLabel="Date Issued "
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -602,35 +562,32 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.latestFSICIssuedControlNo} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.latestFSICIssuedControlNo} 
                                         inputLabel="Latest FSIC Issued Control No. "
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued2} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued2} 
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.fCFee} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.fCFee} 
                                         inputLabel="FC Fee"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -645,35 +602,32 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.certificateOfFireDrill} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.certificateOfFireDrill} 
                                         inputLabel="Certificate of Fire Drill "
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued3}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued3}
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.fCFee2}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.fCFee2}
                                         inputLabel="FC Fee"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -688,24 +642,22 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.latestNoticeToCorrectViolationsControlNo} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.latestNoticeToCorrectViolationsControlNo} 
                                         inputLabel="Latest Notice to Correct Violations Control No. "
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued4}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued4}  
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -719,35 +671,32 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.nameOfFireInsuranceCoOrCoInsurer} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.nameOfFireInsuranceCoOrCoInsurer} 
                                         inputLabel="Name of Fire Insurance Co/Co-Insurer"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.policyNo}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.policyNo}  
                                         inputLabel="Policy No"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued5} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued5} 
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -761,46 +710,42 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"60%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.latestMayorsOrBusPermit}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.latestMayorsOrBusPermit}  
                                         inputLabel="Latest Mayor's/Bus. Permit "
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"30%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued6} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued6} 
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"50%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.municipalLicenseNo} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.municipalLicenseNo} 
                                         inputLabel="Municipal License No"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"30%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued7} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued7} 
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -814,24 +759,22 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.LatestCertificateofElectricalInspectionNo} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.LatestCertificateofElectricalInspectionNo} 
                                         inputLabel="Latest Certificate of Electrical Inspection No. "
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.dateIssued8}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.dateIssued8}  
                                         inputLabel="Date Issued"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -846,13 +789,12 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionThree && sectionThree.otherInformation}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={generalInformation && generalInformation.otherInformation}  
                                         inputLabel="Other Information"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -861,18 +803,14 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 
                             </View>
 
-                            {/* 8 row */}
-                            <View
+                            {/* II.BUILDING CONSTRUCTION */}
+                             <View
                             style={{
                                 marginTop:"10px"
                             }}
                             >
                             <Text
-                                    style={{
-                                    fontFamily:"Open Sans",
-                                    fontWeight:"bold",
-                                    
-                                    }}
+                                     style={[styles.noMarginTextHeading,{marginTop:"5px"}]}
                                 >
                                     II.BUILDING CONSTRUCTION
                                 </Text>
@@ -884,36 +822,33 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     }}
                                 >
                                     <InputRow 
-                                        inputRowViewStyle={{width:"100%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.beams}  
+                                        inputRowViewStyle={{width:"40%",marginRight:"5px"}}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.beams}  
                                         inputLabel="Beams"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.columns}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.columns}
                                         inputLabel="Columns"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.flooring} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.flooring} 
                                         inputLabel="Flooring"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -927,36 +862,33 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     }}
                                 >
                                     <InputRow 
-                                        inputRowViewStyle={{width:"100%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.exteriorWalls}  
+                                        inputRowViewStyle={{width:"40%",marginRight:"5px"}}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.exteriorWalls}  
                                         inputLabel="Exterior Walls"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.corridorWalls}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.corridorWalls}  
                                         inputLabel="Corridor Walls"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.roomPartitions} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.roomPartitions} 
                                         inputLabel="Room Partitions"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -970,36 +902,33 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     }}
                                 >
                                     <InputRow 
-                                        inputRowViewStyle={{width:"100%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.mainStair}  
+                                        inputRowViewStyle={{width:"40%",marginRight:"5px"}}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.mainStair}  
                                         inputLabel="Main Stair"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.windows} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.windows} 
                                         inputLabel="Windows"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.ceiling}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.ceiling}  
                                         inputLabel="Ceiling"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
@@ -1013,66 +942,59 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     }}
                                 >
                                     <InputRow 
-                                        inputRowViewStyle={{width:"100%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.mainDoor} 
+                                        inputRowViewStyle={{width:"40%",marginRight:"5px"}}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.mainDoor} 
                                         inputLabel="Main Door"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%",marginRight:"5px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }}
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.trusses} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.trusses} 
                                         inputLabel="Trusses"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"40%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"11px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionFour && sectionFour.roof} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={buildingConstruction && buildingConstruction.roof} 
                                         inputLabel="Roof"
                                         // inputSuffix="sqm"
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     
                                     
                                 </View>    
-                            </View>
+                            </View> 
 
-                            {/* 9 row */}
-                            <View
+                            {/* III. SECTIONAL OCCUPANCY (Note: Indicate specific usage of each floor, section or rooms) */}
+                             <View
                             style={{
                                 marginTop:"10px"
                             }}
                             >
                                 <Text
-                                    style={{
-                                        fontFamily:"Open Sans",
-                                        fontWeight:"bold",
-                                        
-                                    }}
+                                     style={[styles.noMarginTextHeading,{marginTop:"5px"}]}
                                     >
                                     III. SECTIONAL OCCUPANCY (Note: Indicate specific usage of each floor, section or rooms)
                                     </Text>
                                 {
-                                   sectionFive ? 
+                                   sectionalOccupancy.sectionalOccupancy !== "" ? 
 
                                    <TextAreaPdf
                                    textAreaPdfStyle={{}}
                                    inputContentStyle={{}}
                                    characterLimit={350}
-                                   inputContent={sectionFive && sectionFive.sectionalOccupancy}
+                                   inputContent={sectionalOccupancy && sectionalOccupancy.sectionalOccupancy}
                                    />
                                   :
                                   <View>
@@ -1081,7 +1003,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     width:"100%",
                                     height:"12px"
                                     }}
-                                    inputContent={sectionFive && sectionFive.sectionalOccupancy}
+                                    inputContent={""}
                                     inputContentStyle={{fontSize:"8px"}}
                                 />  
 
@@ -1107,20 +1029,16 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 }
                                   
                                    
-                            </View>
+                            </View> 
 
-                            {/* 10 row */}
+                            {/* IV. CLASSIFICATION*/}
                             <View
                             style={{
                                 marginTop:"10px"
                             }}
                             >
                                 <Text
-                                    style={{
-                                        fontFamily:"Open Sans",
-                                        fontWeight:"bold",
-                                        
-                                    }}
+                                     style={[styles.noMarginTextHeading,{marginTop:"5px"}]}
                                     >
                                     IV. CLASSIFICATION
                                     </Text>
@@ -1133,24 +1051,22 @@ const FsedOneOfFour = ({pdfValue}) => {
                                 >
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionSix && sectionSix.occupantLoad} 
+                                        inputRowStyle={styles.inputRowStyle} 
+                                       inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={classification && classification.occupantLoad} 
                                         inputLabel="Occupant Load:"
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                     <InputRow 
                                         inputRowViewStyle={{width:"100%",marginRight:"10px"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"10px" }} 
-                                        inputRowContentStyle={{fontSize:"8px",fontStyle:"italic"}}
-                                        inputContent={sectionSix && sectionSix.egresscapacity}  
+                                        inputRowStyle={styles.inputRowStyle} 
+                                       inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={classification && classification.egresscapacity}  
                                         inputLabel="Egress capacity"
                                         // inputSuffix="(123)"
-                                        inputRowSuffixStyle={{fontSize:"9px",fontWeight:"bold"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
 
                                     />
                                 </View>
@@ -1160,39 +1076,41 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     (requirement: 0.65 sq.m. per person for concentrated use without fixed seat; 1.4 sq.m. per person for less concentrated use and 0.28 sq.m.  per person for standing room or waiting space)
                                     </Text>
                                     <View 
-                                    style={{
-                                        display:"flex",
-                                        flexDirection:"row"
-                                    }}
+                                    style={styles.rowItem}
                                     >
                                     <ChoicesCheckBox
                                         choicesLabel="Any renovations:"
                                         choicesLabelFirst={true}
-                                        choicesCheckBoxStyle={{marginHorizontal:"3px"}}
+                                        checkBoxLabelFirst={false}
+                                        choicesViewStyle={{display:"flex",flexDirection:"row",width:"50%"}}
+                                        choicesCheckBoxStyle={styles.choicesStyle}
+                                        checkBoxLabelStyle={styles.choicesStyle}
                                         choices={[
                                         {   
                                             label:"Yes",
-                                            checked:sectionSix && sectionSix.anyRenovations.yes
+                                            checked:classification && classification.anyRenovations.yes
                                         },
                                         {
                                             label:"No",
-                                            checked:sectionSix && sectionSix.anyRenovations.no
+                                            checked:classification && classification.anyRenovations.no
                                         },
                                         ]}
                                 />
                                 <ChoicesCheckBox
                                 choicesLabel="Windowless:"
                                 choicesLabelFirst={true}
-                                choicesCheckBoxStyle={{marginHorizontal:"3px"}}
-                                choicesLabelStyle={{marginLeft:"10px"}}
+                                checkBoxLabelFirst={false}
+                                choicesViewStyle={{display:"flex",flexDirection:"row",width:"50%"}}
+                                choicesCheckBoxStyle={styles.choicesStyle}
+                                checkBoxLabelStyle={styles.choicesStyle}
                                 choices={[
                                     {
                                     label:"Yes",
-                                    checked:sectionSix && sectionSix.windowless.yes
+                                    checked:classification && classification.windowless.yes
                                     },
                                     {
                                     label:"No",
-                                    checked:sectionSix && sectionSix.windowless.no
+                                    checked:classification && classification.windowless.no
                                     },
                                 ]}
                             />
@@ -1200,43 +1118,38 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     </View>
                                 
 
-                            </View>
+                            </View> 
 
-                            {/* 11 row */}
-                            <View
+                            {/* V. EXIT DETAILS */}
+                             <View
                                 style={{
                                 marginTop:"10px"
                                 }}
                             >
                                     <Text
-                                    style={{
-                                        fontFamily:"Open Sans",
-                                        fontWeight:"bold",
-                                        
-                                    }}
+                                     style={[styles.noMarginTextHeading,{marginTop:"5px"}]}
                                     >
                                     V. EXIT DETAILS
                                     </Text>
                                     <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"13px" }} 
-                                    inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                    inputContent={sectionSeven && sectionSeven.capacityOfHorizontalExit} 
+                                    // inputRowLabelStyle={{fontSize:"10px"}}
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={exitDetails && exitDetails.capacityOfHorizontalExit} 
                                     inputLabel="Capacity of Horizontal Exit (Corridor Hallway):"
                                     inputSuffix="(Requirement:100 persons per unit of exit width per min)"
-                                    inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                    inputRowSuffixStyle={styles.inputRowSuffixStyle}
                                     />
 
                                     <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"13px" }} 
-                                    inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                    inputContent={sectionSeven && sectionSeven.capacityOfExitStair}
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={exitDetails && exitDetails.capacityOfExitStair}
                                     inputLabel="Capacity of Exit Stair:"
                                     inputSuffix="(Requirement:75 persons per unit of exit width per min)"
-                                    inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                    inputRowSuffixStyle={styles.inputRowSuffixStyle}
                                     />
 
                                     <View
@@ -1247,27 +1160,28 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     >
                                         <InputRow 
                                         inputRowViewStyle={{width:"70%"}}
-                                        inputRowLabelStyle={{fontSize:"10px"}}
-                                        inputRowStyle={{ height:"13px" }} 
-                                        inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                        inputContent={sectionSeven && sectionSeven.noOfExits}
+                                        inputRowStyle={styles.inputRowStyle} 
+                                        inputRowContentStyle={styles.inputRowContentStyle}
+                                        inputContent={exitDetails && exitDetails.noOfExits}
                                         inputLabel="No. of Exits"
                                         inputSuffix=""
-                                        inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
+                                        inputRowSuffixStyle={styles.inputRowSuffixStyle}
                                         />
                                         <ChoicesCheckBox
                                         choicesLabel="Remote"
                                         choicesLabelFirst={true}
-                                        choicesLabelStyle={{marginHorizontal:"5px"}}
-                                        choicesCheckBoxStyle={{marginHorizontal:"3px"}}
+                                        checkBoxLabelFirst={false}
+                                        choicesViewStyle={{display:"flex",flexDirection:"row",width:"50%"}}
+                                        choicesCheckBoxStyle={styles.choicesStyle}
+                                        checkBoxLabelStyle={styles.choicesStyle}
                                         choices={[
                                         {
                                             label:"Yes",
-                                            checked:sectionSeven && sectionSeven.remote.yes
+                                            checked:exitDetails && exitDetails.remote.yes
                                         },
                                         {
                                             label:"No",
-                                            checked:sectionSeven && sectionSeven.remote.no
+                                            checked:exitDetails && exitDetails.remote.no
                                         },
                                         ]}
                                 />
@@ -1279,10 +1193,9 @@ const FsedOneOfFour = ({pdfValue}) => {
 
                                     <InputRow 
                                     inputRowViewStyle={{width:"100%"}}
-                                    inputRowLabelStyle={{fontSize:"10px"}}
-                                    inputRowStyle={{ height:"13px" }} 
-                                    inputRowContentStyle={{fontSize:"9px",fontStyle:"italic"}}
-                                    inputContent={sectionSeven && sectionSeven.locationOfExit} 
+                                    inputRowStyle={styles.inputRowStyle} 
+                                    inputRowContentStyle={styles.inputRowContentStyle}
+                                    inputContent={exitDetails && exitDetails.locationOfExit} 
                                     inputLabel="Location of Exit"
                                     inputSuffix=""
                                     inputRowSuffixStyle={{fontSize:"8px",fontStyle:"italic"}}
@@ -1294,7 +1207,7 @@ const FsedOneOfFour = ({pdfValue}) => {
                                     >
                                     Maximum Travel Distance Requirement from Farthest Room: 46 m without AFSS & 61m with AFSS
                                     </Text>
-                            </View>
+                            </View> 
                 </View>
               </View>
          {/* Footer */}

@@ -138,11 +138,11 @@ const FsedTwoOfFour = ({pdfValue}) => {
                         choices={[
                             {   
                                 label:"Yes",
-                                checked:rowOne.anyEnclosureProvided.yes
+                                checked:exitDetails.anyEnclosureProvided.yes
                             },
                             {
                                 label:"No",
-                                checked:rowOne.anyEnclosureProvided.no
+                                checked:exitDetails.anyEnclosureProvided.no
                             },
                         ]}
                      />

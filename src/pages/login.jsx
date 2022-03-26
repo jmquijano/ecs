@@ -14,6 +14,7 @@ import FsedTwoOfFour from '../components/fsed-forms/FsedTwoOfFour';
 import { useFsed } from '../libs/fsed';
 import FsedThreeOfFour from '../components/fsed-forms/FsedThreeOfFour';
 import {  Document} from '@react-pdf/renderer';
+import FsedFourOfFour from '../components/fsed-forms/FsedFourOfFour';
 
 
 
@@ -44,13 +45,15 @@ export default function Login() {
                display="flex"
                margin={"30px"}
             >
-                 {/* <Sampleform  setPdfValue={setPdfValue}/> */}
-                     <Previewer pdfTitle={"FSED_Page 1 of 4"}>
-                         {/* <FsedOneOfFour pdfValue={pdfValue}/> */}
+                 <Sampleform  />
+                     <Previewer pdfTitle={"FSED FORM"}>
+                         
                          <Document>
-                         {/* <FsedTwoOfFour pdfValue={fsedValue}/> */}
-                            <FsedThreeOfFour pdfValue={fsedValue}/>
-                            </Document>
+                             <FsedOneOfFour pdfValue={fsedValue}/>
+                             <FsedTwoOfFour pdfValue={fsedValue}/>
+                             <FsedThreeOfFour pdfValue={fsedValue}/>
+                             <FsedFourOfFour pdfValue={fsedValue}/>
+                         </Document>
                      </Previewer>
                 
                 {/* <div style={{height:"800px",width:"800px"}}>

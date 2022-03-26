@@ -24,6 +24,11 @@ import { Page, Text, View, Document, StyleSheet, PDFViewer, PDFDownloadLink,Blob
       fontFamily:"Open Sans",
       fontStyle:"italic"
   },
+  noMarginTextHeading:{
+    fontFamily:"Open Sans",
+    fontSize:"10px",
+    fontWeight:"bold",
+  },
   textHeading:{
       fontFamily:"Open Sans",
       fontSize:"10px",
@@ -45,6 +50,16 @@ import { Page, Text, View, Document, StyleSheet, PDFViewer, PDFDownloadLink,Blob
   inputRowSuffixStyle:{
      fontSize:"7px",
      fontStyle:"italic"
+ },
+ inputColumnLabelStyle:{
+  fontSize:"9px",
+  marginHorizontal:"auto",
+  fontFamily:"Open Sans",
+ },
+ inputColumnContentStyle:{
+   fontSize:"10px",
+   fontFamily:"Open Sans",
+   
  }
   
 })
@@ -109,6 +124,8 @@ const NoLabelInput=(props)=>(
               whiteSpace: "nowrap",
               textOverflow: "ellipsis",
               marginHorizontal:"5px",
+              fontFamily:"Open Sans",
+              fontStyle:"italic",
               position:"absolute",
               ...props.inputContentStyle
           }}>

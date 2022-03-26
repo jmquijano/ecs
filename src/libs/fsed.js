@@ -110,7 +110,7 @@ const useProvideFsed = () =>{
        },
     //    5
        exitDetails:{
-           rowOne:{
+           
             capacityOfHorizontalExit:"",
             capacityOfExitStair:"",
             noOfExits:"",
@@ -122,7 +122,7 @@ const useProvideFsed = () =>{
             anyEnclosureProvided:{
                 yes:false,
                 no:false
-            } 
+            
            },
            meansOfEgress:{
             readilyAccessible:{
@@ -935,7 +935,6 @@ const useProvideFsed = () =>{
         dateAndTime:"",
         teamLeader:"",
         chiefFireSafetyEnforcementSection:"",
-        approvedOrDisapproved:"",
         cityMunicipalFireMarshal:""
     },
 
