@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useEffect, useRef } from 'react';
 import { Select, Box, Button, FormControl, FormLabel, Input, Text, Grid, GridItem, FormErrorMessage } from "@chakra-ui/react";
 import { ApiBaseUrl } from '../utils/urlbase';
 import { Field, Form, Formik, FormikProvider } from 'formik';
@@ -15,8 +15,14 @@ const UserCredentials = (props) => {
                                 <FormLabel htmlFor={'username'}>Username</FormLabel>
                                 <Input {...field} id={'username'} />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.username?.message ?? form.errors?.username}
-                                    {form.errors?.username?.code ? ' (EC: ' + form.errors?.username?.code  + ')' : ''} 
+                                    {
+                                        form.errors?.username instanceof Map ? form.errors?.username.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.username
+                                    }
+
+                                    {/* form.errors?.username?.message ?? form.errors?.username}
+                                    form.errors?.username?.code ? ' (EC: ' + form.errors?.username?.code  + ')' : '' */}
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -29,8 +35,11 @@ const UserCredentials = (props) => {
                                 <FormLabel htmlFor={'emailaddress'}>Email Address</FormLabel>
                                 <Input {...field} id={'emailaddress'} />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.emailaddress?.message ?? form.errors?.emailaddress}
-                                    {form.errors?.emailaddress?.code ? ' (EC: ' + form.errors?.emailaddress?.code  + ') ' : ''} 
+                                    {
+                                        form.errors?.emailaddress instanceof Map ? form.errors?.emailaddress.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.emailaddress
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -43,8 +52,11 @@ const UserCredentials = (props) => {
                                 <FormLabel htmlFor={'mobilenumber'}>Mobile Number</FormLabel>
                                 <Input {...field} id={'mobilenumber'} />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.mobilenumber?.message ?? form.errors?.mobilenumber}
-                                    {form.errors?.mobilenumber?.code ? ' (EC: ' + form.errors?.mobilenumber?.code  + ') ' : ''} 
+                                    {
+                                        form.errors?.mobilenumber instanceof Map ? form.errors?.mobilenumber.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.mobilenumber
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -57,8 +69,11 @@ const UserCredentials = (props) => {
                                 <FormLabel htmlFor={'password'}>Password</FormLabel>
                                 <Input {...field} id={'password'} type={'password'} />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.password?.message ?? form.errors?.password}
-                                    {form.errors?.password?.code ? ' (EC: ' + form.errors?.password?.code  + ') ' : ''} 
+                                    {
+                                        form.errors?.password instanceof Map ? form.errors?.password.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.password
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -71,8 +86,11 @@ const UserCredentials = (props) => {
                                 <FormLabel htmlFor={'confirmpassword'}>Confirm Password</FormLabel>
                                 <Input {...field} id={'confirmpassword'} type={'password'} />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.confirmpassword?.message ?? form.errors?.confirmpassword}
-                                    {form.errors?.confirmpassword?.code ? ' (EC: ' + form.errors?.confirmpassword?.code  + ') ' : ''} 
+                                    {
+                                        form.errors?.confirmpassword instanceof Map ? form.errors?.confirmpassword.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.confirmpassword
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -96,13 +114,17 @@ const UserInformation = (props) => {
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.salutation && form.touched?.salutation} isRequired>
                                 <FormLabel htmlFor={'salutation'}>Salutation</FormLabel>
                                 <Select {...field} id='salutation' placeholder=''>
+                                    <option value=""></option>
                                     {salutations.map((s) => (
                                         <option value={s}>{s}</option>
                                     ))}
                                 </Select>
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.salutation?.message ?? form.errors?.salutation}
-                                    {form.errors?.salutation?.code ? ' (EC: ' + form.errors?.salutation?.code  + ')' : ''} 
+                                    {
+                                        form.errors?.salutation instanceof Map ? form.errors?.salutation.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.salutation
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -115,8 +137,11 @@ const UserInformation = (props) => {
                                 <FormLabel htmlFor={'firstname'}>First name</FormLabel>
                                 <Input {...field} id='firstname' placeholder='' />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.firstname?.message ?? form.errors?.firstname}
-                                    {form.errors?.firstname?.code ? ' (EC: ' + form.errors?.firstname?.code  + ')' : ''} 
+                                    {
+                                        form.errors?.firstname instanceof Map ? form.errors?.firstname.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.firstname
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -129,8 +154,11 @@ const UserInformation = (props) => {
                                 <FormLabel htmlFor={'middlename'}>Middle name</FormLabel>
                                 <Input {...field} id='middlename' placeholder='' />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.middlename?.message ?? form.errors?.middlename}
-                                    {form.errors?.middlename?.code ? ' (EC: ' + form.errors?.middlename?.code  + ')' : ''} 
+                                    {
+                                        form.errors?.middlename instanceof Map ? form.errors?.middlename.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.middlename
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -143,8 +171,11 @@ const UserInformation = (props) => {
                                 <FormLabel htmlFor={'lastname'}>Last name</FormLabel>
                                 <Input {...field} id='lastname' placeholder='' />
                                 <FormErrorMessage textAlign={'left'}>
-                                    {form.errors?.lastname?.message ?? form.errors?.lastname}
-                                    {form.errors?.lastname?.code ? ' (EC: ' + form.errors?.lastname?.code  + ')' : ''} 
+                                    {
+                                        form.errors?.lastname instanceof Map ? form.errors?.lastname.map((d, i) => {
+                                            return d;
+                                        }) : form?.errors?.lastname
+                                    }
                                 </FormErrorMessage>
                             </FormControl>
                             )}
@@ -197,28 +228,49 @@ const UserInformation = (props) => {
     );
 }
 
-const VerifySMS = (props) => {
+const Verify = (props) => {
+    const { formikInitialValues } = props;
+    
+
     return (
         <Fragment>
-            <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
-                <GridItem colSpan={12}>
-                    <Box width={'100%'}>
-                        <FormControl isRequired>
-                            <FormLabel htmlFor={'VerifySMS'}>Code</FormLabel>
-                            <Input id={'VerifySMS'} />
-                        </FormControl>
-                    </Box>
-                </GridItem>
-                <GridItem colSpan={12}>
-                    <Box width={'100%'} display={'inline'}>
-                        <Text fontSize={12} display={'inline'}>Haven't received the code?</Text>
-                        <Button display={'inline'} size={'sm'} colorScheme={'brand'} mx={2} fontSize={12}>Resend</Button>
-                    </Box>
-                </GridItem>
-            </Grid>
+            
+            <FormikProvider value={props.formik}>
+                <Form>
+                    <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
+                        <GridItem colSpan={12}>
+                            <Field name='code'>
+                                {({ field, form }) => (
+                                <FormControl isDisabled={props.loading} isInvalid={form.errors?.code && form.touched?.code} isRequired>
+                                    <FormLabel htmlFor={'code'}>Code</FormLabel>
+                                    <Input {...field} id={'code'} type={'password'} />
+                                    <FormErrorMessage textAlign={'left'}>
+                                        {
+                                            form.errors?.code instanceof Map ? form.errors?.code.map((d, i) => {
+                                                return d;
+                                            }) : form?.errors?.code
+                                        }
+                                    </FormErrorMessage>
+                                </FormControl>
+                                )}
+                            </Field>
+                        </GridItem>
+                        <GridItem colSpan={12}>
+                            <Box width={'100%'} display={'inline'}>
+                                <Text fontSize={12} display={'inline'}>Haven't received the code?</Text>
+                                <Button disabled={props.interval >= 1 ? true : false} display={'inline'} size={'sm'} colorScheme={'brand'} mx={2} fontSize={12}>
+                                    {
+                                        props.interval >= 1 ? 'Resend in ' + props.interval + 's' : 'Resend'
+                                    }
+                                </Button>
+                            </Box>
+                        </GridItem>
+                    </Grid>
+                </Form>
+            </FormikProvider>
         </Fragment>
         
     )
 }
 
-export { UserCredentials, UserInformation, VerifySMS }
+export { UserCredentials, UserInformation, Verify }

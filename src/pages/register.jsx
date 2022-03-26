@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { Badge, Box, Button, Center, Divider, Image, Text, VStack, Stack, Grid, GridItem } from "@chakra-ui/react";
 import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
@@ -6,7 +6,7 @@ import { PulseLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { ApiBaseUrl, PageBaseUrl } from '../utils/urlbase';
 import { Step, Steps, useSteps } from "chakra-ui-steps"
-import { UserCredentials, UserInformation, VerifySMS } from '../components/register';
+import { UserCredentials, UserInformation, Verify } from '../components/register';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -15,9 +15,69 @@ export default function Register() {
     const navigate = useNavigate();
     const [loadingState, setLoadingState] = useState(false);
 
-    const { nextStep, prevStep, reset, activeStep } = useSteps({
+    const { nextStep, prevStep, reset, activeStep, setStep } = useSteps({
         initialStep: 0,
     })
+    
+    const [smsResendInterval, setSMSResendInterval] = React.useState(300);
+
+    // Check if token was issued during registration
+    useEffect(() => {
+        setLoadingState(true);
+        fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.CheckIssuedRegistrationToken.url, {
+            method: ApiBaseUrl.Applicant.Auth.CheckIssuedRegistrationToken.method,
+            headers: ApiBaseUrl.Applicant.Auth.CheckIssuedRegistrationToken.headers
+        })
+        .then(response => response.json())
+        .then((res) => {
+            
+            if (res.data.valid) {
+                fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.url, {
+                    method: ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.method,
+                    headers: ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.headers
+                })
+                .then(response => response.json())
+                .then((res) => {
+                    if (res.data.emailaddress) {
+                        console.log('redirect');
+                        return navigate(PageBaseUrl.Dashboard);
+                    }
+
+                    if (res.data.mobilenumber) {
+                        setStep(3);
+                    } else {
+                        setStep(2);
+                    }
+                }).finally((res) => {
+                    setLoadingState(false);
+                })
+                
+            }
+        })
+        .finally((res) => {
+            
+        });
+    }, [activeStep]);
+
+    useEffect(() => {
+        switch (activeStep) {
+            case 2 && 3:
+                if (smsResendInterval >= 1) {
+                    let smsInterval = setInterval(() => {
+                        setSMSResendInterval(smsResendInterval - 1);
+                    }, 1000);
+        
+                    setTimeout(function () {
+                        clearInterval(smsInterval);
+                        console.log('Seconds no longer passes');
+                    }, 1000);
+                }
+            break;
+        }
+        
+    });
+
+    
 
     /**
      * validateEmailFormat
@@ -46,13 +106,16 @@ export default function Register() {
             firstname: Yup.string().required('Firt name is a mandatory field.'),
             middlename: Yup.string().nullable(true),
             lastname: Yup.string().required('Last name is a mandatory field.')
+        }),
+        Verify: Yup.object().shape({
+            code: Yup.string().required('Verification code is required.')
         })
     }
 
     /**
      * formikInitialValues
      */
-    const formikInitialValues = {
+    const [formikInitialValues, setFormikInitialValues] = useState({
         UserCredentials: {
             username: '',
             password: '',
@@ -65,8 +128,11 @@ export default function Register() {
             firstname: '',
             middlename: '',
             lastname: ''
+        },
+        Verify: {
+            code: ''
         }
-    }
+    });
 
     /**
      * formikSubmitHandler
@@ -74,20 +140,21 @@ export default function Register() {
     const formikSubmitHandler = {
         UserCredentials: async (values, { setErrors, resetForm }) => {
             setLoadingState(true);
-            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
+            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.url, {
+                method: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.method,
+                headers: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.headers,
                 body: JSON.stringify(values)
             })
             .then(response => response.json())
             .then((res) => {
                 if (res.status) {
+                    // Store values as state
+                    setFormikInitialValues({
+                        ...formikInitialValues,
+                        UserCredentials: values,
+                    })
+                    // Proceed to next step
                     nextStep();
-                    console.log('true');
-                    
                 }
                 setErrors(res.errordata)
             })
@@ -96,8 +163,99 @@ export default function Register() {
             });
         },
         BasicInformation: async (values, { setErrors, resetForm }) => {
+            setLoadingState(true);
+            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.url, {
+                method: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.method,
+                headers: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.headers,
+                body: JSON.stringify(values)
+            })
+            .then(res => res.json())
+            .then((res) => {
+                if (res.status) {
+                    // Store values as state
+                    setFormikInitialValues({
+                        ...formikInitialValues,
+                        BasicInformation: values
+                    })
 
-        }
+                    // Push post parameters to registration endpoint
+                    fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.Register.url, {
+                        method: ApiBaseUrl.Applicant.Auth.Register.method,
+                        headers: ApiBaseUrl.Applicant.Auth.Register.headers,
+                        body: JSON.stringify({...formikInitialValues.UserCredentials, ...values})
+                    })
+                    .then(response => response.json())
+                    .then((res) => {
+                        if (res.status) {
+                            // Set LocalStorage "Token"
+                            localStorage.setItem("token", res.data.access_token);
+
+                            // Proceed to next step (Verification)
+                            nextStep();
+                        }
+                    })
+                    .finally((res) => {
+                        setLoadingState(false);
+                    });
+
+                    // Set Errors
+                    setErrors(res.errordata);
+                }
+            })
+            .then((res) => {
+                
+                
+            })
+            .finally((res) => {
+                
+            });
+        },
+        VerifySMS: async (values, { setErrors, resetForm }) => {
+            setLoadingState(true);
+            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.VerifySMS.url, {
+                method: ApiBaseUrl.Applicant.Auth.VerifySMS.method,
+                headers: ApiBaseUrl.Applicant.Auth.VerifySMS.headers,
+                body: JSON.stringify(values)
+            })
+            .then(res => res.json())
+            .then((res) => {
+                if (res.status) {
+                    // Proceed to next step
+                    nextStep();
+                }
+                setErrors(res.errordata)
+            })
+            .then((res) => {
+                
+                
+            })
+            .finally((res) => {
+                setLoadingState(false);
+            });
+        },
+        VerifyEmail: async (values, { setErrors, resetForm }) => {
+            setLoadingState(true);
+            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.VerifyEmail.url, {
+                method: ApiBaseUrl.Applicant.Auth.VerifyEmail.method,
+                headers: ApiBaseUrl.Applicant.Auth.VerifyEmail.headers,
+                body: JSON.stringify(values)
+            })
+            .then(res => res.json())
+            .then((res) => {
+                if (res.status) {
+                    // Proceed to next step
+                    nextStep();
+                }
+                setErrors(res.errordata)
+            })
+            .then((res) => {
+                
+                
+            })
+            .finally((res) => {
+                setLoadingState(false);
+            });
+        },
     }
 
     /**
@@ -112,7 +270,17 @@ export default function Register() {
         BasicInformation: useFormik({
             initialValues: formikInitialValues.BasicInformation,
             validationSchema: formikValidationSchema.BasicInformation,
-            onSubmit: formikSubmitHandler.UserCredentials
+            onSubmit: formikSubmitHandler.BasicInformation
+        }),
+        VerifySMS: useFormik({
+            initialValues: formikInitialValues.Verify, // Share the same initial values
+            validationSchema: formikValidationSchema.Verify, // Share the same validation schema
+            onSubmit: formikSubmitHandler.VerifySMS
+        }),
+        VerifyEmail: useFormik({
+            initialValues: formikInitialValues.Verify, // Share the same initial values
+            validationSchema: formikValidationSchema.Verify, // Share the same validation schema
+            onSubmit: formikSubmitHandler.VerifyEmail
         })
     };
 
@@ -130,17 +298,33 @@ export default function Register() {
         {
             label: 'Step 3',
             description: 'Verify Phone Number',
-            component: <VerifySMS />
+            component: <Verify interval={smsResendInterval} formik={formik.VerifySMS} loading={loadingState} formikInitialValues={formikInitialValues} />
         },
         {
             label: 'Step 4',
             description: 'Verify Email Address',
-            component: <VerifySMS />
+            component: <Verify interval={smsResendInterval} formik={formik.VerifyEmail} loading={loadingState} formikInitialValues={formikInitialValues} />
         }
     ];
 
-    
+    const buttonStepHandler = () => {
+        switch (activeStep) {
+            case 0:
+                formik.UserCredentials.submitForm();
+            break;
+            case 1:
+                formik.BasicInformation.submitForm();
+            break;
+            case 2:
+                formik.VerifySMS.submitForm();
+            break;
+            case 3:
+                formik.VerifyEmail.submitForm();
+            break;
+        }
+    }
 
+    
     return (
         <React.Fragment>
             <div>
@@ -230,6 +414,7 @@ export default function Register() {
                                             onClick={prevStep}
                                             borderTopRightRadius={0}
                                             borderBottomRightRadius={0}
+                                            disabled={activeStep >= 2 ? true : false}
                                         >
                                             {activeStep >= 1 ? "Back" : ""}
                                         </Button>
@@ -241,15 +426,7 @@ export default function Register() {
                                             spinner={<PulseLoader size={8} color='white' />}
                                             colorScheme={'brand'} 
                                             width={'100%'}
-                                            onClick={() => {
-                                                console.log(activeStep);
-
-                                                switch (activeStep) {
-                                                    case 0:
-                                                        formik.UserCredentials.submitForm();
-                                                    break;
-                                                }
-                                            }}
+                                            onClick={buttonStepHandler}
                                             
                                             borderTopLeftRadius={activeStep >= 1 ? 0 : 'base'}
                                             borderBottomLeftRadius={activeStep >= 1 ? 0 : 'base'}
