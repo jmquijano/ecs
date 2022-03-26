@@ -7,6 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import { PageBaseUrl } from '../utils/urlbase';
 import { Maps, Pin } from '../components/maps';
 import { useAuth } from '../libs/auth';
+import {Previewer} from '../components/pdf';
+import FsedOneOfFour from '../components/fsed-forms/FsedOneOfFour';
+import Sampleform from '../components/Sampleform';
+import FsedTwoOfFour from '../components/fsed-forms/FsedTwoOfFour';
+import { useFsed } from '../libs/fsed';
+import FsedThreeOfFour from '../components/fsed-forms/FsedThreeOfFour';
+import {  Document} from '@react-pdf/renderer';
+import FsedFourOfFour from '../components/fsed-forms/FsedFourOfFour';
 
 
 
@@ -14,12 +22,17 @@ export default function Login() {
     const navigate = useNavigate();
     const [ loadingState, setLoadingState ] = useState(false);
     const { Login } = useAuth()
+    const {fsedValue} = useFsed()
+    const [pdfValue,setPdfValue]= useState({})
 
     const authFromBackend = () => {
        setLoadingState(true)
        Login({userId:"test",password:"tests"})
        
     }
+
+
+    console.log(fsedValue)
 
     return (
         <React.Fragment>
@@ -29,7 +42,19 @@ export default function Login() {
             <Center  
                bg={'gray.50'} 
                height={'100vh'} 
+               display="flex"
+               margin={"30px"}
             >
+                 <Sampleform  />
+                     <Previewer pdfTitle={"FSED FORM"}>
+                         
+                         <Document>
+                             <FsedOneOfFour pdfValue={fsedValue}/>
+                             <FsedTwoOfFour pdfValue={fsedValue}/>
+                             <FsedThreeOfFour pdfValue={fsedValue}/>
+                             <FsedFourOfFour pdfValue={fsedValue}/>
+                         </Document>
+                     </Previewer>
                 
                 {/* <div style={{height:"800px",width:"800px"}}>
                     <Maps 
@@ -45,7 +70,7 @@ export default function Login() {
                     </Maps>
                     
                 </div> */}
-                <Box 
+                {/* <Box 
                     width={'100%'}
                      // para ma scroll sa gamay nga device
                      maxH="100%"
@@ -67,10 +92,11 @@ export default function Login() {
                         >
                             Electronic Certification System
                         </Text>
-                    </Center>
+                    </Center> */}
+                    
                     
                     { /* Login Card */ }
-                    <Box 
+                    {/* <Box 
                         marginX={{
                             base: 5,
                             md: 0
@@ -145,11 +171,11 @@ export default function Login() {
                                 </Box>
                             </Stack>
                         </Box>
-                    </Box> 
+                    </Box>  
                     
 
                     {/* Copyright & Application Information */}
-                    <Box marginTop={5}>
+                    {/* <Box marginTop={5}>
                         <Text 
                             display={'block'}
                             fontSize={14}
@@ -167,16 +193,16 @@ export default function Login() {
                             my={1}
                             
                         >
-                            {/**
+                            *
                             <Text display={'inline'}>Developer Information</Text>
                             <Text display={'inline'}> - </Text>
-                            */}
+                           
                             <Badge colorScheme={'green'} textTransform={'none'}>v{process.env.REACT_APP_VERSION}</Badge>
                             
                         </Box>
                         
-                    </Box>
-                </Box>
+                    </Box> */}
+                {/* </Box> */}
             </Center>
             
             
