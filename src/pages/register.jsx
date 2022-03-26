@@ -32,6 +32,7 @@ export default function Register() {
         .then((res) => {
             
             if (res.data.valid) {
+                setLoadingState(true);
                 fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.url, {
                     method: ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.method,
                     headers: ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.headers
@@ -55,7 +56,7 @@ export default function Register() {
             }
         })
         .finally((res) => {
-            
+            setLoadingState(false);
         });
     }, [activeStep]);
 

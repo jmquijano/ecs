@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet-async";
 import { ApiBaseUrl, PageBaseUrl } from "./utils/urlbase";
 import { InternalServerError } from "./pages/error";
 import Register from "./pages/register";
+import FSEDForm from "./pages/tests/fsedform";
 
 export default function AppRoutes() {
     return (
@@ -32,6 +33,11 @@ export default function AppRoutes() {
                         element={<Register />}
                     />
 
+                    {/** Page/Components Test Routes */}
+                    <Route 
+                        path={'/test/fsedform'} 
+                        element={<FSEDForm />}
+                    />
 
                     {/** Errors */}
                     <Route

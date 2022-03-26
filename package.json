@@ -28,12 +28,8 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
     "react-spinners": "^0.11.0",
-<<<<<<< HEAD
-    "tiny-timer": "^1.6.0",
-=======
     "stream-browserify": "^3.0.0",
-    "util": "^0.12.4",
->>>>>>> cfd754f0918451d865da7a50d7ab1cb66b15d3be
+    "tiny-timer": "^1.6.0",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11"
   },

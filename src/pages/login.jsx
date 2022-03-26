@@ -5,18 +5,8 @@ import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
 import { PulseLoader } from "react-spinners";
 import { useNavigate } from 'react-router-dom';
 import { PageBaseUrl } from '../utils/urlbase';
-import { Maps, Pin } from '../components/maps';
 import { useAuth } from '../libs/auth';
-import {Previewer} from '../components/pdf';
-import FsedOneOfFour from '../components/fsed-forms/FsedOneOfFour';
-import Sampleform from '../components/Sampleform';
-import FsedTwoOfFour from '../components/fsed-forms/FsedTwoOfFour';
 import { useFsed } from '../libs/fsed';
-import FsedThreeOfFour from '../components/fsed-forms/FsedThreeOfFour';
-import {  Document} from '@react-pdf/renderer';
-import FsedFourOfFour from '../components/fsed-forms/FsedFourOfFour';
-
-
 
 export default function Login() {
     const navigate = useNavigate();
@@ -31,9 +21,6 @@ export default function Login() {
        
     }
 
-
-    console.log(fsedValue)
-
     return (
         <React.Fragment>
             <div>
@@ -45,36 +32,11 @@ export default function Login() {
                display="flex"
                margin={"30px"}
             >
-                 <Sampleform  />
-                     <Previewer pdfTitle={"FSED FORM"}>
-                         
-                         <Document>
-                             <FsedOneOfFour pdfValue={fsedValue}/>
-                             <FsedTwoOfFour pdfValue={fsedValue}/>
-                             <FsedThreeOfFour pdfValue={fsedValue}/>
-                             <FsedFourOfFour pdfValue={fsedValue}/>
-                         </Document>
-                     </Previewer>
-                
-                {/* <div style={{height:"800px",width:"800px"}}>
-                    <Maps 
-                        center={{ lat: 51.505, lng: -0.09 }}
-                        zoom={17}
-                        scrollWheelZoom={false}
-                    >
-                        <Pin 
-                            position={{ lat: 51.505, lng: -0.09 }}
-                            PopupMessage={'Your are located here'}
-                            onChange={(e) => { console.log(e) }}
-                        />
-                    </Maps>
-                    
-                </div> */}
-                {/* <Box 
+                <Box 
                     width={'100%'}
-                     // para ma scroll sa gamay nga device
-                     maxH="100%"
-                     // para ma scroll sa gamay nga device
+                    // para ma scroll sa gamay nga device
+                    maxH="100%"
+                    // para ma scroll sa gamay nga device
                     maxWidth={500} 
                     textAlign={'center'}
                 >
@@ -92,11 +54,11 @@ export default function Login() {
                         >
                             Electronic Certification System
                         </Text>
-                    </Center> */}
+                    </Center>
                     
                     
                     { /* Login Card */ }
-                    {/* <Box 
+                    <Box 
                         marginX={{
                             base: 5,
                             md: 0
@@ -175,7 +137,7 @@ export default function Login() {
                     
 
                     {/* Copyright & Application Information */}
-                    {/* <Box marginTop={5}>
+                    <Box marginTop={5}>
                         <Text 
                             display={'block'}
                             fontSize={14}
@@ -201,8 +163,8 @@ export default function Login() {
                             
                         </Box>
                         
-                    </Box> */}
-                {/* </Box> */}
+                    </Box>
+                </Box>
             </Center>
             
             
