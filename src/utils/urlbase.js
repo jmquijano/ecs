@@ -1,3 +1,8 @@
+const getToken = () => {
+    return localStorage.getItem('token');
+
+}
+
 const ApiBaseUrl = {
     Applicant: { 
         Base: 'http://api-dev.bfp-ecs.com/applicant/v1/',
@@ -25,7 +30,7 @@ const ApiBaseUrl = {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    // 'Authorization': 'Bearer ' + getToken()
                 }
             },
             CheckVerificationStatus: {
@@ -34,7 +39,7 @@ const ApiBaseUrl = {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    // 'Authorization': 'Bearer ' + getToken()
                 }
             },
             VerifySMS: {
@@ -43,7 +48,7 @@ const ApiBaseUrl = {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    // 'Authorization': 'Bearer ' + getToken()
                 }
             },
             VerifyEmail: {
@@ -52,7 +57,25 @@ const ApiBaseUrl = {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    // 'Authorization': 'Bearer ' + getToken()
+                }
+            },
+            ResendSMS: {
+                url: 'auth/verification/sms/resend',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Bearer ' + getToken()
+                }
+            },
+            ResendEmail: {
+                url: 'auth/verification/email/resend',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Bearer ' + getToken()
                 }
             }
 

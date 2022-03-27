@@ -11,13 +11,13 @@ import { useFsed } from '../libs/fsed';
 export default function Login() {
     const navigate = useNavigate();
     const [ loadingState, setLoadingState ] = useState(false);
-    const { Login } = useAuth()
-    const {fsedValue} = useFsed()
-    const [pdfValue,setPdfValue]= useState({})
+    const { Login } = useAuth();
+    const {fsedValue} = useFsed();
+    const [pdfValue,setPdfValue]= useState({});
 
     const authFromBackend = () => {
-       setLoadingState(true)
-       Login({userId:"test",password:"tests"})
+       setLoadingState(true);
+       Login({userId:"test",password:"tests"});
        
     }
 

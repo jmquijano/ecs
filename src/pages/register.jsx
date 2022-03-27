@@ -9,70 +9,92 @@ import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { UserCredentials, UserInformation, Verify } from '../components/register';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useAuth } from '../libs/auth';
+import Timer from 'tiny-timer';
 
 
 export default function Register() {
+    // React Router Navigate
     const navigate = useNavigate();
-    const [loadingState, setLoadingState] = useState(false);
+
+    const { RegisterContext, ContactChannelVerification } = useAuth();
 
     const { nextStep, prevStep, reset, activeStep, setStep } = useSteps({
         initialStep: 0,
     })
     
-    const [smsResendInterval, setSMSResendInterval] = React.useState(300);
+    const [loadingState, setLoadingState] = useState(false);
+    const [smsResendInterval, setSMSResendInterval] = React.useState(0);
+    const [emailResendInterval, setEmailResendInterval] = React.useState(0);
 
-    // Check if token was issued during registration
-    useEffect(() => {
-        setLoadingState(true);
-        fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.CheckIssuedRegistrationToken.url, {
-            method: ApiBaseUrl.Applicant.Auth.CheckIssuedRegistrationToken.method,
-            headers: ApiBaseUrl.Applicant.Auth.CheckIssuedRegistrationToken.headers
-        })
-        .then(response => response.json())
-        .then((res) => {
-            
-            if (res.data.valid) {
-                setLoadingState(true);
-                fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.url, {
-                    method: ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.method,
-                    headers: ApiBaseUrl.Applicant.Auth.CheckVerificationStatus.headers
-                })
-                .then(response => response.json())
-                .then((res) => {
-                    if (res.data.emailaddress) {
-                        console.log('redirect');
-                        return navigate(PageBaseUrl.Dashboard);
+    const runInterval = () => {
+        if (smsResendInterval >= 1) {
+            let smsInterval = setInterval(() => {
+                setSMSResendInterval(smsResendInterval - 1);
+            }, 1000);
+    
+            setTimeout(function () {
+                clearInterval(smsInterval);
+                // console.log('Seconds no longer passes');
+            }, 1000);
+        } 
+
+        if (emailResendInterval >= 1) {
+            let emailInterval = setInterval(() => {
+                setEmailResendInterval(emailResendInterval - 1);
+            }, 1000);
+    
+            setTimeout(function () {
+                clearInterval(emailInterval);
+                // console.log('Seconds no longer passes');
+            }, 1000);
+        } 
+
+    }
+
+    const runContactChannelVerification = () => {
+        ContactChannelVerification({
+            onStart: () => setLoadingState(true),
+            currentStep: activeStep,
+            onValidationCheck: {
+                onStart: () => setLoadingState(true),
+                email: verified => {
+                    if (verified) {
+                        navigate(PageBaseUrl.Dashboard); 
                     }
-
-                    if (res.data.mobilenumber) {
+                },
+                mobile: verified => {
+                    if (verified) {
                         setStep(3);
                     } else {
                         setStep(2);
                     }
-                }).finally((res) => {
+                },
+                onEnd: end => setLoadingState(false)
+            },
+            onResendInterval: {
+                email: i => setEmailResendInterval(i),
+                sms: i => setSMSResendInterval(i)
+            },
+            onEnd: end => {
+                if (!end) {
                     setLoadingState(false);
-                })
-                
+                }
             }
-        })
-        .finally((res) => {
-            setLoadingState(false);
         });
-    }, [activeStep]);
+    }
+
+    useEffect(() => {
+        runContactChannelVerification();
+    }, []);
 
     useEffect(() => {
         switch (activeStep) {
-            case 2 && 3:
-                if (smsResendInterval >= 1) {
-                    let smsInterval = setInterval(() => {
-                        setSMSResendInterval(smsResendInterval - 1);
-                    }, 1000);
-        
-                    setTimeout(function () {
-                        clearInterval(smsInterval);
-                        console.log('Seconds no longer passes');
-                    }, 1000);
-                }
+            case 2:
+                runInterval();
+            break;
+            case 3:
+                runInterval();
             break;
         }
         
@@ -140,124 +162,69 @@ export default function Register() {
      */
     const formikSubmitHandler = {
         UserCredentials: async (values, { setErrors, resetForm }) => {
-            setLoadingState(true);
-            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.url, {
-                method: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.method,
-                headers: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.headers,
-                body: JSON.stringify(values)
-            })
-            .then(response => response.json())
-            .then((res) => {
-                if (res.status) {
-                    // Store values as state
+            RegisterContext.CheckCredentials({
+                onStart: () => setLoadingState(true),
+                param: values, 
+                onSuccess: res => {
                     setFormikInitialValues({
                         ...formikInitialValues,
-                        UserCredentials: values,
-                    })
-                    // Proceed to next step
+                        UserCredentials: values
+                    });
+
+                    runContactChannelVerification();
+
                     nextStep();
-                }
-                setErrors(res.errordata)
-            })
-            .finally((res) => {
-                setLoadingState(false);
+                },
+                onFailure: error => setErrors(error),
+                onEnd: response => setLoadingState(false)
             });
         },
         BasicInformation: async (values, { setErrors, resetForm }) => {
             setLoadingState(true);
-            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.url, {
-                method: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.method,
-                headers: ApiBaseUrl.Applicant.Auth.RegistrationValidationFromBackend.headers,
-                body: JSON.stringify(values)
-            })
-            .then(res => res.json())
-            .then((res) => {
-                if (res.status) {
-                    // Store values as state
+            RegisterContext.CheckBasicInformation({
+                param: values,
+                onSuccess: (res) => {
                     setFormikInitialValues({
                         ...formikInitialValues,
                         BasicInformation: values
-                    })
-
-                    // Push post parameters to registration endpoint
-                    fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.Register.url, {
-                        method: ApiBaseUrl.Applicant.Auth.Register.method,
-                        headers: ApiBaseUrl.Applicant.Auth.Register.headers,
-                        body: JSON.stringify({...formikInitialValues.UserCredentials, ...values})
-                    })
-                    .then(response => response.json())
-                    .then((res) => {
-                        if (res.status) {
-                            // Set LocalStorage "Token"
-                            localStorage.setItem("token", res.data.access_token);
-
-                            // Proceed to next step (Verification)
-                            nextStep();
-                        }
-                    })
-                    .finally((res) => {
-                        setLoadingState(false);
                     });
 
-                    // Set Errors
-                    setErrors(res.errordata);
-                }
-            })
-            .then((res) => {
-                
-                
-            })
-            .finally((res) => {
-                
+                    // Call registrater finalization context
+                    RegisterContext.FinalizeRegistrationProcess({
+                        param: JSON.stringify({...formikInitialValues.UserCredentials, ...values}),
+                        onSuccess: token => { localStorage.setItem('token', token);  nextStep(); },
+                        onEnd: res => setLoadingState(false),
+                        onFailure: error => setErrors(error)
+                    });
+                },
+                onFailure: error => setErrors(error),
+                // Null dapat ang onEnd kasi may gagawin pa sa onSuccess.
+                onEnd: response => null
             });
+            
         },
         VerifySMS: async (values, { setErrors, resetForm }) => {
-            setLoadingState(true);
-            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.VerifySMS.url, {
-                method: ApiBaseUrl.Applicant.Auth.VerifySMS.method,
-                headers: ApiBaseUrl.Applicant.Auth.VerifySMS.headers,
-                body: JSON.stringify(values)
-            })
-            .then(res => res.json())
-            .then((res) => {
-                if (res.status) {
-                    // Proceed to next step
-                    nextStep();
-                }
-                setErrors(res.errordata)
-            })
-            .then((res) => {
-                
-                
-            })
-            .finally((res) => {
-                setLoadingState(false);
+            RegisterContext.ContactChannelVerification.sms({
+                param: values,
+                onStart: () => setLoadingState(true),
+                onSuccess: response => nextStep(),
+                onFailure: error => setErrors(error),
+                onEnd: end => setLoadingState(false)
             });
         },
         VerifyEmail: async (values, { setErrors, resetForm }) => {
-            setLoadingState(true);
-            await fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.VerifyEmail.url, {
-                method: ApiBaseUrl.Applicant.Auth.VerifyEmail.method,
-                headers: ApiBaseUrl.Applicant.Auth.VerifyEmail.headers,
-                body: JSON.stringify(values)
-            })
-            .then(res => res.json())
-            .then((res) => {
-                if (res.status) {
-                    // Proceed to next step
-                    nextStep();
-                }
-                setErrors(res.errordata)
-            })
-            .then((res) => {
-                
-                
-            })
-            .finally((res) => {
-                setLoadingState(false);
+            RegisterContext.ContactChannelVerification.email({
+                param: values,
+                onStart: () => setLoadingState(true),
+                // Anong hihintayin mo? Pasko? Redirect na kaagad sa dashboard.
+                onSuccess: response => navigate(PageBaseUrl.Dashboard),
+                onFailure: error => setErrors(error),
+                onEnd: end => setLoadingState(false)
             });
         },
     }
+
+
 
     /**
      * formik
@@ -299,12 +266,48 @@ export default function Register() {
         {
             label: 'Step 3',
             description: 'Verify Phone Number',
-            component: <Verify interval={smsResendInterval} formik={formik.VerifySMS} loading={loadingState} formikInitialValues={formikInitialValues} />
+            component: <Verify 
+                interval={smsResendInterval} 
+                formik={formik.VerifySMS} 
+                loading={loadingState} 
+                formikInitialValues={formikInitialValues} 
+                onResendClick={(e) => {
+                    e.preventDefault();
+                    RegisterContext.ResendVerification.sms({
+                        onStart: start => setLoadingState(true),
+                        onEnd: end => setLoadingState(false),
+                        onSuccess: success => { 
+                            alert(success?.data?.alert);
+                            // Set Resend Interval, if valjue was null then set default 300 seconds.
+                            setSMSResendInterval(success?.data?.resend_interval?.delay ?? 300); 
+                        },
+                        onFailure: error => alert(error?.alert)
+                    })
+                }}
+            />
         },
         {
             label: 'Step 4',
             description: 'Verify Email Address',
-            component: <Verify interval={smsResendInterval} formik={formik.VerifyEmail} loading={loadingState} formikInitialValues={formikInitialValues} />
+            component: <Verify 
+                interval={emailResendInterval} 
+                formik={formik.VerifyEmail} 
+                loading={loadingState} 
+                formikInitialValues={formikInitialValues}
+                onResendClick={(e) => {
+                    e.preventDefault();
+                    RegisterContext.ResendVerification?.email({
+                        onStart: start => setLoadingState(true),
+                        onEnd: end => setLoadingState(false),
+                        onSuccess: success => {
+                            alert(success?.data?.alert);
+                            // Set Resend Interval, if valjue was null then set default 300 seconds.
+                            setSMSResendInterval(success?.data?.resend_interval?.delay ?? 300); 
+                        },
+                        onFailure: error => alert(error?.alert)
+                    })
+                }} 
+            />
         }
     ];
 
@@ -391,17 +394,14 @@ export default function Register() {
                                 <Steps orientation={'vertical'} colorScheme={'brand'} activeStep={activeStep} justifyContent={'start'} marginY={5}>
                                     {registrationSteps.map(({label, description, component}, i) => (
                                         
-                                        <Step label={label} description={description} key={label}>
+                                        <Step label={label} description={description} key={i}>
                                             {component}
                                         </Step>
                                     ))}
-                                    
-                                    
                                 </Steps>
                                 
                             </Box>
                             <VStack spacing={5}>
-                                
                                 <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={0} my={5}>
                                     {activeStep >= 1 ?
                                     (
@@ -482,7 +482,6 @@ export default function Register() {
                             color={'gray.400'}
                             cursor={'pointer'}
                             my={1}
-                            
                         >
                             <Badge colorScheme={'green'} textTransform={'none'}>v{process.env.REACT_APP_VERSION}</Badge>
                             

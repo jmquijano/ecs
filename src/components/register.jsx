@@ -258,7 +258,15 @@ const Verify = (props) => {
                         <GridItem colSpan={12}>
                             <Box width={'100%'} display={'inline'}>
                                 <Text fontSize={12} display={'inline'}>Haven't received the code?</Text>
-                                <Button disabled={props.interval >= 1 ? true : false} display={'inline'} size={'sm'} colorScheme={'brand'} mx={2} fontSize={12}>
+                                <Button 
+                                    onClick={props?.onResendClick} 
+                                    disabled={props.interval >= 1 ? true : (props.loading)} 
+                                    display={'inline'} 
+                                    size={'sm'} 
+                                    colorScheme={'brand'} 
+                                    mx={2} 
+                                    fontSize={12}
+                                >
                                     {
                                         props.interval >= 1 ? 'Resend in ' + props.interval + 's' : 'Resend'
                                     }
