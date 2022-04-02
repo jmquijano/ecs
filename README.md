@@ -1,7 +1,6 @@
 # BFP-ECS
 ![](https://i.ibb.co/S64N4Bw/unnamed-6.png)
-
-## Electronic Certification System for the Bureau of Fire Protection (Region 11)
+Electronic Certification System for the Bureau of Fire Protection (Region 11)
 
 ## Tech stacks
 
