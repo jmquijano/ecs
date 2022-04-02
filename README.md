@@ -3,10 +3,7 @@
 
 ## Electronic Certification System for the Bureau of Fire Protection (Region 11)
 
-
-BFP-ECS is a cloud-enabled, mobile-ready, offline-storage compatible,
-
-## Tech
+## Tech stacks
 
 BFP-ECS uses a number of open source projects to work properly:
 
