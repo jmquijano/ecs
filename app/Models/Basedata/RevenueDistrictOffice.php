@@ -1,5 +1,8 @@
 <?php 
-
+/**
+ * app/Models/Basedata/RevenueDistrictOffice.php 
+ * @author jmquijano
+ */
 namespace App\Models\Basedata;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;

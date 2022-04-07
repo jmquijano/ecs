@@ -1,5 +1,8 @@
 <?php 
-
+/**
+ * app/Models/Boundaries/PSGC.php 
+ * @author jmquijano
+ */
 namespace App\Models\Boundaries;
 
 use Illuminate\Database\Eloquent\Model;

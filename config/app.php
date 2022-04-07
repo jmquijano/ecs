@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_DEFAULT_TIMEZONE', 'Asia/Manila'),
 
     /*
     |--------------------------------------------------------------------------
