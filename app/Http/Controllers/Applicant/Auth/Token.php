@@ -17,6 +17,12 @@ use App\Core\Utilities\Http\ClientRequestFootprint;
 use Carbon\Carbon;
 
 class Token extends Controller {
+    /**
+     * Login
+     * 
+     * @param LoginRequest $req
+     * @return response()
+     */
     public function Login(LoginRequest $req) {
         try {
             // Initialize Exception Model
@@ -77,6 +83,58 @@ class Token extends Controller {
             return $e;
         } catch (\Exception $e) {
             return response()->error(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * Logout
+     * Revokes the token to prevent token misuse.
+     * 
+     * @param Request $req
+     * @return response()
+     */
+    public function Logout(Request $req) {
+        try {
+            // Initialize Exception Model
+            $exception = new ExceptionModel();
+
+            if (strtolower($req->method()) == 'post') {
+                // Parse token by using Post Request
+                $token = (new Jwt())->parseByParam($req->input('access_token', ''));
+                
+                
+            } else {
+                // Parse token by using Authorization Header
+                $token = (new Jwt())->parse($req);
+            }
+            
+            $jti = $token['jti'] ?? null;
+
+            // Find JTI from SessionToken
+            $findJti = ApplicantSessionToken::query()->where('jti', '=', $jti);
+
+            // (ERROR) JTI couldn't be found.
+            if ($findJti->count() <= 0) {
+                return response()->error(400, $exception->getMessageString('AT006A'));
+                die();
+            }
+
+            // (ERROR) Token has already been revoked.
+            if ($findJti->get()->first()->is_revoked) {
+                return response()->error(400, $exception->getMessageString('AT006B'));
+                die();
+            }
+
+            // (SUCCESS)
+            $findJti->update([
+                'is_revoked' => true
+            ]);
+
+            return response()->success(200, 'Token has been successfully revoked');
+        } catch (\Exception $e) {
+            // $message = 'An internal server error has occured while performing token revocation.';
+            $message = $e->getMessage();
+            return response()->error(500, $message);
         }
     }
 

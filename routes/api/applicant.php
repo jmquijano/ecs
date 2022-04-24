@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Applicant\Auth\Registration;
 use App\Http\Controllers\Applicant\Auth\Token;
+use App\Http\Controllers\Applicant\Dashboard;
+use App\Http\Controllers\Applicant\User;
 use App\Http\Controllers\Basedata\RevenueDistrictOffice;
 use App\Http\Controllers\Boundaries;
 use App\Utility\SMS;
@@ -32,6 +34,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/token', [Token::class, 'Login']);
     Route::get('/token/validate', [Token::class, 'ValidateToken'])->middleware(['authguard.applicant']);
 
+    // Logout
+    Route::post('/token/revoke', [Token::class, 'Logout']);
+    Route::get('/token/revoke', [Token::class, 'Logout'])->middleware(['authguard.applicant']);
+
     // Registration
     Route::post('/register', [Registration::class, 'Register']);
 
@@ -57,6 +63,22 @@ Route::prefix('auth')->group(function () {
     Route::get('/verification/email/resend', [Registration::class, 'ResendEmail'])->middleware(['authguard.applicant']);
 
 
+});
+
+/**
+ * User
+ */
+Route::prefix('user')->group(function () {
+    // Fetch User Profile
+    Route::get('/profile', [User::class, 'GetProfile'])->middleware(['authguard.applicant']);
+});
+
+/**
+ * Dashboard Widgets
+ */
+Route::prefix('dashboard/widget')->group(function () {
+    // Counter
+    Route::get('/counter', [Dashboard::class, 'WidgetCounter'])->middleware(['authguard.applicant']);
 });
 
 /**
