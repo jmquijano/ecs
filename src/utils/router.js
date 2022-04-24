@@ -3,6 +3,7 @@ import { ApiBaseUrl, PageBaseUrl } from './urlbase';
 
 import { Splash } from '../components/splash';
 import { Navigate, matchPath, useLocation, useNavigate} from "react-router-dom";
+import { UserProfileContextProvider } from '../context/UserProfileContext';
 
 
 const HandleTokenValidation = (callback) => {
@@ -81,7 +82,7 @@ const PrivateRoute = ({children}) => {
 
     return !Loading ? Exception ? <Navigate to={`${PageBaseUrl.Error.InternalServerError}`} /> :
         (
-            Authenticated ? children : <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
+            Authenticated ? <UserProfileContextProvider>{children}</UserProfileContextProvider> : <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
         ) : <Splash text="Fetching resources"/>;
 }
 

@@ -7,6 +7,10 @@ import { ApiBaseUrl, PageBaseUrl } from "./utils/urlbase";
 import { InternalServerError } from "./pages/error";
 import Register from "./pages/register";
 import FSEDForm from "./pages/tests/fsedform";
+import Dashboard from "./pages/portal";
+import Home from "./pages/portal/home";
+
+
 
 export default function AppRoutes() {
     return (
@@ -17,13 +21,20 @@ export default function AppRoutes() {
             <BrowserRouter>
                 <Routes>
                     <Route 
-                        path="/" 
+                        path={PageBaseUrl.Dashboard}
                         element={
                             <PrivateRoute>
-                                <Login />
+                                <Dashboard />
                             </PrivateRoute>
                         } 
-                    />
+                    >
+                        <Route path={PageBaseUrl.Dashboard} element={
+                            <Home />
+                        } />
+                        <Route path={PageBaseUrl.Application} element={
+                            <Home />
+                        } />
+                    </Route>
                     <Route 
                         path={PageBaseUrl.Auth.Login}
                         element={<Login />} 
@@ -37,6 +48,16 @@ export default function AppRoutes() {
                     <Route 
                         path={'/test/fsedform'} 
                         element={<FSEDForm />}
+                    />
+
+                    {/** Dashboard */}
+                    <Route 
+                        path={PageBaseUrl.Dashboard}
+                        element={
+                            <PrivateRoute>
+                                <Login />
+                            </PrivateRoute>
+                        }
                     />
 
                     {/** Errors */}

@@ -4,7 +4,6 @@ import { StepsStyleConfig as Steps } from 'chakra-ui-steps';
 
 
 const breakpoints = createBreakpoints({
-  xs:"0em", //0px
   sm: "30em", //480px
   md: "48em", //768px
   lg: "62em", //992px
@@ -69,7 +68,108 @@ const theme = extendTheme({
   },
   components: { 
     Link: { baseStyle: { _focus: { boxShadow: 'none' } } }, 
-    Button,
+    Button: {
+      baseStyle: {
+        minWidth: '100%',
+        fontWeight: 'normal', // Normally, it is "semibold",
+        _focus: { 
+          boxShadow: 'none' 
+        }
+      },
+      
+      sizes: {
+        
+      },
+      variants: {
+
+        'white-text': {
+          color: 'white',
+          _hover: {
+            color: 'white',
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+        'brand-color-text': {
+          color: 'brand.200',
+          _hover: {
+            color: 'brand.200',
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+        'mobile-active': {
+          color: 'rgba(224,90,44, 1)',
+          border: '1px solid',
+          marginBottom: 0,
+          marginTop: '0px !important',
+          bg: 'rgba(224,90,44, 0.15)',
+          _hover: {
+            color: 'white',
+            bg: 'brand.200'
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+        'mobile-outline': {
+          color: 'brand.200',
+          border: '1px solid',
+          borderColor: 'brand.200',
+          marginTop: '0px !important',
+          _hover: {
+            color: 'white',
+            bg: 'brand.200'
+          },
+          _active: {
+            bg: 'brand.200'
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+        active: {
+          color: 'white',
+          border: '1px solid',
+          bg: 'brand.200',
+          _hover: {
+            color: 'white',
+            bg: 'brand.200'
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+        outline: {
+          color: 'brand.200',
+          border: '1px solid',
+          borderColor: 'brand.200',
+          _hover: {
+            color: 'white',
+            bg: 'brand.200'
+          },
+          _active: {
+            bg: 'brand.200'
+          },
+          _focus: {
+            boxShadow: 'none',
+          },
+        },
+        ghost: {
+          bg: 'transparent',
+          color: 'brand.200',
+          border: '1px solid',
+          borderColor: 'transparent',
+          _hover: {
+            bg: 'transparent',
+            border: '1px solid',
+            borderColor: 'brand.200'
+          }
+        }
+      },
+    },
     Select: { baseStyle: { _focus: { boxShadow: 'none' } } },
     Input,
     Steps

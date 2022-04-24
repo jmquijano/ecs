@@ -1,6 +1,5 @@
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, { Fragment } from 'react';
 import { Select, Box, Button, FormControl, FormLabel, Input, Text, Grid, GridItem, FormErrorMessage } from "@chakra-ui/react";
-import { ApiBaseUrl } from '../utils/urlbase';
 import { Field, Form, Formik, FormikProvider } from 'formik';
 
 const UserCredentials = (props) => {
@@ -184,54 +183,12 @@ const UserInformation = (props) => {
                 </Grid>
             </Form>
         </FormikProvider>
-        /*
-        <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
-            <GridItem colSpan={[12, 12, 12, 6]}>
-                <Box width={'100%'}>
-                    <FormControl isRequired>
-                        <FormLabel htmlFor={'Salutation'}>Salutation</FormLabel>
-                        <Select id='Salutation' placeholder=''>
-                            {salutations.map((s) => (
-                                <option value={s}>{s}</option>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-            </GridItem>
-            <GridItem colSpan={[12,12,12,6]}>
-                <Box width={'100%'}>
-                    <FormControl isRequired>
-                        <FormLabel htmlFor={'FirstName'}>First name</FormLabel>
-                        <Input id={'FirstName'} type={'text'} />
-                    </FormControl>
-                </Box>
-            </GridItem>
-            <GridItem colSpan={[12,12,12,6]}>
-                <Box width={'100%'}>
-                    <FormControl>
-                        <FormLabel htmlFor={'lastname'}>Middle name</FormLabel>
-                        <Input id={'MiddleName'} type={'text'} />
-                    </FormControl>
-                </Box>
-            </GridItem>
-            <GridItem colSpan={[12,12,12,6]}>
-                <Box width={'100%'}>
-                    <FormControl>
-                        <FormLabel htmlFor={'LastName'}>Last name</FormLabel>
-                        <Input id={'LastName'} type={'text'} />
-                    </FormControl>
-                </Box>
-            </GridItem>
-            
-        </Grid>
-        */
     );
 }
 
 const Verify = (props) => {
     const { formikInitialValues } = props;
     
-
     return (
         <Fragment>
             

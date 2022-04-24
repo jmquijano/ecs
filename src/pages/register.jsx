@@ -10,7 +10,6 @@ import { UserCredentials, UserInformation, Verify } from '../components/register
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from '../libs/auth';
-import Timer from 'tiny-timer';
 
 
 export default function Register() {
@@ -99,9 +98,7 @@ export default function Register() {
         }
         
     });
-
     
-
     /**
      * validateEmailFormat
      */

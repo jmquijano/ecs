@@ -7,6 +7,22 @@ const ApiBaseUrl = {
     Applicant: { 
         Base: 'http://api-dev.bfp-ecs.com/applicant/v1/',
         Auth: {
+            Login: {
+                url: 'auth/token',
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            Revoke: {
+                url: 'auth/token/revoke',
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
             ValidateToken: 'auth/token/validate',
             RegistrationValidationFromBackend: {
                 url: 'auth/register/check',
@@ -78,7 +94,26 @@ const ApiBaseUrl = {
                     // 'Authorization': 'Bearer ' + getToken()
                 }
             }
-
+        },
+        User: {
+            Profile: {
+                url: 'user/profile',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        },
+        DashboardWidgets: {
+            Counter: {
+                url: 'dashboard/widget/counter',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
         }
     }
 };
@@ -96,7 +131,8 @@ const PageBaseUrl = {
     Error: {
         InternalServerError: '/error/500'
     },
-    Dashboard: '/dashboard'
+    Dashboard: '/',
+    Application: '/application' // parent to Dashboard
 }
 
 export { ApiBaseUrl, PageBaseUrl }

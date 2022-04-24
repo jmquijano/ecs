@@ -16,8 +16,29 @@ export const useAuth = () => {
 const useProvideAuth = () =>{
    
     const Login = async (props) => {
-        return console.log(props);
+        props.onStart();
+
+        const values = props.set ?? props.values ?? props.param;
+
+        fetch(ApiBaseUrl.Applicant.Base + ApiBaseUrl.Applicant.Auth.Login.url, {
+            method: ApiBaseUrl.Applicant.Auth.Login.method,
+            headers: ApiBaseUrl.Applicant.Auth.Login.headers,
+            body: JSON.stringify(values)
+        })
+        .then(response => response.json())
+        .then((res) => {
+            if (!res.status) {
+                props?.onFailure(res?.errordata);
+            } else {
+                props?.onSuccess(res);
+            }
+        })
+        .finally((res) => {
+            props?.onEnd(res);
+        });
     }
+
+
     const Register = {
         CheckCredentials: (props) => {
             props.onStart();
