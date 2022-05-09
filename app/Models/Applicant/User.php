@@ -34,7 +34,8 @@ class User extends Model {
         // A boolean that determines whether the user had already verified the mobile address
         'is_mobilenumber_verified',
         // A boolean that determines whether the user had enabled two-factor authentication
-        'is_mfa_enabled'
+        'is_mfa_enabled',
+        'last_password_change'
     ];
 
     /**

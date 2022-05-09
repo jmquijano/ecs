@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Applicant\Auth;
 
 use App\Core\Exception\Models\ExceptionModel;
+use App\Core\Utilities\Authentication\ApplicantAuthUtility;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Applicant\Auth\Login\LoginRequest;
 use App\Models\Applicant\Config as ApplicantConfig;
@@ -81,6 +82,27 @@ class Token extends Controller {
             );
         } catch (HttpResponseException $e) {
             return $e;
+        } catch (\Exception $e) {
+            return response()->error(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * Get Token Information
+     * 
+     * @param Request $req
+     * @return response()
+     */
+    public function GetTokenInfo(Request $req) {
+        try {
+            // Parse token by using Authorization Header
+            $token = (new Jwt())->parse($req);
+
+            return response()->success(
+                200,
+                'Token Information',
+                $token
+            );
         } catch (\Exception $e) {
             return response()->error(500, $e->getMessage());
         }

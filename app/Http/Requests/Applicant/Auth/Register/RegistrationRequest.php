@@ -1,8 +1,5 @@
 <?php
-/**
- * app/Http/Requests/Applicant/Auth/Register/RegistrationRequest.php 
- * @author jmquiijano
- */
+
 namespace App\Http\Requests\Applicant\Auth\Register;
 
 use Illuminate\Foundation\Http\FormRequest;

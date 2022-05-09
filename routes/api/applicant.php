@@ -6,12 +6,15 @@ use App\Http\Controllers\Applicant\Dashboard;
 use App\Http\Controllers\Applicant\User;
 use App\Http\Controllers\Basedata\RevenueDistrictOffice;
 use App\Http\Controllers\Boundaries;
+use App\Http\Controllers\Applicant\Application;
+use App\Http\Controllers\Basedata\MFACommunicationChannel;
+use App\Http\Controllers\Basedata\PSIC;
 use App\Utility\SMS;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
  
 /**
- * Map Boundaries
+ * Map Boundaries Endpoints
  */
 Route::prefix('boundaries')->group(function () {
     Route::get('/province', [Boundaries::class, 'Provinces']);
@@ -20,18 +23,33 @@ Route::prefix('boundaries')->group(function () {
 });
 
 /**
- * Base Data
+ * Base Data Endpoints
  */
 Route::prefix('basedata')->group(function () {
     Route::get('/rdo', [RevenueDistrictOffice::class, 'Get']);
+
+    /**
+     * Philippine Standard Industrial Classification Code (PSIC) Endpoints
+     */
+    Route::prefix('psic')->group(function () {
+        Route::get('/', [PSIC::class, 'GetWithSearch']);
+    });
+
+    /**
+     * MFA Communication Channel
+     */
+    Route::prefix('mfa-channels')->group(function () {
+        Route::get('/', [MFACommunicationChannel::class, 'getActiveChannels']);
+    });
 });
 
 /**
- * Authentication
+ * Authentication Endpoints
  */
 Route::prefix('auth')->group(function () {
     // Token
     Route::post('/token', [Token::class, 'Login']);
+    Route::get('/token', [Token::class, 'GetTokenInfo'])->middleware(['authguard.applicant']);
     Route::get('/token/validate', [Token::class, 'ValidateToken'])->middleware(['authguard.applicant']);
 
     // Logout
@@ -70,15 +88,42 @@ Route::prefix('auth')->group(function () {
  */
 Route::prefix('user')->group(function () {
     // Fetch User Profile
-    Route::get('/profile', [User::class, 'GetProfile'])->middleware(['authguard.applicant']);
+    Route::get('/{id}', [User::class, 'GetProfile'])->middleware(['authguard.applicant']);
+
+    // Edit User Profile
+    Route::put('{id}', [User::class, 'EditBasicProfile'])->middleware(['authguard.applicant']);
+
+    // Change Password
+    Route::put('{id}/password', [User::class, 'ChangePassword'])->middleware(['authguard.applicant']);
+
+    // Change Email (Subject for further confirmation)
+    Route::post('{id}/emailaddress', [User::class, 'ChangeEmail'])->middleware(['authguard.applicant']);
+
+    // Confirm Change Email
+    Route::put('{id}/emailaddress', [User::class, 'ChangeEmailConfirm'])->middleware(['authguard.applicant']);
+
 });
 
 /**
- * Dashboard Widgets
+ * Dashboard Widgets Endpoints
  */
 Route::prefix('dashboard/widget')->group(function () {
     // Counter
     Route::get('/counter', [Dashboard::class, 'WidgetCounter'])->middleware(['authguard.applicant']);
+});
+
+/**
+ * Application Endpoint
+ */
+Route::prefix('application')->group(function () {
+    // Create New Application
+    Route::post('/', [Application::class, 'Create'])->middleware(['authguard.applicant']);
+
+    // Get Application
+    Route::get('/', [Application::class, 'getAll'])->middleware(['authguard.applicant']);
+
+    // Get Application by ID
+    Route::get('/{id}', [Application::class, 'getById'])->middleware(['authguard.applicant']);
 });
 
 /**
