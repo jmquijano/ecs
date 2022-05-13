@@ -7,11 +7,14 @@ use App\Core\Utilities\Authentication\OneTimePassword;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Applicant\User\ChangeEmailConfirmRequest;
 use App\Http\Requests\Applicant\User\ChangeEmailRequest;
+use App\Http\Requests\Applicant\User\ChangeMobileNumberConfirmRequest;
+use App\Http\Requests\Applicant\User\ChangeMobileNumberRequest;
 use App\Http\Requests\Applicant\User\ChangePasswordRequest;
 use App\Http\Requests\Applicant\User\EditBasicProfileRequest;
 use App\Models\Applicant\Config as ApplicantConfig;
 use App\Models\Applicant\User as ApplicantUser;
 use App\Models\Applicant\User\ChangeEmailConfirmation;
+use App\Models\Applicant\User\ChangeMobileNumberConfirmation;
 use App\Models\Applicant\User\ChangePasswordLog;
 use App\Models\CommunicationTemplates;
 use App\Models\OTP;
@@ -339,245 +342,188 @@ class User extends Controller {
     }
 
     /**
-     * Change Email Flow
+     * Change Mobile Number
      */
-    public function changeEmailFlow(Request $req) {
+    public function changeMobileNumber(ChangeMobileNumberRequest $req, int $id) {
         try {
             // Exception
             $exception = new ExceptionModel();
 
+            // OTP Utility
+            $otp_utility = new OneTimePassword();
+
+            // Communication Template
+            $template = new CommunicationTemplates();
+
             // Current User
             $currentUser = ApplicantAuthUtility::CurrentUser($req);
 
-            // Set New Email Address in Current User
-            $currentUser->emailaddress = $req->emailaddress ?? $currentUser->emailaddress;
+            // Get User Info
+            $user = ApplicantUser::query()->find($id);
 
-            // Initialize class
-            $otp_request = new OtpRequest();
-            $otp_utility = new OneTimePassword();
-
-            // Transaction Type and Communication Template
-            $transaction_type = 'UCI-02B';
-            $communication_template = 'CT-001B';
-
-            // Find OTP request
-            $find_otp_request = $otp_request
-            ->findMatchingValidRequest($transaction_type, [
-                'type' => 'applicant',
-                'user_id' => $currentUser->id
-            ]);
-            
-            // Create a new request
-            if ($find_otp_request->count() <= 0) {
-                $create_otp_request = $otp_request->createNew($transaction_type, [
-                    'type' => 'applicant',
-                    'user_id' => $currentUser->id
-                ]);
-
-                try {
-                    $this->otpGenerationFlow(
-                        2,
-                        $currentUser,
-                        $create_otp_request,
-                        $communication_template
-                    );
-
-                    return response()->success(200, 'OTP has been generated.');
-                    die();
-                } catch (\Exception $e) {
-                    return response()->error(
-                        400,
-                        $e->getMessage()
-                    );
-                    die();
-                }
-            }
-
-            // An OTP Request has been found
-            if ($find_otp_request->count() >= 1) {
-
-                /** 
-                 * Check if there has been an OTP generated for the OTP request,
-                 * If null then attempt to generate an OTP
-                */
-                if ($find_otp_request->first()->otp == null) {
-                    $this->otpGenerationFlow(
-                        2,
-                        $currentUser,
-                        $find_otp_request,
-                        $communication_template
-                    );
-
-                    return response()->success(200, 'OTP has been generated.');
-                    die();
-                }
-
-                // Validate OTP
-                $get_otp = OTP::query()->find($find_otp_request->first()->otp);
-
-                
-                $get_otp_hash = $get_otp->otp ?? null;
-                if ($get_otp_hash == null) {
-                    return response()->error(400, 'Validation Error', [
-                        'otp' => $exception->getMessageString('MFA-E3')
-                    ]);
-                    die();
-                }
-
-                $validate_otp = Hash::check($req->input('otp'), $get_otp_hash);
-
-                if (!$validate_otp) {
-                    return response()->error(401, 'Validation Error', [
-                        'otp' => [
-                            $exception->getMessageString('MFA-E1')
-                        ]
-                    ]);
-                    die();
-                }
-
-                // OTP is correct, continue change email address
-                $user = ApplicantUser::query()->find($currentUser->id);
-                $user->update([
-                    'emailaddress' => $req->emailaddress ?? $user->emailaddress
-                ]);
-
-                // Revoke OTP and OTP Request
-                $revoke_otp = $get_otp->update([
-                    'is_revoked' => true
-                ]);
-                $revoke_otp_request = $find_otp_request->update([
-                    'is_revoked' => true
-                ]);
-                
-                return response()->success(200, 'Email address has been updated successfully.');
+            if ($user == null) {
+                return response()->error('404', 'User not found.');
                 die();
             }
 
+            // Check Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req);
+            if ($user->id !== $currentUser->id) {
+                return response()->error('403', 'You do not have enought privilege to make changes on behalf of another user.');
+                die();
+            }
+
+            // Get Communication Channel
+            $mfa_communication_channel = MFACommunicationChannel::query()->where([
+                'shortname' => 'sms',
+                'is_active' => true
+            ])->first()->id;
+
+            // Communication Channel is not valid or active
+            if ($mfa_communication_channel == null) {
+                return response()->error(
+                    400,
+                    'Invalid Communication Channel',
+                    [
+                        'mobilenumber' => [$exception->getMessageString("ST002A")]
+                    ]
+                );
+                die();
+            }
+
+            // Create OTP
+            $otp = $otp_utility->Create($mfa_communication_channel, 900)->get;
+
+            if ($otp['id'] == null) {
+                return response()->error(
+                    400,
+                    'Invalid Communication Channel',
+                    [
+                        'mobilenumber' => [$exception->getMessageString("MFA-E4", [
+                            'type' => 'confirmation code'
+                        ])]
+                    ]
+                );
+                die();
+            }
+
+            // Store OTP in Change Mobile Number Confirmation
+            $storeChangeMobileNumber =  ChangeMobileNumberConfirmation::query()->create([
+                'otp_id' => $otp['id'],
+                'mobilenumber' => $req->mobilenumber,
+                'applicant_user_id' => $currentUser->id,
+                'is_confirmed' => false,
+                'expires_at' => $otp['expires_at']
+            ]);
+
+            // Send OTP
+            $template->sendSms(
+                'CT-001C',
+                $req->mobilenumber,
+                [
+                    'otp' => $otp['code'] ?? null
+                ]
+            );
             
+            return response()->success(
+                200, 
+                'A confirmation code has been sent to your mobile number.', 
+                [
+                    'changeMobileNumberRequest' =>  $storeChangeMobileNumber->makeHidden(['otp_id', 'is_confirmed', 'expires_at', 'created_at', 'applicant_user_id'])
+                ]
+            );
         } catch (\Exception $e) {
-            
-            return response()->error(500, 'An internal server error has occured while changing the password.');
+            // return $e;
+            return response()->error(500, 'An internal server error has occured while changing mobile number.');
         }
     }
 
     /**
-     * Change Mobile Number Flow
+     * Change Mobile Number Confirmation
      */
-    public function changeMobileNumberFlow(Request $req) {
+    public function changeMobileNumberConfirm(ChangeMobileNumberConfirmRequest $req, int $id) {
         try {
             // Exception
             $exception = new ExceptionModel();
 
-            // Current User
-            $currentUser = ApplicantAuthUtility::CurrentUser($req);
+            // Communication Template
+            $template = new CommunicationTemplates();
 
-            // Set New Email Address in Current User
-            $currentUser->emailaddress = $req->emailaddress ?? $currentUser->emailaddress;
+            // Get User Info
+            $user = ApplicantUser::query()->find($id);
 
-            // Initialize class
-            $otp_request = new OtpRequest();
-            $otp_utility = new OneTimePassword();
-
-            // Transaction Type and Communication Template
-            $transaction_type = 'UCI-02A';
-            $communication_template = 'CT-001C';
-
-            // Find OTP request
-            $find_otp_request = $otp_request
-            ->findMatchingValidRequest($transaction_type, [
-                'type' => 'applicant',
-                'user_id' => $currentUser->id
-            ]);
-            
-            // Create a new request
-            if ($find_otp_request->count() <= 0) {
-                $create_otp_request = $otp_request->createNew($transaction_type, [
-                    'type' => 'applicant',
-                    'user_id' => $currentUser->id
-                ]);
-
-                try {
-                    $this->otpGenerationFlow(
-                        2,
-                        $currentUser,
-                        $create_otp_request,
-                        $communication_template
-                    );
-
-                    return response()->success(200, 'OTP has been generated.');
-                    die();
-                } catch (\Exception $e) {
-                    return response()->error(
-                        400,
-                        $e->getMessage()
-                    );
-                    die();
-                }
-            }
-
-            // An OTP Request has been found
-            if ($find_otp_request->count() >= 1) {
-
-                /** 
-                 * Check if there has been an OTP generated for the OTP request,
-                 * If null then attempt to generate an OTP
-                */
-                if ($find_otp_request->first()->otp == null) {
-                    $this->otpGenerationFlow(
-                        2,
-                        $currentUser,
-                        $find_otp_request,
-                        $communication_template
-                    );
-
-                    return response()->success(200, 'OTP has been generated.');
-                    die();
-                }
-
-                // Validate OTP
-                $get_otp = OTP::query()->find($find_otp_request->first()->otp);
-
-                $get_otp_hash = $get_otp->otp ?? null;
-                if ($get_otp_hash == null) {
-                    return response()->error(400, 'Validation Error', [
-                        'otp' => $exception->getMessageString('MFA-E3')
-                    ]);
-                    die();
-                }
-
-                $validate_otp = Hash::check($req->input('otp'), $get_otp_hash);
-
-                if (!$validate_otp) {
-                    return response()->error(401, 'Validation Error', [
-                        'otp' => [
-                            $exception->getMessageString('MFA-E1')
-                        ]
-                    ]);
-                    die();
-                }
-
-                // OTP is correct, continue change email address
-                $user = ApplicantUser::query()->find($currentUser->id);
-                $user->update([
-                    'mobilenumber' => $req->mobilenumber ?? $user->mobilenumber
-                ]);
-
-                // Revoke OTP and OTP Request
-                $revoke_otp = $get_otp->update([
-                    'is_revoked' => true
-                ]);
-                $revoke_otp_request = $find_otp_request->update([
-                    'is_revoked' => true
-                ]);
-                
-                return response()->success(200, 'Mobile number has been updated successfully.');
+            if ($user == null) {
+                return response()->error('404', 'User not found.');
                 die();
             }
 
+            // Check Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req);
+            if ($user->id !== $currentUser->id) {
+                return response()->error('403', 'You do not have enought privilege to make changes on behalf of another user.');
+                die();
+            }
+
+            // Change Mobile Number Confirmation
+            $changeMobileNumberConfirmation = ChangeMobileNumberConfirmation::query()->find($req->id);
+
+            // Check ChangeEmailConfirmation is intended for the user.
+            if ($changeMobileNumberConfirmation->applicant_user_id !== $currentUser->id) {
+                return response()->error('400', 'The identifier was intended for other users.');
+                die();
+            }
+
+            // Check ChangeEmailConfirmation whether expired or has already been confirmed.
+            if ($changeMobileNumberConfirmation->expires_at < Carbon::now()) {
+                return response()->error('400', 'The identifier has already been expired.');
+                die();
+            }
+            if ($changeMobileNumberConfirmation->is_confirmed) {
+                return response()->error('400', 'The identifier has already been confirmed.');
+                die();
+            }
+
+            // Get OTP
+            try {
+                $otp = OTP::query()->findOrFail($changeMobileNumberConfirmation->otp_id);
+                $check_hash = Hash::check($req->otp, $otp->otp);
+
+                if (!$check_hash) {
+                    return response()->error(400, 'OTP Error', [
+                        'otp' => [
+                            $exception->getMessageString('MFA-E1A', ['type' => 'Confirmation code'])
+                        ]
+                    ]);
+
+                    die();
+                }
+
+                // Set is_confirmed to true
+                $changeMobileNumberConfirmation->update([
+                    'is_confirmed' => true
+                ]);
+
+                // Update Mobile Number
+                $user->update([
+                    'mobilenumber' => $changeMobileNumberConfirmation->mobilenumber
+                ]);
+
+            } catch (ModelNotFoundException $notFound) {
+                return response()->error(400, 'OTP Error', [
+                    'alert' => [
+                        $exception->getMessageString('MFA-E4', ['type' => 'confirmation code'])
+                    ]
+                ]);
+                die();
+            }
             
+            return response()->success(
+                200, 
+                'Mobile number has been successfully updated.'
+            );
         } catch (\Exception $e) {
-            
-            return response()->error(500, 'An internal server error has occured while changing the mobile number.');
+            // return $e;
+            return response()->error(500, 'An internal server error has occured while confirming the email change.');
         }
     }
 

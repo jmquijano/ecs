@@ -102,6 +102,11 @@ Route::prefix('user')->group(function () {
     // Confirm Change Email
     Route::put('{id}/emailaddress', [User::class, 'ChangeEmailConfirm'])->middleware(['authguard.applicant']);
 
+    // Change Mobile Number (Subject for further confirmation)
+    Route::post('{id}/mobilenumber', [User::class, 'ChangeMobileNumber'])->middleware(['authguard.applicant']);
+
+    // Change Mobile Number
+    Route::put('{id}/mobilenumber', [User::class, 'ChangeMobileNumberConfirm'])->middleware(['authguard.applicant']);
 });
 
 /**
@@ -115,15 +120,27 @@ Route::prefix('dashboard/widget')->group(function () {
 /**
  * Application Endpoint
  */
-Route::prefix('application')->group(function () {
+Route::prefix('application')->middleware(['authguard.applicant'])->group(function () {
     // Create New Application
-    Route::post('/', [Application::class, 'Create'])->middleware(['authguard.applicant']);
+    Route::post('/', [Application::class, 'Create']);
 
     // Get Application
-    Route::get('/', [Application::class, 'getAll'])->middleware(['authguard.applicant']);
+    Route::get('/', [Application::class, 'GetAll']);
 
     // Get Application by ID
-    Route::get('/{id}', [Application::class, 'getById'])->middleware(['authguard.applicant']);
+    Route::get('/{id}', [Application::class, 'GetById']);
+
+    // Upload File
+    Route::post('/{id}/file', [Application::class, 'UploadFile']);
+
+    // Get Uploaded Files
+    Route::get('/{id}/file', [Application::class, 'GetUploadedFiles']);
+
+    // Get Uploaded File by ID
+    Route::get('/{id}/file/{file_id}', [Application::class, 'GetUploadedFileById']);
+
+    // Delete Uploaded File by ID
+    Route::delete('/{id}/file/{file_id}', [Application::class, 'DeleteUploadedFileById']);
 });
 
 /**

@@ -22,7 +22,7 @@ class ResponseServiceProvider extends ServiceProvider
                 $format['code'] = 200;
             }
 
-            $format['status'] = true;
+            $format['success'] = true;
 
             if ($message !== null) {
                 $format['message'] = $message;
@@ -46,7 +46,7 @@ class ResponseServiceProvider extends ServiceProvider
                 $format['code'] = 400;
             }
 
-            $format['status'] = false;
+            $format['success'] = false;
 
             if ($message !== null) {
                 $format['message'] = $message;

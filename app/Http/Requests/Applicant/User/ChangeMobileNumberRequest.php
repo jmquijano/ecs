@@ -6,10 +6,12 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Core\Exception\Models\ExceptionModel;
-use Illuminate\Http\Request;
+use App\Trait\ContactChannelFormatTrait;
 
-class ChangeEmailRequest extends FormRequest
+class ChangeMobileNumberRequest extends FormRequest
 {
+    use ContactChannelFormatTrait;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -18,7 +20,7 @@ class ChangeEmailRequest extends FormRequest
     public function rules()
     {
         return [
-            'emailaddress' => ['required', 'unique:applicant_user,emailaddress', 'email:rfc,dns']
+            'mobilenumber' => ['required', 'unique:applicant_user,mobilenumber', 'numeric']
         ];
     }
 
@@ -29,12 +31,18 @@ class ChangeEmailRequest extends FormRequest
         $exception = new ExceptionModel();
         
         return [
-            // Password
-            'emailaddress.required' => $exception->getMessageString('UA002A'),
-            'emailaddress.unique' => $exception->getMessageString('UA002B'),
-            'emailaddress.email' => $exception->getMessageString('UA002C')
-            
+            // Mobile Number
+            'mobilenumber.required' => $exception->getMessageString('UA003A'),
+            'mobilenumber.unique' => $exception->getMessageString('UA003B'),
+            'mobilenumber.numeric' => $exception->getMessageString('UA003C')
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'mobilenumber' => $this->PrependAreaCode(63)->FormatMobileNumber($this->input('mobilenumber'))
+        ]);
     }
 
     protected function getValidatorInstance()

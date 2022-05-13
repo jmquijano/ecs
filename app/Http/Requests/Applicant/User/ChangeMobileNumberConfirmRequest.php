@@ -6,9 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Core\Exception\Models\ExceptionModel;
-use Illuminate\Http\Request;
 
-class ChangeEmailRequest extends FormRequest
+class ChangeMobileNumberConfirmRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,7 +17,8 @@ class ChangeEmailRequest extends FormRequest
     public function rules()
     {
         return [
-            'emailaddress' => ['required', 'unique:applicant_user,emailaddress', 'email:rfc,dns']
+            'otp' => ['required'],
+            'id' => ['required', 'exists:applicant_user_changemobilenumberconfirmation,id']
         ];
     }
 
@@ -29,11 +29,9 @@ class ChangeEmailRequest extends FormRequest
         $exception = new ExceptionModel();
         
         return [
-            // Password
-            'emailaddress.required' => $exception->getMessageString('UA002A'),
-            'emailaddress.unique' => $exception->getMessageString('UA002B'),
-            'emailaddress.email' => $exception->getMessageString('UA002C')
-            
+            'otp.required' => $exception->getMessageString('MFA-E1B', ['type' => 'Confirmation code']),
+            'id.required' => $exception->getMessageString('UA002D'),
+            'id.exist' => $exception->getMessageString('UA002D')
         ];
     }
 
