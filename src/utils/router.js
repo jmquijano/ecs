@@ -4,6 +4,8 @@ import { ApiBaseUrl, PageBaseUrl } from './urlbase';
 import { Splash } from '../components/splash';
 import { Navigate, matchPath, useLocation, useNavigate} from "react-router-dom";
 import { UserProfileContextProvider } from '../context/UserProfileContext';
+import { AuthTokenContextProvider } from '../context/AuthTokenContext';
+
 
 
 const HandleTokenValidation = (callback) => {
@@ -40,7 +42,7 @@ const PublicRoute = ({children}) => {
 
     useEffect(() => {
         HandleTokenValidation((res) => {
-            if (res.status) {
+            if (res?.success) {
                 SetAuthentication(true);
             } else {
                 localStorage.removeItem('token');
@@ -66,7 +68,7 @@ const PrivateRoute = ({children}) => {
 
     useEffect(() => {
         HandleTokenValidation((res) => {
-            if (res.status) {
+            if (res?.success) {
                 SetAuthentication(true);
             } else {
                 SetException(res?.exception);
@@ -82,7 +84,7 @@ const PrivateRoute = ({children}) => {
 
     return !Loading ? Exception ? <Navigate to={`${PageBaseUrl.Error.InternalServerError}`} /> :
         (
-            Authenticated ? <UserProfileContextProvider>{children}</UserProfileContextProvider> : <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
+            Authenticated ? <AuthTokenContextProvider><UserProfileContextProvider>{children}</UserProfileContextProvider></AuthTokenContextProvider> : <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
         ) : <Splash text="Fetching resources"/>;
 }
 

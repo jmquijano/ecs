@@ -120,13 +120,16 @@ function PopoverAccountNav({mobile}) {
                             >
                                 {userProfile?.firstname} {userProfile?.middlename} {userProfile?.lastname}
                             </Text>
+                            
                             <Text 
                                 marginTop={'0px !important'} 
                                 cursor={'pointer'} 
                                 fontSize={13}
                                 color={'brand.500'}
                             >
-                                View profile
+                                <Link to={PageBaseUrl.User.Profile}>
+                                    View Profile
+                                </Link>
                             </Text>
                         </Stack>
                     </Stack>
@@ -187,13 +190,16 @@ function CustomIconButton({icon, text, children, ...props }) {
     );
 }
 
-function DesktopNavButton({path, children, variant}) {
+function DesktopNavButton({path, children, variant, startsWith}) {
     const location = useLocation();
 
-    const active = (path) => {
-        console.log(location.pathname);
+    const active = (path, startsWith = false) => {
+        // console.log(location.pathname);
         if (path == location.pathname) {
             return true;
+        } else if (startsWith) {
+            const doesItStartWith = (location.pathname).startsWith(path);
+            return doesItStartWith;
         } else {
             return false;
         }
@@ -204,9 +210,9 @@ function DesktopNavButton({path, children, variant}) {
             <Button 
                 colorScheme={'brand'} 
                 fontSize={13} 
-                variant={variant ?? (active(path) ? 'active' : 'outline')} 
+                variant={variant ?? (active(path, startsWith) ? 'active' : 'outline')} 
                 fontWeight={800} 
-                borderRadius={100}
+                borderRadius={'full'}
             >
                 {children}
             </Button>
@@ -214,13 +220,16 @@ function DesktopNavButton({path, children, variant}) {
     );
 }
 
-function MobileNavButton({path, children, variant}) {
+function MobileNavButton({path, children, variant, startsWith}) {
     const location = useLocation();
 
     const active = (path) => {
-        console.log(location.pathname);
+        // console.log(location.pathname);
         if (path == location.pathname) {
             return true;
+        } else if (startsWith) {
+            const doesItStartWith = (location.pathname).startsWith(path);
+            return doesItStartWith;
         } else {
             return false;
         }
@@ -234,7 +243,7 @@ function MobileNavButton({path, children, variant}) {
                 width={'100%'}
                 colorScheme={'brand'} 
                 fontSize={13} 
-                variant={variant ?? (active(path) ? 'mobile-active' : 'mobile-outline')} 
+                variant={variant ?? (active(path, startsWith) ? 'mobile-active' : 'mobile-outline')} 
                 fontWeight={800} 
                 borderRadius={0}
                 border={0}
@@ -253,9 +262,11 @@ function MobileNavButton({path, children, variant}) {
 function DesktopNavItems() {
     return (
         <Fragment>
-        {navitems.map((a) => (
+        {navitems.map((a, i) => (
             <DesktopNavButton 
-                path={a?.path} 
+                key={i}
+                path={a?.path}
+                startsWith={a?.beginWith}
             >
                 {a?.title}
             </DesktopNavButton>
@@ -267,9 +278,11 @@ function DesktopNavItems() {
 function MobileNavItems() {
     return (
         <Fragment>
-        {navitems.map((a) => (
-            <MobileNavButton 
+        {navitems.map((a, i) => (
+            <MobileNavButton
+                key={i} 
                 path={a?.path} 
+                startsWith={a?.beginWith}
             >
                 {a?.title}
             </MobileNavButton>
@@ -287,13 +300,14 @@ function Navigation({onClockTicking}) {
     
     return (
         <Fragment>
+            {/** Philippine Standard Time - Desktop */}
             <Box
                 bgColor={'brand.200'}
                 width={'100%'}
                 display={['none', 'none', 'none', 'block']}
             >
                 <Container
-                    maxWidth={'100%'}
+                    maxWidth={'1200px'}
                     py={2}
                     height={'100%'}
                     
@@ -304,10 +318,13 @@ function Navigation({onClockTicking}) {
                 </Container>
                 
             </Box>
+            {/** Philippine Standard Time - Mobile and Tables */}
             <Box
                 bgColor={'white'}
                 width={'100%'}
                 display={['block', 'block', 'block', 'none']}
+                borderBottom={'1px solid'}
+                borderColor={'gray.200'}
             >
                 <Container
                     maxWidth={'100%'}
@@ -330,7 +347,7 @@ function Navigation({onClockTicking}) {
                 padding={0}
             >
                 <Container
-                    maxWidth={'100%'}
+                    maxWidth={'1200px'}
                     padding={'0px auto'}
                     height={'100%'}
                 >
@@ -426,7 +443,7 @@ function Navigation({onClockTicking}) {
                 
             >
                 <Box
-                    bgColor={'gray.50'}
+                    bgColor={'white'}
                     display={['block', 'block', 'block', 'none']}
                     borderBottom={'1px solid'}
                     borderColor={'gray.200'}

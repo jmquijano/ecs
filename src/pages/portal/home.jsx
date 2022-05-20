@@ -1,10 +1,9 @@
-import { Box, Heading, Container, Spacer, Grid, GridItem, Stack, Text, Divider, Button } from '@chakra-ui/react';
+import { Box, Heading, Container, Spacer, Grid, GridItem, Stack, Text, Button } from '@chakra-ui/react';
 import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { UserProfileContext } from '../../context/UserProfileContext';
-import Clock from 'react-live-clock';
 import { ApiBaseUrl } from '../../utils/urlbase';
-import { PuffLoader, PulseLoader, ScaleLoader } from 'react-spinners';
+import { ScaleLoader } from 'react-spinners';
 
 function DashboardCounterCardInfo({count, title, description, href, loading}) {
     return (

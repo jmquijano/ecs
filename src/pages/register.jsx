@@ -425,7 +425,6 @@ export default function Register() {
                                             colorScheme={'brand'} 
                                             width={'100%'}
                                             onClick={buttonStepHandler}
-                                            
                                             borderTopLeftRadius={activeStep >= 1 ? 0 : 'base'}
                                             borderBottomLeftRadius={activeStep >= 1 ? 0 : 'base'}
                                         >

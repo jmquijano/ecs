@@ -1,4 +1,4 @@
-import { Container, Spacer } from '@chakra-ui/react';
+import { Box, Container, Spacer } from '@chakra-ui/react';
 import React, { Fragment, useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { BrowserRouter, Outlet, Routes } from 'react-router-dom';
@@ -14,7 +14,12 @@ export default function Dashboard() {
             </Helmet>
             <Fragment>
                 <Navigation />
-                <Outlet />
+                <Box
+                    minHeight={'70vh'}
+                >
+                    <Outlet />
+                </Box>
+                
                 <Spacer my={10} />
                 <AppFooter />
             </Fragment>

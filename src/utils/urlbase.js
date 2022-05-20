@@ -3,6 +3,18 @@ const getToken = () => {
 
 }
 
+const UrlWithParam = (param, url) => {
+    let _url = url;
+    for (const [key, value] of Object.entries(param)) {
+        const _key = '{' + key + '}';
+        // console.log(key, value);
+
+        _url = _url.replace(_key, value);
+    }
+
+    return _url;
+}
+
 const ApiBaseUrl = {
     Applicant: { 
         Base: 'http://api-dev.bfp-ecs.com/applicant/v1/',
@@ -10,6 +22,14 @@ const ApiBaseUrl = {
             Login: {
                 url: 'auth/token',
                 method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            TokenVerify: {
+                url: 'auth/token',
+                method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -97,8 +117,16 @@ const ApiBaseUrl = {
         },
         User: {
             Profile: {
-                url: 'user/profile',
+                url: 'user/{id}',
                 method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            EditProfile: {
+                url: 'user/{id}',
+                method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -108,6 +136,26 @@ const ApiBaseUrl = {
         DashboardWidgets: {
             Counter: {
                 url: 'dashboard/widget/counter',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        },
+        Basedata: {
+            MFACommunicationChanel: {
+                url: 'basedata/mfa-channels',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        },
+        Application: {
+            MySubmittedApplication: {
+                url: 'application?limit={limit}&page={page}&paginate={paginate}',
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -132,7 +180,11 @@ const PageBaseUrl = {
         InternalServerError: '/error/500'
     },
     Dashboard: '/',
-    Application: '/application' // parent to Dashboard
+    Application: '/application', // parent to Dashboard
+    CreateNewApplication: '/application/create',
+    User: {
+        Profile: '/profile'
+    }
 }
 
-export { ApiBaseUrl, PageBaseUrl }
+export { ApiBaseUrl, PageBaseUrl, UrlWithParam }

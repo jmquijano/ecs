@@ -9,15 +9,13 @@ import Register from "./pages/register";
 import FSEDForm from "./pages/tests/fsedform";
 import Dashboard from "./pages/portal";
 import Home from "./pages/portal/home";
-
-
+import ApplicationIndex from "./pages/portal/application";
+import { UserProfile } from "./pages/portal/user/profile";
+import CreateApplication from "./pages/portal/application/create";
 
 export default function AppRoutes() {
     return (
         <React.Fragment>
-            <Helmet>
-                <title>ECS (Applicant Portal)</title>
-            </Helmet>
             <BrowserRouter>
                 <Routes>
                     <Route 
@@ -32,7 +30,15 @@ export default function AppRoutes() {
                             <Home />
                         } />
                         <Route path={PageBaseUrl.Application} element={
-                            <Home />
+                            <ApplicationIndex />
+                        } />
+
+                        <Route path={PageBaseUrl.CreateNewApplication} element={
+                            <CreateApplication />
+                        } />
+
+                        <Route path={PageBaseUrl.User.Profile} element={
+                            <UserProfile />
                         } />
                     </Route>
                     <Route 

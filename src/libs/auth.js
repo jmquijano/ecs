@@ -27,7 +27,7 @@ const useProvideAuth = () =>{
         })
         .then(response => response.json())
         .then((res) => {
-            if (!res.status) {
+            if (!res?.success) {
                 props?.onFailure(res?.errordata);
             } else {
                 props?.onSuccess(res);
@@ -52,7 +52,7 @@ const useProvideAuth = () =>{
             })
             .then(response => response.json())
             .then((res) => {
-                if (!res.status) {
+                if (!res?.success) {
                     props?.onFailure(res?.errordata);
                 } else {
                     props?.onSuccess(res);
@@ -75,7 +75,7 @@ const useProvideAuth = () =>{
             })
             .then(response => response.json())
             .then((res) => {
-                if (!res.status) {
+                if (!res?.success) {
                     props?.onFailure(res.errordata);
                 } else {
                     props?.onSuccess(res);
@@ -101,7 +101,7 @@ const useProvideAuth = () =>{
             })
             .then(response => response.json())
             .then((res) => {
-                if (!res.status) {
+                if (!res?.success) {
                     props?.onFailure(res?.errordata);
                 } else {
                     props?.onSuccess(res.data.access_token);
@@ -129,7 +129,7 @@ const useProvideAuth = () =>{
                 })
                 .then(res => res.json())
                 .then((res) => {
-                    if (!res.status) {
+                    if (!res?.success) {
                         props?.onFailure(res?.errordata);
                     } else {
                         props?.onSuccess(res);
@@ -157,7 +157,7 @@ const useProvideAuth = () =>{
                 })
                 .then(res => res.json())
                 .then((res) => {
-                    if (!res.status) {
+                    if (!res?.success) {
                         props?.onFailure(res?.errordata);
                     } else {
                         props?.onSuccess(res);
@@ -183,7 +183,7 @@ const useProvideAuth = () =>{
                 })
                 .then(res => res.json())
                 .then((res) => {
-                    if (!res.status) {
+                    if (!res?.success) {
                         props?.onFailure(res?.errordata);
                     } else {
                         props?.onSuccess(res);
@@ -207,7 +207,7 @@ const useProvideAuth = () =>{
                 })
                 .then(res => res.json())
                 .then((res) => {
-                    if (!res.status) {
+                    if (!res?.success) {
                         props?.onFailure(res?.errordata);
                     } else {
                         props?.onSuccess(res);

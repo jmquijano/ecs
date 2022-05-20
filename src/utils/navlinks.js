@@ -7,7 +7,8 @@ const NavLinks = [
     },
     {
         title: 'My Application',
-        path: PageBaseUrl.Application
+        path: PageBaseUrl.Application,
+        beginWith: true
     }
 ];
 
