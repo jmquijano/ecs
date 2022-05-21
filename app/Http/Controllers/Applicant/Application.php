@@ -31,16 +31,27 @@ class Application extends Controller {
             // Current User
             $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
 
+            // Paginate
+            $pagination = filter_var($req->get('paginate', 'false'), FILTER_VALIDATE_BOOLEAN);
+            $paginationLimit = $req->get('limit') ?? 10;
+
             // Fetch
             $fetch = $filed_application->query()
                 ->where('created_by->type', '=', 'applicant')
                 ->where('created_by->user_id', '=', $currentUser)
-                ->orderByDesc('id');
+                ->orderBy('id', 'desc');
+
+            if ($pagination) {
+                $fetch = $fetch->paginate($paginationLimit, ['*'])->toArray();
+            } else {
+                $fetch = $fetch->get();
+            }
 
             return response()->success(
                 200,
                 'Applications',
-                $fetch->get(['id', 'application_reference_number', 'business_id', 'taxpayer_name', 'trade_name', 'status', 'created_at', 'created_by'])
+                $fetch['data'] ?? $fetch ?? null,
+                $fetch ?? null
             );
         } catch (\Exception $e) {
             return response()->error(

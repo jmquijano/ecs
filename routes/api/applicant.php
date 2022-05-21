@@ -7,6 +7,8 @@ use App\Http\Controllers\Applicant\User;
 use App\Http\Controllers\Basedata\RevenueDistrictOffice;
 use App\Http\Controllers\Boundaries;
 use App\Http\Controllers\Applicant\Application;
+use App\Http\Controllers\Basedata\BusinessType;
+use App\Http\Controllers\Basedata\CertificateType;
 use App\Http\Controllers\Basedata\MFACommunicationChannel;
 use App\Http\Controllers\Basedata\PSIC;
 use App\Utility\SMS;
@@ -26,6 +28,9 @@ Route::prefix('boundaries')->group(function () {
  * Base Data Endpoints
  */
 Route::prefix('basedata')->group(function () {
+    /**
+     * BIR Revenue District Office
+     */
     Route::get('/rdo', [RevenueDistrictOffice::class, 'Get']);
 
     /**
@@ -41,6 +46,15 @@ Route::prefix('basedata')->group(function () {
     Route::prefix('mfa-channels')->group(function () {
         Route::get('/', [MFACommunicationChannel::class, 'getActiveChannels']);
     });
+
+    /**
+     * Certificate Type
+     */
+    Route::get('/certificate-type', [CertificateType::class, 'getAll']);
+    /**
+     * Business Type
+     */
+    Route::get('/business-type', [BusinessType::class, 'getAll']);
 });
 
 /**

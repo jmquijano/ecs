@@ -72,6 +72,7 @@ class FiledApplication extends Model {
         $user = (
             $type == "applicant" ?
             ApplicantUser::query()->find($created->user_id)->makeHidden([
+                'last_password_change',
                 'password', 
                 'is_active', 
                 'emailaddress',

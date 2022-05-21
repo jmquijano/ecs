@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Applicant;
 
+use App\Core\Utilities\Authentication\ApplicantAuthUtility;
 use App\Http\Controllers\Controller;
+use App\Models\FiledApplication;
 use Illuminate\Http\Request;
 
 class Dashboard extends Controller {
@@ -10,9 +12,16 @@ class Dashboard extends Controller {
         try {
             $counter = array();
 
+            // Get Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req);
+
             // Submitted Application
+            $submittedApplication = FiledApplication::query()
+                                    ->where('created_by->type', '=', 'applicant')
+                                    ->where('created_by->user_id', '=', $currentUser->id)
+                                    ->count();
             $counter['submitted_application'] = [
-                'count' => 0 
+                'count' => $submittedApplication 
             ];
 
             // All Issued FSIC

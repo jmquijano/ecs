@@ -36,13 +36,13 @@ class ApplicantAuthGuard
 
             } catch (\Exception $e) {
                 if ($e instanceof \PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException){
-                    return response()->error(400, 'Malformed Token');
+                    return response()->error(401, 'Malformed Token');
                 }else if ($e instanceof \PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException){
-                    return response()->error(400, 'Expired Token');
+                    return response()->error(401, 'Expired Token');
                 } else if ( $e instanceof \PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException) {
-                    return response()->error(500, $e->getMessage());
+                    return response()->error(401, $e->getMessage());
                 }else{
-                    return response()->error(500, $e->getMessage());
+                    return response()->error(401, $e->getMessage());
                 }
             }
 

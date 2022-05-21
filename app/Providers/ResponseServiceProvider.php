@@ -11,7 +11,7 @@ class ResponseServiceProvider extends ServiceProvider
 {
     public function boot(ResponseFactory $factory)
     {
-        $factory->macro('success', function (int $statusCode, $message = null, $data = null) use ($factory) {
+        $factory->macro('success', function (int $statusCode, $message = null, $data = null, $otherParams = null) use ($factory) {
             
 
             $format = [];
@@ -30,6 +30,12 @@ class ResponseServiceProvider extends ServiceProvider
 
             if ($data !== null) {
                 $format['data'] = $data;
+            }
+
+            if (is_array($otherParams)) {
+                foreach ($otherParams as $k => $v) {
+                    $format[$k] = $v;
+                }
             }
 
             return $factory->make($format, $statusCode);
