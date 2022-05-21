@@ -151,6 +151,22 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            BusinessType: {
+                url: 'basedata/business-type',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            CertificateType: {
+                url: 'basedata/certificate-type',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         },
         Application: {

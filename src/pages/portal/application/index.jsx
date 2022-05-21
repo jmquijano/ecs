@@ -62,9 +62,7 @@ const FiledApplicationTable = () => {
         });
     }
 
-    useEffect(() => {
-        fetchApplication();
-    }, []);
+    
 
     useEffect(() => {
         fetchApplication();
@@ -79,7 +77,7 @@ const FiledApplicationTable = () => {
             border={'1px solid'}
             borderColor={'gray.200'}
             mt={5}
-            overflowX={'scroll'}
+            overflowX={'auto'}
         >
             {
                 loading ? 
@@ -202,7 +200,7 @@ const FiledApplicationTable = () => {
                         </Table>
                     </Box>
                     
-                    <Box background={'gray.100'} py={3} px={4}>
+                    <Box minWidth={'100%'} background={'white'} py={3} px={4}>
                         <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={2}>
                             <GridItem colSpan={[12, 6]}>
                                 <Stack direction={'row'} alignItems={'center'} justifyContent={['center','left']}>
