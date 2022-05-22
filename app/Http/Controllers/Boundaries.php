@@ -16,7 +16,7 @@ class Boundaries extends Controller {
         try {
             $serialize = [];
 
-            $getpsgc = PSGC::query()->where('type', '=', 'PROVINCE')->where('isactive', '=', true);
+            $getpsgc = PSGC::query()->where('type', '=', 'PROVINCE')->where('is_active', '=', true)->orderBy('id', 'asc');
 
             foreach ($getpsgc->get() as $psgc) {
                 $geopath = GeoPath::query()->where('boundaries_psgc_id', '=', $psgc->id);
@@ -40,7 +40,9 @@ class Boundaries extends Controller {
             $serialize = [];
 
             if ($parent >= 1) {
-                $getpsgc = PSGC::query()->whereIn('type', ['CITY', 'MUNICIPALITY', 'SUB-MUNICIPALITY'])->whereBetween('id', [$parent, $range])->where('isactive', '=', true);
+                $getpsgc = PSGC::query()->whereIn('type', ['CITY', 'MUNICIPALITY', 'SUB-MUNICIPALITY'])
+                ->whereBetween('id', [$parent, $range])->where('is_active', '=', true)
+                ->orderBy('id', 'asc');
 
                 foreach ($getpsgc->get() as $psgc) {
                     $geopath = GeoPath::query()->where('boundaries_psgc_id', '=', $psgc->id);
@@ -67,7 +69,10 @@ class Boundaries extends Controller {
 
             if ($parent >= 1) {
                 $cache_key = "Barangays_{$parent}";
-                $getpsgc = PSGC::query()->whereIn('type', ['BARANGAY'])->whereBetween('id', [$parent, $range])->where('isactive', '=', true);
+                $getpsgc = PSGC::query()->whereIn('type', ['BARANGAY'])
+                            ->whereBetween('id', [$parent, $range])
+                            ->where('is_active', '=', true)
+                            ->orderBy('id', 'asc');
 
                 if (Cache::has($cache_key)) {
                     $serialize = Cache::get($cache_key);
