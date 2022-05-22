@@ -1,4 +1,4 @@
-import { Grid, GridItem, Container, Heading, Text, Button, Stack, Box, FormControl, Input, FormLabel, FormErrorMessage, Select, Divider } from "@chakra-ui/react"
+import { Grid, GridItem, Container, Heading, Text, Button, Stack, Box, FormControl, Input, FormLabel, FormErrorMessage, Select, Divider, Modal, ModalOverlay, ModalContent, Center } from "@chakra-ui/react"
 import { Fragment, useEffect, useState } from "react"
 import { BiArrowToLeft, BiCaretRight, BiChevronLeft, BiPlus } from "react-icons/bi"
 import { Link } from "react-router-dom"
@@ -7,6 +7,10 @@ import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as Yup from 'yup';
 import { Form, FormikProvider, useFormik, Field } from "formik";
 import { fetchBusinessType, fetchCertificateType } from "../../../utils/basedata";
+import { fetchBarangay, fetchCity, fetchProvince } from "../../../utils/boundaries";
+import { AutoComplete, AutoCompleteInput, AutoCompleteItem, AutoCompleteList } from "@choc-ui/chakra-autocomplete";
+import { Loader } from "../../../components/loaders";
+import { HandleGeolocPermission, Maps, Pin } from "../../../components/maps";
 
 function BusinessInformation ({props}) {
     const [formValues, setFormValues] = useState({
@@ -18,6 +22,13 @@ function BusinessInformation ({props}) {
         barangay: null,
         city: null,
         province: null,
+        address: {
+            room: null,
+            building: null,
+            street: null,
+            landmark: null
+
+        },
         geomap: {
             longitude: null,
             latitude: null
@@ -41,7 +52,7 @@ function BusinessInformation ({props}) {
         business_id: Yup.string().required("Business ID is a mandatory field.").typeError(""),
         taxpayer_name: Yup.string().required("This is a mandatory field.").nullable().typeError(""),
         trade_name: Yup.string().nullable(true),
-        businesstype: Yup.number().required("Business Type is a mandatory field.").nullable(false, 'n'),
+        businesstype: Yup.number().required("Business Type is a mandatory field.").nullable(false).typeError("Business Type is a mandatory field."),
         certificationtype: Yup.string().required("Certificate Type is a mandatory field."),
         barangay: Yup.number().required("Barangay is a mandatory field."),
         city: Yup.number().required("City is a mandatory field."),
@@ -66,7 +77,6 @@ function BusinessInformation ({props}) {
 
     const formikSubmitHandler = async (values, { setErrors, resetForm }) => {
     };
-
     const formikInit = useFormik({
         initialValues: formValues,
         validationSchema: validationSchema,
@@ -74,11 +84,38 @@ function BusinessInformation ({props}) {
         enableReinitialize: true
     });
 
+    const [loading, setLoading] = useState(false);
+    
     const [certificateType, setCertificateType] = useState();
     const [businessType, setBusinessType] = useState([]);
     const [selectedBusinessType, setSelectedBusinessType] = useState({});
+
+    const [province, setProvince] = useState([]);
+    const [city, setCity] = useState([]);
+    const [barangay, setBarangay] = useState([]);
+    const [locateMe, setLocateMe] = useState();
+
+    const [focusMap, setFocusMap] = useState({
+        lng: null,
+        lat: null
+    });
+
+    const [pinMap, setPinMap] = useState({
+        lng: null,
+        lat: null
+    })
    
     useEffect(() => {
+        HandleGeolocPermission();
+
+        // Set Geolocate
+        navigator.geolocation.getCurrentPosition(function(position) {
+            setLocateMe({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            });
+        });
+
         fetchCertificateType()
             .then(res => res.json())
             .then(res => {
@@ -94,51 +131,174 @@ function BusinessInformation ({props}) {
                     setBusinessType(res?.data);
                 }
             });
+
+        fetchProvince(() => {
+            setLoading(true);
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res?.success) {
+                    setProvince(res?.data);
+
+                    if (res?.data[0]?.path[0]) {
+                        const coordinates = {
+                            lng: parseFloat(res?.data[0]?.path[0]?.lng),
+                            lat: parseFloat(res?.data[0]?.path[0]?.lat),
+                            zoom: 8
+                        };
+    
+                        // console.log(coordinates);
+                        setFocusMap(coordinates);
+                    }
+                }
+            })
+            .finally(e => setLoading(false));
     }, []);
 
     const handleBusinessTypeChange = async (e) => {
         let _id = e?.target?.value;
         const _f = businessType.filter(x => x.id == _id);
         setSelectedBusinessType(_f[0]);
+    }
+    
+    const handleProvinceChange = async (e) => {
+        let _id = e?.target?.value ?? e;
 
-        console.log(_f[0]);
-    }   
+        fetchCity(_id, () => {
+            setLoading(true);
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res?.success) {
+                setCity(res?.data);
+
+                if (res?.data[0]?.path[0]) {
+                    const coordinates = {
+                        lng: parseFloat(res?.data[0]?.path[0]?.lng),
+                        lat: parseFloat(res?.data[0]?.path[0]?.lat),
+                        zoom: 9
+                    };
+
+                    // console.log(coordinates);
+                    setFocusMap(coordinates);
+                }
+            }
+        })
+        .finally(e => setLoading(false));
+    }
+
+    const handleCityChange = async (e) => {
+        let _id = e?.target?.value ?? e;
+
+        fetchBarangay(_id, () => {
+            setLoading(true);
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res?.success) {
+                setBarangay(res?.data);
+
+                if (res?.data[0]?.path[0]) {
+                    const coordinates = {
+                        lng: parseFloat(res?.data[0]?.path[0]?.lng),
+                        lat: parseFloat(res?.data[0]?.path[0]?.lat),
+                        zoom: 13
+                    };
+
+                    // console.log(coordinates);
+                    setFocusMap(coordinates);
+                }
+            }
+        })
+        .finally(e => setLoading(false));
+    }
+
+    const handleBarangayChange = async (e) => {
+        let _id = e?.target?.value ?? e;
+
+        // Search Barangay
+        const searchBarangay= barangay?.filter(x => x.id == e);
+
+        if (searchBarangay[0].path[0]) {
+
+            if ("geolocation" in navigator) {
+                console.log("Available");
+            } else {
+                console.log("Not Available");
+            }
+
+            console.log(locateMe);
+
+            const coordinates = {
+                lng: locateMe?.lng ?? parseFloat(searchBarangay[0].path[0]?.lng),
+                lat: locateMe?.lat ?? parseFloat(searchBarangay[0].path[0]?.lat),
+                zoom: 15
+            };
+
+            // console.log(coordinates);
+            setFocusMap(coordinates);
+            setPinMap(coordinates);
+        }
+    }
+    
 
     return (
         <Fragment>
-            <Box px={[5, 5, 5, 10]} py={5}>
+            <Modal isOpen={loading} isCentered bg={'transparent'}>
+                <ModalOverlay 
+                    bg='blackAlpha.500'
+                />
+                <ModalContent bg={'transparent'} shadow={'none'} w={'auto'} h={'auto'} px={4} py={4}>
+                    <Center
+                        alignItems={'center'}
+                        alignContent={'center'}
+                    >
+                        <Loader.PulseLoader color={'white'} />
+                    </Center>
+                    
+                </ModalContent>
+            </Modal>
+            <Box px={[5, 5, 5, 10]} pt={5} pb={10} height={'100%'}>
                 <FormikProvider value={formikInit}>
                     <Form>
-                        <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={4}>
-                            {/* Primary Information */}
+                        <Grid 
+                            templateColumns={'repeat(12, 1fr)'} 
+                            width={'100%'} 
+                            gap={4}
+                        >
+                            {/** 
+                             * Primary Business Information
+                             */}
                             <GridItem 
                                 colSpan={12} 
                                 mt={4}
                             >
                                 <Box
                                     display={'block'}
-                                    borderTop={'4px solid'}
+                                    borderTop={'2px solid'}
                                     borderColor={'brand.200'}
                                     height={'auto'}
+                                    textAlign={'left'}
                                 >
                                     <Text
-                                        as={'Span'}
-                                        bg={'brand.200'} 
-                                        color={'white'}
+                                        as={'span'}
+                                        bg={'gray.200'} 
+                                        color={'brand.200'}
                                         display={'inline-block'} 
                                         mt={0} 
                                         py={2}
-                                        px={3}
+                                        px={5}
                                         fontSize={13}
                                         fontWeight={600}
-                                        minWidth={'200px'}
+                                        borderBottomRadius={'8px'}
+                                        textAlign={['center', 'center', 'left', 'left']}
+                                        width={['100%', '100%', 'auto', 'auto']}
                                     >
                                         Primary Information
                                     </Text>
                                 </Box>
                                 
                             </GridItem>
-
                             {/* Certification Type */}
                             <GridItem colSpan={[12, 12, 12, 2]} display={'none'}>
                                 <Field 
@@ -185,9 +345,8 @@ function BusinessInformation ({props}) {
                                     )}
                                 </Field>
                             </GridItem>
-
                             {/* Business Ownership Type */}
-                            <GridItem colSpan={[12, 12, 12, 3]}>
+                            <GridItem colSpan={[12, 4, 4, 3]}>
                                 <Field 
                                     name='businesstype'
                                 >
@@ -208,7 +367,7 @@ function BusinessInformation ({props}) {
                                                 id='businesstype' 
                                                 placeholder='' 
                                                 onChangeCapture={handleBusinessTypeChange}
-                                                fontSize={14}
+                                                fontSize={13}
                                             >
                                                 <option value="">Select</option>
                                                 {businessType?.map((d, k) => (
@@ -233,9 +392,8 @@ function BusinessInformation ({props}) {
                                     )}
                                 </Field>
                             </GridItem>
-                            
                             {/* Business ID */}
-                            <GridItem colSpan={[12, 12, 12, 3]}>
+                            <GridItem colSpan={[12, 8, 8, 3]}>
                                 <Field name='business_id'>
                                     {({ field, form }) => (
                                         <FormControl 
@@ -252,7 +410,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='business_id' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                                 disabled={
                                                     selectedBusinessType?.id >= 1 ? false : true
                                                 }
@@ -271,9 +429,8 @@ function BusinessInformation ({props}) {
                                     )}
                                 </Field>
                             </GridItem>
-
                             {/* Taxpayer Name */}
-                            <GridItem colSpan={[12, 12, 12, 6]}>
+                            <GridItem colSpan={[12, 8, 8, 4]}>
                                 <Field name='taxpayer_name'>
                                     {({ field, form }) => (
                                         <FormControl 
@@ -295,7 +452,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='taxpayer_name' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                                 disabled={
                                                     selectedBusinessType?.id >= 1 ? false : true
                                                 }
@@ -314,8 +471,320 @@ function BusinessInformation ({props}) {
                                     )}
                                 </Field>
                             </GridItem>
+                            {/* Date of Birth/Incorporation */}
+                            <GridItem colSpan={[12, 4, 4, 2]}>
+                                <Field name='other.date_of_birth'>
+                                    {({ field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors['other.date_of_birth'] && form.touched?.other.date_of_birth} 
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'other.date_of_birth'}
+                                                fontSize={12}
+                                            >
+                                                {selectedBusinessType?.shortname == "CORP"
+                                                    ? 
+                                                    "Date of Incorporation"
+                                                    :
+                                                    selectedBusinessType?.shortname == "COOP" ?
+                                                    "Date of Registration"
+                                                    :
+                                                    selectedBusinessType?.shortname == "PRTN" ?
+                                                    "Date of Registration"
+                                                    :
+                                                    "Date of Birth"
+                                                }
+                                            </FormLabel>
+                                            <Input 
+                                                {...field} 
+                                                id='other.date_of_birth' 
+                                                placeholder='' 
+                                                fontSize={13}
+                                                disabled={
+                                                    selectedBusinessType?.id >= 1 ? false : true
+                                                }
+                                            />
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors['other.date_of_birth'] instanceof Map ? form.errors['other.date_of_birth'].map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors['other.date_of_birth']
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            
+                            
+                            {
+                            /**
+                             * Business Location
+                             */
+                            selectedBusinessType?.id >= 1 ?
+                            <GridItem 
+                                colSpan={12} 
+                                mt={4}
+                            >
+                                <Box
+                                    display={'block'}
+                                    borderTop={'2px solid'}
+                                    borderColor={'brand.200'}
+                                    height={'auto'}
+                                    textAlign={'left'}
+                                >
+                                    <Text
+                                        as={'span'}
+                                        bg={'gray.200'} 
+                                        color={'brand.200'}
+                                        display={'inline-block'} 
+                                        mt={0} 
+                                        py={2}
+                                        px={5}
+                                        fontSize={13}
+                                        fontWeight={600}
+                                        borderBottomRadius={'8px'}
+                                    >
+                                        Business Address
+                                    </Text>
+                                </Box>
+                                
+                            </GridItem>
+                            : ''
+                            }
+                            {/* Province */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 4, 4]}>
+                                <Field 
+                                    name='province'
+                                >
+                                    {({ field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors?.province && form.touched?.province} 
+                                            isRequired
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'province'}
+                                                fontSize={12}
+                                            >
+                                                Province
+                                            </FormLabel>
+                                            <AutoComplete 
+                                                openOnFocus 
+                                                onChange={handleProvinceChange}
+                                            >
+                                                <AutoCompleteInput
+                                                    fontSize={12}
+                                                    disabled={
+                                                        province.length <= 0 ? true : false
+                                                    }
+                                                    cursor={
+                                                        province.length <= 0 ? 'progress' : 'pointer'
+                                                    }
+                                                    variant={province.length <= 0 ? 'filled' : 'outline'}
+                                                />
+                                                <AutoCompleteList
+                                                    mt={1}
+                                                >
+                                                    {
+                                                        province?.map((d, i) => {
+                                                            return (<AutoCompleteItem
+                                                                key={d?.id}
+                                                                value={String(d?.id)}
+                                                                label={d?.name}
+                                                                fontSize={13}
+                                                            >
+                                                                {d?.name}
+                                                            </AutoCompleteItem>
+                                                            );
+                                                        })
+                                                    }
+                                                </AutoCompleteList>
+                                            </AutoComplete>
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors?.province instanceof Map ? form.errors?.province.map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors?.province
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
 
-                            {/* Location */}
+                            {/* City */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 4, 4]}>
+                                <Field 
+                                    name='city'
+                                >
+                                    {({ field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors?.city && form.touched?.city} 
+                                            isRequired
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'city'}
+                                                fontSize={12}
+                                            >
+                                                City / Municipality
+                                            </FormLabel>
+                                            <AutoComplete 
+                                                openOnFocus 
+                                                onChange={handleCityChange}
+                                            >
+                                                <AutoCompleteInput
+                                                    fontSize={12}
+                                                    disabled={
+                                                        city.length <= 0 ? true : false
+                                                    }
+                                                    cursor={
+                                                        city.length <= 0 ? 'progress' : 'pointer'
+                                                    }
+                                                    variant={city.length <= 0 ? 'filled' : 'outline'}
+                                                />
+                                                <AutoCompleteList
+                                                    mt={1}
+                                                >
+                                                    {
+                                                        city?.map((d, i) => {
+                                                            return (<AutoCompleteItem
+                                                                key={d?.id}
+                                                                value={String(d?.id)}
+                                                                label={d?.name}
+                                                                fontSize={13}
+                                                            >
+                                                                {d?.name}
+                                                            </AutoCompleteItem>
+                                                            );
+                                                        })
+                                                    }
+                                                </AutoCompleteList>
+                                            </AutoComplete>
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors?.city instanceof Map ? form.errors?.city.map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors?.city
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
+
+                            {/* Barangay */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 4, 4]}>
+                                <Field 
+                                    name='barangay'
+                                >
+                                    {({ field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors?.barangay && form.touched?.barangay} 
+                                            isRequired
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'barangay'}
+                                                fontSize={12}
+                                            >
+                                                Barangay
+                                            </FormLabel>
+                                            <AutoComplete 
+                                                openOnFocus 
+                                                onChange={handleBarangayChange}
+                                            >
+                                                <AutoCompleteInput
+                                                    fontSize={12}
+                                                    disabled={
+                                                        barangay.length <= 0 ? true : false
+                                                    }
+                                                    cursor={
+                                                        barangay.length <= 0 ? 'progress' : 'pointer'
+                                                    }
+                                                    variant={barangay.length <= 0 ? 'filled' : 'outline'}
+                                                />
+                                                <AutoCompleteList
+                                                    mt={1}
+                                                >
+                                                    {
+                                                        barangay?.map((d, i) => {
+                                                            return (<AutoCompleteItem
+                                                                key={d?.id}
+                                                                value={String(d?.id)}
+                                                                label={d?.name}
+                                                                fontSize={13}
+                                                            >
+                                                                {d?.name}
+                                                            </AutoCompleteItem>
+                                                            );
+                                                        })
+                                                    }
+                                                </AutoCompleteList>
+                                            </AutoComplete>
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors?.barangay instanceof Map ? form.errors?.barangay.map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors?.barangay
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
+
+                            {/* Map */}
+                            {selectedBusinessType?.id >= 1 ? 
+                            <GridItem colSpan={[12, 12, 12, 12]}>
+                                <Box
+                                    width={'100%'}
+                                    height={'400px'}
+                                >
+                                    <Maps
+                                        
+                                        center={focusMap}
+                                        zoom={focusMap?.zoom}
+                                        scrollWheelZoom={true}
+                                    >
+                                        <Pin 
+                                            position={{
+                                                lng: focusMap?.lng,
+                                                lat: focusMap?.lat
+                                            }}
+                                            PopupMessage={'Your are located here'}
+                                            onChange={(e) => setPinMap(e)}
+                                        />
+                                    </Maps>
+                                </Box>
+                                
+                            </GridItem>
+                            : ''
+                            }
+
+                            {/* Business Lines */}
                             {
                                 selectedBusinessType?.id >= 1 ?
                                 <GridItem 
@@ -324,58 +793,30 @@ function BusinessInformation ({props}) {
                                 >
                                     <Box
                                         display={'block'}
-                                        borderTop={'4px solid'}
+                                        borderTop={'2px solid'}
                                         borderColor={'brand.200'}
                                         height={'auto'}
+                                        textAlign={'left'}
                                     >
                                         <Text
-                                            as={'Span'}
-                                            bg={'brand.200'} 
-                                            color={'white'}
+                                            as={'span'}
+                                            bg={'gray.200'} 
+                                            color={'brand.200'}
                                             display={'inline-block'} 
                                             mt={0} 
                                             py={2}
-                                            px={3}
+                                            px={5}
                                             fontSize={13}
                                             fontWeight={600}
-                                            minWidth={'200px'}
+                                            borderBottomRadius={'8px'}
                                         >
-                                            Business Location
+                                            Business Lines
                                         </Text>
                                     </Box>
                                     
                                 </GridItem>
                                 : ''
                             }
-
-                            {/* Primary Information */}
-                            <GridItem 
-                                colSpan={12} 
-                                mt={4}
-                            >
-                                <Box
-                                    display={'block'}
-                                    borderTop={'4px solid'}
-                                    borderColor={'brand.200'}
-                                    height={'auto'}
-                                >
-                                    <Text
-                                        as={'Span'}
-                                        bg={'brand.200'} 
-                                        color={'white'}
-                                        display={'inline-block'} 
-                                        mt={0} 
-                                        py={2}
-                                        px={3}
-                                        fontSize={13}
-                                        fontWeight={600}
-                                        minWidth={'200px'}
-                                    >
-                                        Business Lines
-                                    </Text>
-                                </Box>
-                                
-                            </GridItem>
                             
                             {/* Other Information */}
                             {
@@ -386,21 +827,23 @@ function BusinessInformation ({props}) {
                                 >
                                     <Box
                                         display={'block'}
-                                        borderTop={'4px solid'}
+                                        borderTop={'2px solid'}
                                         borderColor={'brand.200'}
                                         height={'auto'}
+                                        textAlign={'left'}
                                     >
                                         <Text
-                                            as={'Span'}
-                                            bg={'brand.200'} 
-                                            color={'white'}
+                                            as={'span'}
+                                           
+                                            bg={'gray.200'} 
+                                            color={'brand.200'}
                                             display={'inline-block'} 
                                             mt={0} 
                                             py={2}
-                                            px={3}
+                                            px={5}
                                             fontSize={13}
                                             fontWeight={600}
-                                            minWidth={'200px'}
+                                            borderBottomRadius={'8px'}
                                         >
                                             Other Information
                                         </Text>
@@ -409,8 +852,7 @@ function BusinessInformation ({props}) {
                                 </GridItem>
                                 : ''
                             }
-                           
-
+                            
                             {/* DTI Trade Name */}
                             {selectedBusinessType?.shortname == "INDV" ?
                             <GridItem colSpan={[12, 12, 12, 6]}>
@@ -430,7 +872,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='trade_name' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -467,7 +909,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='dti_registration_number' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -504,7 +946,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='dti_registration_date' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -541,7 +983,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='taxpayer_name' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -578,7 +1020,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='sec_registration_number' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -597,7 +1039,7 @@ function BusinessInformation ({props}) {
                             : ""}
 
                             {/* CDA Registered Name */}
-                            {selectedBusinessType?.shortname == "CORP" ||  selectedBusinessType?.shortname == "PRTN" || selectedBusinessType?.shortname == "COOP" ?
+                            {selectedBusinessType?.shortname == "COOP" ?
                             <GridItem colSpan={[12, 12, 12, 8]}>
                                 <Field name='taxpayer_name'>
                                     {({ field, form }) => (
@@ -615,7 +1057,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='taxpayer_name' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -652,7 +1094,7 @@ function BusinessInformation ({props}) {
                                                 {...field} 
                                                 id='cda_registration_number' 
                                                 placeholder='' 
-                                                fontSize={14}
+                                                fontSize={13}
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -684,6 +1126,8 @@ export default function CreateApplication () {
         initialStep: 0,
     })
 
+    const [loading, setLoading] = useState(false);
+
     const _steps = [
         {
             label: 'Business Information',
@@ -701,11 +1145,6 @@ export default function CreateApplication () {
         }
     ];
 
-    
-
-    
-
-    
     return (
         <Fragment>
             <Helmet>
@@ -717,7 +1156,7 @@ export default function CreateApplication () {
             >
                 <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={[2, 5, 10, 10]}>
                     <GridItem 
-                        colSpan={[12, 6, 6, 6, 6]} 
+                        colSpan={[12, 12, 6, 6, 6]} 
                         maxWidth={'100%'}
                     >
                         <Heading 
@@ -729,7 +1168,7 @@ export default function CreateApplication () {
                         </Heading>
                     </GridItem>
                     <GridItem 
-                        colSpan={[12, 6, 6, 6, 6]} 
+                        colSpan={[12, 12, 6, 6, 6]} 
                         maxWidth={'100%'}
                     >
                         <Stack 
@@ -771,16 +1210,24 @@ export default function CreateApplication () {
                     mt={5}
                     overflowX={'auto'}
                 >
-                    <Stack direction={'column'} visibility={['hidden', 'hidden', 'visible', 'visible']}>
+                    <Stack 
+                        direction={'column'}
+                        width={'100%'} 
+                    >
                         <Steps 
-                            px={[4, 4, 4, '15em']} 
+                            px={[4, 4, 4, '10em', '15em']} 
                             py={'1.2em'} 
-                            background={'gray.50'} 
+                            bg={{
+                                base: 'white',
+                                md: 'gray.50'
+                            }}
                             alignItems={'center'} 
                             orientation={'horizontal'} 
                             colorScheme={'brand'} 
                             activeStep={activeStep} 
                             justifyContent={'start'}
+                            width={'100%'}
+                            minWidth={'100%'}
                         >
                             {_steps.map(({label, description, component}, i) => (
                             <Step 
@@ -795,12 +1242,14 @@ export default function CreateApplication () {
                                     </Text>
                                 } 
                                 key={i}
+                                width={['100%', '100%', 'auto', 'auto']}
                             >
                                 {component}
                             </Step>
                             ))}
                         </Steps>
                     </Stack>
+                    
 
                 </Box>
             </Container>

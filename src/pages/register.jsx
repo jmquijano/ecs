@@ -366,7 +366,7 @@ export default function Register() {
                     { /* Login Card */ }
                     <Box 
                         marginX={{
-                            base: 5,
+                            base: 0,
                             md: 0
                         }}
                     >

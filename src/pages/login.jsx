@@ -83,7 +83,7 @@ export default function Login() {
                bg={'gray.50'} 
                height={'100vh'} 
                display="flex"
-               margin={"30px"}
+               margin={["0px", "30px", "30px", "30px"]}
             >
                 <Box 
                     width={'100%'}
@@ -113,7 +113,7 @@ export default function Login() {
                     { /* Login Card */ }
                     <Box 
                         marginX={{
-                            base: 5,
+                            base: 0,
                             md: 0
                         }}
                     >

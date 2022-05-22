@@ -26,6 +26,18 @@ const Input = {
     },
 }
 
+const Select = {
+  baseStyle: {
+    field: {
+      background: 'transparent',
+      color: 'gray.700',
+    },
+  },
+  defaultProps: {
+      focusBorderColor: 'brand.50',
+  },
+}
+
 /**
  * Component: Button
  */
@@ -170,7 +182,7 @@ const theme = extendTheme({
         }
       },
     },
-    Select: { baseStyle: { _focus: { boxShadow: 'none' } } },
+    Select,
     Input,
     Steps
   },

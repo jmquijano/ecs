@@ -3,6 +3,7 @@ import { ApiBaseUrl } from "./urlbase";
 const { Applicant } = ApiBaseUrl;
 
 const fetchCertificateType = () => {
+    
     const { url, method, headers } = Applicant?.Basedata?.CertificateType; 
     const _f = fetch(Applicant?.Base + url, {
         method: method,

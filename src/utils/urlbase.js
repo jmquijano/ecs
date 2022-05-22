@@ -169,6 +169,32 @@ const ApiBaseUrl = {
                 }
             }
         },
+        Boundaries: {
+            Province: {
+                url: 'boundaries/province',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            City: {
+                url: 'boundaries/city?parent={parent}',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            Barangay: {
+                url: 'boundaries/barangay?parent={parent}',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        },
         Application: {
             MySubmittedApplication: {
                 url: 'application?limit={limit}&page={page}&paginate={paginate}',
