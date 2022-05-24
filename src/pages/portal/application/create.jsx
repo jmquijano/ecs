@@ -1,4 +1,4 @@
-import { Grid, GridItem, Container, Heading, Text, Button, Stack, Box, FormControl, Input, FormLabel, FormErrorMessage, Select, Divider, Modal, ModalOverlay, ModalContent, Center } from "@chakra-ui/react"
+import { Grid, GridItem, Container, Heading, Text, Button, Stack, Box, FormControl, Input, FormLabel, FormErrorMessage, Select, Divider, Modal, ModalOverlay, ModalContent, Center, InputGroup, InputRightElement } from "@chakra-ui/react"
 import { Fragment, useEffect, useState } from "react"
 import { BiArrowToLeft, BiCaretRight, BiChevronLeft, BiPlus } from "react-icons/bi"
 import { Link } from "react-router-dom"
@@ -81,10 +81,19 @@ function BusinessInformation ({props}) {
         initialValues: formValues,
         validationSchema: validationSchema,
         onSubmit: formikSubmitHandler,
+        dirty: true,
         enableReinitialize: true
     });
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({
+        general: false,
+        field: {
+            businessType: false,
+            province: false,
+            city: false,
+            barangay: false
+        }
+    });
     
     const [certificateType, setCertificateType] = useState();
     const [businessType, setBusinessType] = useState([]);
@@ -133,7 +142,13 @@ function BusinessInformation ({props}) {
             });
 
         fetchProvince(() => {
-            setLoading(true);
+            setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    province: true
+                }
+            });
         })
             .then(res => res.json())
             .then(res => {
@@ -152,8 +167,20 @@ function BusinessInformation ({props}) {
                     }
                 }
             })
-            .finally(e => setLoading(false));
+            .finally(e => 
+                setLoading({
+                    ...loading,
+                    field: {
+                        ...loading?.field,
+                        province: false
+                    }
+                })    
+            );
     }, []);
+
+    useEffect(() => {
+        console.log(pinMap);
+    }, [pinMap]);
 
     const handleBusinessTypeChange = async (e) => {
         let _id = e?.target?.value;
@@ -161,11 +188,20 @@ function BusinessInformation ({props}) {
         setSelectedBusinessType(_f[0]);
     }
     
-    const handleProvinceChange = async (e) => {
+    const handleProvinceChange = async (e, form) => {
         let _id = e?.target?.value ?? e;
 
+        // Set Field Value
+        formikInit?.setFieldValue('province', parseInt(_id));
+
         fetchCity(_id, () => {
-            setLoading(true);
+            setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    city: true
+                }
+            })    
         })
         .then(res => res.json())
         .then(res => {
@@ -184,14 +220,31 @@ function BusinessInformation ({props}) {
                 }
             }
         })
-        .finally(e => setLoading(false));
+        .finally(e => 
+            setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    city: false
+                }
+            })        
+        );
     }
 
     const handleCityChange = async (e) => {
         let _id = e?.target?.value ?? e;
 
+        // Set Field Value
+        formikInit?.setFieldValue('city', parseInt(_id));
+
         fetchBarangay(_id, () => {
-            setLoading(true);
+            setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    barangay: true
+                }
+            })    
         })
         .then(res => res.json())
         .then(res => {
@@ -210,11 +263,22 @@ function BusinessInformation ({props}) {
                 }
             }
         })
-        .finally(e => setLoading(false));
+        .finally(e => 
+            setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    barangay: false
+                }
+            })        
+        );
     }
 
     const handleBarangayChange = async (e) => {
         let _id = e?.target?.value ?? e;
+
+        // Set Field Value
+        formikInit?.setFieldValue('barangay', parseInt(_id));
 
         // Search Barangay
         const searchBarangay= barangay?.filter(x => x.id == e);
@@ -222,21 +286,21 @@ function BusinessInformation ({props}) {
         if (searchBarangay[0].path[0]) {
 
             if ("geolocation" in navigator) {
-                console.log("Available");
+                // console.log("Available");
             } else {
-                console.log("Not Available");
+                // console.log("Not Available");
             }
-
-            console.log(locateMe);
 
             const coordinates = {
                 lng: locateMe?.lng ?? parseFloat(searchBarangay[0].path[0]?.lng),
-                lat: locateMe?.lat ?? parseFloat(searchBarangay[0].path[0]?.lat),
-                zoom: 15
+                lat: locateMe?.lat ?? parseFloat(searchBarangay[0].path[0]?.lat)
             };
 
             // console.log(coordinates);
-            setFocusMap(coordinates);
+            setFocusMap({
+                ...coordinates,
+                zoom: 15
+            });
             setPinMap(coordinates);
         }
     }
@@ -244,7 +308,7 @@ function BusinessInformation ({props}) {
 
     return (
         <Fragment>
-            <Modal isOpen={loading} isCentered bg={'transparent'}>
+            <Modal isOpen={loading?.general} isCentered bg={'transparent'}>
                 <ModalOverlay 
                     bg='blackAlpha.500'
                 />
@@ -258,7 +322,7 @@ function BusinessInformation ({props}) {
                     
                 </ModalContent>
             </Modal>
-            <Box px={[5, 5, 5, 10]} pt={5} pb={10} height={'100%'}>
+            <Box px={[0, 5, 5, 10]} pt={[0, 5, 5, 5]} pb={10} height={'100%'}>
                 <FormikProvider value={formikInit}>
                     <Form>
                         <Grid 
@@ -266,6 +330,17 @@ function BusinessInformation ({props}) {
                             width={'100%'} 
                             gap={4}
                         >
+                            <GridItem 
+                                colSpan={12} 
+                                mt={4}
+                            >
+                                <Text
+                                    fontSize={12}
+                                >
+                                    Fields with asterisk (<Text color={'red'} display={'inline'}>*</Text>) are mandatory fields and shouldn't be left empty.
+                                </Text>
+                            </GridItem>
+
                             {/** 
                              * Primary Business Information
                              */}
@@ -519,7 +594,6 @@ function BusinessInformation ({props}) {
                                 </Field>
                             </GridItem>
                             
-                            
                             {
                             /**
                              * Business Location
@@ -547,6 +621,8 @@ function BusinessInformation ({props}) {
                                         fontSize={13}
                                         fontWeight={600}
                                         borderBottomRadius={'8px'}
+                                        textAlign={['center', 'center', 'left', 'left']}
+                                        width={['100%', '100%', 'auto', 'auto']}
                                     >
                                         Business Address
                                     </Text>
@@ -555,7 +631,7 @@ function BusinessInformation ({props}) {
                             </GridItem>
                             : ''
                             }
-                            {/* Province */}
+                            {/* PSGC Province */}
                             {selectedBusinessType?.id >= 1 ?
                             <GridItem colSpan={[12, 12, 4, 4]}>
                                 <Field 
@@ -577,16 +653,28 @@ function BusinessInformation ({props}) {
                                                 openOnFocus 
                                                 onChange={handleProvinceChange}
                                             >
-                                                <AutoCompleteInput
-                                                    fontSize={12}
-                                                    disabled={
-                                                        province.length <= 0 ? true : false
-                                                    }
-                                                    cursor={
-                                                        province.length <= 0 ? 'progress' : 'pointer'
-                                                    }
-                                                    variant={province.length <= 0 ? 'filled' : 'outline'}
-                                                />
+                                                <Stack direction={'row'}>
+                                                    <InputGroup>
+                                                        <AutoCompleteInput
+                                                            autoComplete="no"
+                                                            fontSize={12}
+                                                            disabled={
+                                                                province.length <= 0 ? true : false
+                                                            }
+                                                            cursor={
+                                                                province.length <= 0 ? 'progress' : 'pointer'
+                                                            }
+                                                            variant={province.length <= 0 ? 'filled' : 'outline'}
+                                                        />
+                                                        {
+                                                            loading?.field?.province ?
+                                                            <InputRightElement children={<Loader.Default size={'md'} thickness={'3px'} />} />
+                                                            :
+                                                            ''
+                                                        }
+                                                    </InputGroup>
+                                                </Stack>
+                                                
                                                 <AutoCompleteList
                                                     mt={1}
                                                 >
@@ -622,7 +710,7 @@ function BusinessInformation ({props}) {
                             : ''
                             }
 
-                            {/* City */}
+                            {/* PSGC City */}
                             {selectedBusinessType?.id >= 1 ?
                             <GridItem colSpan={[12, 12, 4, 4]}>
                                 <Field 
@@ -644,16 +732,27 @@ function BusinessInformation ({props}) {
                                                 openOnFocus 
                                                 onChange={handleCityChange}
                                             >
-                                                <AutoCompleteInput
-                                                    fontSize={12}
-                                                    disabled={
-                                                        city.length <= 0 ? true : false
-                                                    }
-                                                    cursor={
-                                                        city.length <= 0 ? 'progress' : 'pointer'
-                                                    }
-                                                    variant={city.length <= 0 ? 'filled' : 'outline'}
-                                                />
+                                                <Stack direction={'row'}>
+                                                    <InputGroup>
+                                                        <AutoCompleteInput
+                                                            fontSize={12}
+                                                            disabled={
+                                                                city.length <= 0 ? true : false
+                                                            }
+                                                            cursor={
+                                                                city.length <= 0 ? 'progress' : 'pointer'
+                                                            }
+                                                            variant={city.length <= 0 ? 'filled' : 'outline'}
+                                                        />
+                                                        {
+                                                            loading?.field?.city ?
+                                                            <InputRightElement children={<Loader.Default size={'md'} thickness={'3px'} />} />
+                                                            :
+                                                            ''
+                                                        }
+                                                    </InputGroup>
+                                                </Stack>
+                                                
                                                 <AutoCompleteList
                                                     mt={1}
                                                 >
@@ -689,7 +788,7 @@ function BusinessInformation ({props}) {
                             : ''
                             }
 
-                            {/* Barangay */}
+                            {/* PSGC Barangay */}
                             {selectedBusinessType?.id >= 1 ?
                             <GridItem colSpan={[12, 12, 4, 4]}>
                                 <Field 
@@ -711,16 +810,27 @@ function BusinessInformation ({props}) {
                                                 openOnFocus 
                                                 onChange={handleBarangayChange}
                                             >
-                                                <AutoCompleteInput
-                                                    fontSize={12}
-                                                    disabled={
-                                                        barangay.length <= 0 ? true : false
-                                                    }
-                                                    cursor={
-                                                        barangay.length <= 0 ? 'progress' : 'pointer'
-                                                    }
-                                                    variant={barangay.length <= 0 ? 'filled' : 'outline'}
-                                                />
+                                                <Stack direction={'row'}>
+                                                    <InputGroup>
+                                                        <AutoCompleteInput
+                                                            fontSize={12}
+                                                            disabled={
+                                                                barangay.length <= 0 ? true : false
+                                                            }
+                                                            cursor={
+                                                                barangay.length <= 0 ? 'progress' : 'pointer'
+                                                            }
+                                                            variant={barangay.length <= 0 ? 'filled' : 'outline'}
+                                                        />
+                                                        {
+                                                            loading?.field?.barangay ?
+                                                            <InputRightElement children={<Loader.Default size={'md'} thickness={'3px'} />} />
+                                                            :
+                                                            ''
+                                                        }
+                                                    </InputGroup>
+                                                </Stack>
+
                                                 <AutoCompleteList
                                                     mt={1}
                                                 >
@@ -756,6 +866,151 @@ function BusinessInformation ({props}) {
                             : ''
                             }
 
+                            {/* Room or Door */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 4, 4]}>
+                                <Field 
+                                    name='address.room'
+                                >
+                                    {({ values, field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors['address.room'] && form.touched?.address?.room} 
+                                            isRequired
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'address.room'}
+                                                fontSize={12}
+                                            >
+                                                Room / Door
+                                                
+                                            </FormLabel>
+                                            <Input 
+                                                {...field} 
+                                                autoComplete={'off'}
+                                                id='address.room' 
+                                                placeholder='' 
+                                                fontSize={13}
+                                                disabled={
+                                                    form?.values?.barangay == null
+                                                }
+                                                variant={form?.values?.barangay == null ? 'filled' : 'outline'}
+                                                
+                                            />
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors['address.room'] instanceof Map ? form.errors['address.room'].map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors['address.room']
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
+
+                            {/* Building */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 4, 4]}>
+                                <Field 
+                                    name='address.building'
+                                >
+                                    {({ values, field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors['address.building'] && form.touched?.address?.building} 
+                                            isRequired
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'address.building'}
+                                                fontSize={12}
+                                            >
+                                                Building
+                                                
+                                            </FormLabel>
+                                            <Input 
+                                                {...field} 
+                                                autoComplete={'off'}
+                                                id='address.room' 
+                                                placeholder='' 
+                                                fontSize={13}
+                                                disabled={
+                                                    form?.values?.barangay == null
+                                                }
+                                                variant={form?.values?.barangay == null ? 'filled' : 'outline'}
+                                                
+                                            />
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors['address.room'] instanceof Map ? form.errors['address.room'].map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors['address.room']
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
+
+                            {/* Street */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 4, 4]}>
+                                <Field 
+                                    name='address.street'
+                                >
+                                    {({ values, field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors['address.street'] && form.touched?.address?.street} 
+                                            isRequired
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'address.street'}
+                                                fontSize={12}
+                                            >
+                                                Street
+                                                
+                                            </FormLabel>
+                                            <Input 
+                                                {...field} 
+                                                autoComplete={'off'}
+                                                id='address.street' 
+                                                placeholder='' 
+                                                fontSize={13}
+                                                disabled={
+                                                    form?.values?.barangay == null
+                                                }
+                                                variant={form?.values?.barangay == null ? 'filled' : 'outline'}
+                                                
+                                            />
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors['address.street'] instanceof Map ? form.errors['address.street'].map((d, i) => {
+                                                        return d;
+                                                    }) : form?.errors['address.street']
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
+                            
+
                             {/* Map */}
                             {selectedBusinessType?.id >= 1 ? 
                             <GridItem colSpan={[12, 12, 12, 12]}>
@@ -778,7 +1033,17 @@ function BusinessInformation ({props}) {
                                             onChange={(e) => setPinMap(e)}
                                         />
                                     </Maps>
+
+                                    
                                 </Box>
+
+                                <Text 
+                                    mt={2}
+                                    fontSize={12} 
+                                    color={'red.500'}
+                                >
+                                    REMINDER: <b>Pin the map according to your exact location.</b>
+                                </Text>
                                 
                             </GridItem>
                             : ''
@@ -1153,6 +1418,7 @@ export default function CreateApplication () {
             <Container 
                 maxWidth={'1200px'}
                 py={[5, 5, 5, 5, 10]}
+                
             >
                 <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={[2, 5, 10, 10]}>
                     <GridItem 
@@ -1180,7 +1446,7 @@ export default function CreateApplication () {
                                 textAlign: 'right'
                             }}>
                                 <Button 
-                                    width={['100%', 'auto', 'auto', 'auto']}
+                                    width={['100%', '100%', 'auto', 'auto']}
                                     my={[3, 0, 0, 0]}
                                     colorScheme={'brand.200'} 
                                     variant={'outline'}
@@ -1192,7 +1458,7 @@ export default function CreateApplication () {
                                 >
                                     <BiChevronLeft fontSize={25} />
                                     <Text ml={0}>
-                                        Back to My Application
+                                        Go Back
                                     </Text>
                                 </Button>
                             </Link>
@@ -1203,12 +1469,12 @@ export default function CreateApplication () {
                 <Box
                     bg={'white'}
                     width={'100%'}
-                    minHeight={'60vh'}
                     borderRadius={10}
                     border={'1px solid'}
                     borderColor={'gray.200'}
                     mt={5}
                     overflowX={'auto'}
+                    shadow={'xl'}
                 >
                     <Stack 
                         direction={'column'}
