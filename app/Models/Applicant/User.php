@@ -1,13 +1,29 @@
 <?php 
-/**
- * app/Models/Applicant/User.php
- * @author jmquijano
- */
 namespace App\Models\Applicant;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * Applicant Users
+ * @package App\Models\Applicant
+ * 
+ * @table applicant_user
+ * @primarykey id
+ * 
+ * @fillable (string) username
+ * @fillable (string) password - BCrypt Hash Value
+ * @fillable (string) firtname
+ * @fillable (string) middlename
+ * @fillable (string) lastname
+ * @fillable (string) emailaddress 
+ * @fillable (string) salutation
+ * @fillable (bool) is_active
+ * @fillable (bool) is_emailaddress_verified
+ * @fillable (bool) is_mobilenumber_verified
+ * @fillable (bool) is_mfa_enabled
+ * @fillable (timestamptz) last_password_change
+ */
 class User extends Model {
     protected $table = 'applicant_user';
     protected $primaryKey = 'id';

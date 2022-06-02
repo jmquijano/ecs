@@ -6,8 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Basedata\CertificateType as BasedataCertificateType;
 use Illuminate\Http\Request;
 
+/**
+ * Certificate Type
+ * @package App\Http\Controllers\Basedata
+ */
 class CertificateType extends Controller
 {
+    /**
+     * Get Certificate Types
+     * 
+     * @param Request $req
+     * 
+     * @return mixed
+     */
     public function getAll(Request $req) {
         try {
             // Query

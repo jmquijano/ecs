@@ -17,12 +17,20 @@ use App\Models\Applicant\User\SessionTokens as ApplicantSessionToken;
 use App\Core\Utilities\Http\ClientRequestFootprint;
 use Carbon\Carbon;
 
+/**
+ * Token Creation and Token Revocation.
+ * 
+ * @package App\Http\Controllers\Applicant\Auth
+ */
 class Token extends Controller {
     /**
      * Login
      * 
+     * @route:post /auth/token
+     * 
      * @param LoginRequest $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function Login(LoginRequest $req) {
         try {
@@ -90,8 +98,11 @@ class Token extends Controller {
     /**
      * Get Token Information
      * 
+     * @route:get /auth/token
+     * 
      * @param Request $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function GetTokenInfo(Request $req) {
         try {
@@ -109,45 +120,50 @@ class Token extends Controller {
     }
 
     /**
-     * Logout
-     * Revokes the token to prevent token misuse.
+     * Logout - Revokes the token to prevent token misuse.
+     * Apart from client-side token removal, invalidating the token's JTI on the backend can be useful.
+     * 
+     * @route:post /auth/logout
+     * @route:get /auth/logout
      * 
      * @param Request $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function Logout(Request $req) {
         try {
             // Initialize Exception Model
             $exception = new ExceptionModel();
 
+            // If request method is POST, use the value passed on the post request parameter "access_token". 
             if (strtolower($req->method()) == 'post') {
-                // Parse token by using Post Request
                 $token = (new Jwt())->parseByParam($req->input('access_token', ''));
-                
-                
-            } else {
-                // Parse token by using Authorization Header
+            } 
+            // If request method is GET, use the value passed on the Authorization header.
+            else {
                 $token = (new Jwt())->parse($req);
             }
             
+            // Get the "jti" value in token
             $jti = $token['jti'] ?? null;
 
-            // Find JTI from SessionToken
+            // Find the "jti" from SessionToken
             $findJti = ApplicantSessionToken::query()->where('jti', '=', $jti);
 
-            // (ERROR) JTI couldn't be found.
+            // Count the "jti" in $findJti, if the integer result was 0 then return an error response.
             if ($findJti->count() <= 0) {
                 return response()->error(400, $exception->getMessageString('AT006A'));
                 die();
             }
 
-            // (ERROR) Token has already been revoked.
+            // If the boolean attribute value of "is_revoked" is True then return an error message since the token has already been revoked.
             if ($findJti->get()->first()->is_revoked) {
                 return response()->error(400, $exception->getMessageString('AT006B'));
                 die();
             }
 
-            // (SUCCESS)
+            // Update the boolean attribute value "is_revoked" into True. 
+            // Next time if the revoked token was tried to be used again the middleware will not accept the token.
             $findJti->update([
                 'is_revoked' => true
             ]);
@@ -160,6 +176,15 @@ class Token extends Controller {
         }
     }
 
+    /**
+     * Validate Token
+     * 
+     * @route:get /auth/token/validate
+     * 
+     * @param Request $req
+     * 
+     * @return mixed
+     */
     public function ValidateToken(Request $req) {
         try {
             return response()->success(200, 'Token is valid');

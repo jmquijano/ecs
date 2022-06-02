@@ -8,6 +8,10 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Core\Exception\Models\ExceptionModel;
 use Illuminate\Http\Request;
 
+/**
+ * Change Email Request
+ * @package App\Http\Requests\Applicant\User
+ */
 class ChangeEmailRequest extends FormRequest
 {
     /**

@@ -5,6 +5,18 @@ namespace App\Models\FiledApplication;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Uploaded Files
+ * @package App\Models\FiledApplication
+ * 
+ * @table filedapplication_uploadedfiles
+ * @primarykey id
+ * 
+ * @fillable (int) filedapplication
+ * @fillable (int) doctype
+ * @fillable (json) context
+ * @fillable (json) created_by
+ */
 class UploadedFiles extends Model
 {
     protected $table = 'filedapplication_uploadedfiles';
@@ -14,8 +26,8 @@ class UploadedFiles extends Model
     const UPDATED_AT = null;
 
     protected $fillable = [
-        'filedapplication_id',
-        'doctype_id',
+        'filedapplication',
+        'doctype',
         'context',
         'created_by'
     ];

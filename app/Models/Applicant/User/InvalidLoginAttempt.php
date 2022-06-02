@@ -5,6 +5,17 @@ namespace App\Models\Applicant\User;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Invalid Login Attempt
+ * @package App\Models\Applicant\User
+ * 
+ * @table applicant_user_invalidloginattempt
+ * @primarykey id
+ * 
+ * @fillable (int) applicant_user_id
+ * @fillable (json) footprint
+ * @fillable (bool) is_notified
+ */
 class InvalidLoginAttempt extends Model {
     protected $table = 'applicant_user_invalidloginattempt';
     protected $primaryKey = 'id';
@@ -28,6 +39,7 @@ class InvalidLoginAttempt extends Model {
      * @param int $applicant_user_id
      * @param mixed $footprint
      * @param bool $is_notified
+     * 
      * @return bool
      */
     public function store(int $applicant_user_id, mixed $footprint) {

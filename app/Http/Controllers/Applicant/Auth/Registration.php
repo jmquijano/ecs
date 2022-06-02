@@ -1,9 +1,4 @@
 <?php
-/**
- * @package App\Http\Controllers\Applicant\Auth
- * @author jmquijano
- */
-
 namespace App\Http\Controllers\Applicant\Auth;
 
 use App\Core\Exception\Models\ExceptionModel;
@@ -34,7 +29,10 @@ use App\Models\OTP as ModelsOTP;
 use App\Trait\ContactChannelFormatTrait;
 use Carbon\Carbon;
 
-
+/**
+ * Registration
+ * @package App\Http\Controllers\Applicant\Auth
+ */
 class Registration extends Controller {
     use ContactChannelFormatTrait;
 
@@ -49,6 +47,7 @@ class Registration extends Controller {
      * 
      * @param string $recipient
      * @param string $code
+     * 
      * @return void
      */
     private function SendActivationCodeViaSMS(string $recipient, string $code) : void 
@@ -68,6 +67,7 @@ class Registration extends Controller {
      * @param string $email
      * @param string $name
      * @param array $merge
+     * 
      * @return void
      */
     private function SendActivationCodeViaEmail(string $email, string $name, array $merge) : void 
@@ -98,7 +98,8 @@ class Registration extends Controller {
      * Registration
      * 
      * @param RegistrationRequest $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function Register(RegistrationRequest $req) {
         try {
@@ -221,7 +222,8 @@ class Registration extends Controller {
      * Mobile phone number verification.
      * 
      * @param OtpVerificationRequest $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function VerifySms(OtpVerificationRequest $req) {
         try {
@@ -299,7 +301,8 @@ class Registration extends Controller {
      * Email address verification
      * 
      * @param OtpVerificationRequest $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function VerifyEmail(OtpVerificationRequest $req) {
         try {
@@ -378,7 +381,8 @@ class Registration extends Controller {
      * Resend activation SMS
      * 
      * @param Request $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function ResendSms(Request $req) {
         try {
@@ -469,7 +473,8 @@ class Registration extends Controller {
      * Resend Email
      * 
      * @param Request $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function ResendEmail(Request $req) {
         try {
@@ -565,7 +570,8 @@ class Registration extends Controller {
      * Check if token was issued during Registration process
      * 
      * @param Request $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function IsTokenRegistration(Request $req) {
         try {
@@ -584,6 +590,8 @@ class Registration extends Controller {
 
     /**
      * Get SMS Resend Interval
+     * 
+     * @param int $userid
      * 
      * @return int
      */
@@ -637,6 +645,8 @@ class Registration extends Controller {
     /**
      * Get Email Resend Interval
      * 
+     * @param int $userid
+     * 
      * @return int
      */
     protected function GetEmailResendInterval(int $userid) : int {
@@ -688,7 +698,8 @@ class Registration extends Controller {
      * Check verification statuses of mobile number and email address
      * 
      * @param Request $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function CheckVerificationStatus(Request $req) {
         try {
@@ -718,7 +729,8 @@ class Registration extends Controller {
      * Parameter Check
      * 
      * @param ParameterCheckRequest $req
-     * @return response()
+     * 
+     * @return mixed
      */
     public function ParameterCheck(ParameterCheckRequest $req) {
         try {

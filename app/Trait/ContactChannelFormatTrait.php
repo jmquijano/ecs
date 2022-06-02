@@ -1,8 +1,4 @@
 <?php 
-/**
- * app/Trait/ContactChannelFormatTrait.php 
- * @author jmquijano
- */
 namespace App\Trait;
 
 trait ContactChannelFormatTrait {

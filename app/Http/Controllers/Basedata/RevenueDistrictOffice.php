@@ -6,8 +6,17 @@ namespace App\Http\Controllers\Basedata;
 use App\Http\Controllers\Controller;
 use App\Models\Basedata\RevenueDistrictOffice as BasedataRevenueDistrictOffice;
 
+/**
+ * Revenue District Office (BIR)
+ * @package App\Http\Controllers\Basedata
+ */
 class RevenueDistrictOffice extends Controller {
-    public function Get()
+    /**
+     * Get all RDO
+     * 
+     * @return mixed
+     */
+    public function get()
     {
         try {
             $fetch = BasedataRevenueDistrictOffice::all()->makeHidden(['isactive']);

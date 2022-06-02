@@ -3,14 +3,15 @@
 namespace App\Rules\BasedataCheck;
 
 use App\Core\Exception\Models\ExceptionModel;
-use App\Models\Basedata\CertificateType as BasedataCertificateType;
+use App\Models\Basedata\InspectionType as BasedataInspectionType;
 use Illuminate\Contracts\Validation\Rule;
 
+
 /**
- * Certificate Type
+ * Inspection Type Rule
  * @package App\Rules\BasedataCheck
  */
-class CertificateType implements Rule
+class InspectionType implements Rule
 {
     protected string $message;
 
@@ -33,8 +34,8 @@ class CertificateType implements Rule
      */
     public function passes($attribute, $value)
     {
-        // Find Certificate Type
-        $find = BasedataCertificateType::query()->find($value);
+        // Find Inspection Type
+        $find = BasedataInspectionType::query()->find($value);
 
         // Set bool
         $status = ($find == null ? false : true);
@@ -45,7 +46,7 @@ class CertificateType implements Rule
         $this->message = (
             $status ?
             '' :
-            $exception->getMessageString('AP001C', ['FieldName' => 'Certificate Type'])
+            $exception->getMessageString('AP001C', ['FieldName' => 'Inspection Type'])
         );
 
         return $status;

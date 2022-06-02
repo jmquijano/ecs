@@ -7,6 +7,21 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * OTP Requests
+ * @package App\Models\OTP
+ * 
+ * @table otp_requests
+ * @primarykey id
+ * 
+ * @fillable (json) initiator
+ * @fillable (int) otp
+ * @fillable (int) transactiontype
+ * @fillable (string) transaction_reference_number
+ * @fillable (timestamptz) created_at
+ * @fillable (timestamptz) expires_at
+ * @fillable (bool) is_revoked
+ */
 class Requests extends Model
 {
     protected $table = 'otp_requests';
@@ -27,6 +42,8 @@ class Requests extends Model
 
     /**
      * Generate Reference Number
+     * 
+     * @param mixed $prefix
      * 
      * @return string
      */
@@ -53,6 +70,13 @@ class Requests extends Model
         );
     }
 
+    /**
+     * Get Transaction Type
+     * 
+     * @param string|int $transaction_type
+     * 
+     * @return mixed
+     */
     private function getTransactionType(string|int $transaction_type) {
         // Lookup Transaction Type
         $transaction = new TransactionType();
@@ -65,6 +89,14 @@ class Requests extends Model
         return $transaction;
     }
 
+    /**
+     * Find Matching Valid OTP Request
+     * 
+     * @param string|int $transaction_type
+     * @param array $initiator
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function findMatchingValidRequest(string|int $transaction_type, array $initiator) {
         $transaction = $this->getTransactionType($transaction_type);
 
@@ -80,6 +112,14 @@ class Requests extends Model
         return $find;
     }
 
+    /**
+     * Create New OTP Request
+     * 
+     * @param string|int $transaction_type
+     * @param array $initiator
+     * 
+     * @return mixed
+     */
     public function createNew(string|int $transaction_type, array $initiator) {
         $transaction = $this->getTransactionType($transaction_type);
 

@@ -6,6 +6,10 @@ use App\Core\Exception\Models\ExceptionModel;
 use App\Models\Boundaries\PSGC;
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Barangay PSGC Check Rule
+ * @package App\Rules\PSGCCheck
+ */
 class Barangay implements Rule
 {
     protected string $message;

@@ -7,6 +7,10 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Core\Exception\Models\ExceptionModel;
 
+/**
+ * Change Mobile Number Confirm Request
+ * @package App\Http\Requests\Applicant\User
+ */
 class ChangeMobileNumberConfirmRequest extends FormRequest
 {
     /**

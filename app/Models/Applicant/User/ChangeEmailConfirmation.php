@@ -4,6 +4,19 @@ namespace App\Models\Applicant\User;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Change Email Confirmation
+ * @package App\Models\Applicant\User
+ * 
+ * @table applicant_user_changeemailconfirmation
+ * @primarykey id
+ * 
+ * @fillable (int) applicant_user_id
+ * @fillable (string) emailaddress
+ * @fillable (int) otp_id
+ * @fillable (bool) is_confirmed
+ * @fillable (timestamptz) expires_at
+ */
 class ChangeEmailConfirmation extends Model
 {
     protected $table = 'applicant_user_changeemailconfirmation';

@@ -38,6 +38,7 @@ Route::prefix('basedata')->group(function () {
      */
     Route::prefix('psic')->group(function () {
         Route::get('/', [PSIC::class, 'GetWithSearch']);
+        Route::get('/{id}', [PSIC::class, 'getById']);
     });
 
     /**
@@ -126,9 +127,9 @@ Route::prefix('user')->group(function () {
 /**
  * Dashboard Widgets Endpoints
  */
-Route::prefix('dashboard/widget')->group(function () {
+Route::prefix('dashboard')->group(function () {
     // Counter
-    Route::get('/counter', [Dashboard::class, 'WidgetCounter'])->middleware(['authguard.applicant']);
+    Route::get('/widget/counter', [Dashboard::class, 'WidgetCounter'])->middleware(['authguard.applicant']);
 });
 
 /**
@@ -160,6 +161,7 @@ Route::prefix('application')->middleware(['authguard.applicant'])->group(functio
 /**
  * Tests
  */
+/*
 Route::prefix('test')->group(function () {
     Route::post('/sms', function (Request $req) {
         // SMS
@@ -178,4 +180,4 @@ Route::prefix('test')->group(function () {
 
         
     });
-});
+}); */

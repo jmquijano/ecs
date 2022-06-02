@@ -8,6 +8,10 @@ use App\Trait\ContactChannelFormatTrait;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * Registration Request
+ * @package App\Http\Requests\Applicant\Auth\Register
+ */
 class RegistrationRequest extends FormRequest
 {
     use ContactChannelFormatTrait;

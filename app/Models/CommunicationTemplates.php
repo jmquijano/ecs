@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use App\Core\Utilities\Communication\ShortMessagingService as SmsUtility;
 
-
+/**
+ * SMS and Email Templates.
+ * This is use for various communication such as OTP, Notification, etc.
+ * @package App\Models
+ * 
+ * @table core_communicationtemplates
+ * @primarykey id
+ */
 class CommunicationTemplates extends Model
 {
     protected $table = 'core_communicationtemplates';
@@ -21,6 +28,8 @@ class CommunicationTemplates extends Model
      * 
      * @param string|int $template_id
      * @param array $param
+     * 
+     * @return void
      */
     public function sendSms(
         string|int $template_id, 
@@ -59,6 +68,8 @@ class CommunicationTemplates extends Model
      * 
      * @param string|int $template_id
      * @param array $param
+     * 
+     * @return bool
      */
     public function sendEmail(
         string|int $template_id, 

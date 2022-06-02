@@ -5,6 +5,7 @@ namespace App\Http\Requests\Applicant\Application;
 use App\Core\Exception\Models\ExceptionModel;
 use App\Rules\BasedataCheck\BusinessType;
 use App\Rules\BasedataCheck\CertificateType;
+use App\Rules\BasedataCheck\InspectionType;
 use App\Rules\PSGCCheck\Barangay;
 use App\Rules\PSGCCheck\City;
 use App\Rules\PSGCCheck\Province;
@@ -12,6 +13,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * Create Request
+ * @package App\Http\Requests\Applicant\Application
+ */
 class CreateRequest extends FormRequest
 {
     /**
@@ -41,6 +46,10 @@ class CreateRequest extends FormRequest
             'geomap' => ['required'],
             'geomap.longitude' => ['required'],
             'geomap.latitude' => ['required'],
+            'address.room' => ['nullable'],
+            'address.building' => ['nullable'],
+            'address.street' => ['required'],
+            'address.landmark' => ['nullable'],
             'other' => [],
             'businesstype' => ['required', new BusinessType()],
             'certificatetype' => ['required', new CertificateType()],
@@ -50,8 +59,16 @@ class CreateRequest extends FormRequest
             'other.sec_registration_number' => ['nullable'],
             'other.date_of_birth' => ['nullable'],
             'other.date_of_incorporation' => ['nullable', 'same:other.date_of_birth'],
+            'other.cda_registration_number' => ['nullable'],
+            'other.cda_registration_date' => ['nullable'],
+            'other.dti_registration_number' => ['nullable'],
+            'other.dti_registration_date' => ['nullable'],
             'businessline' => ['required', 'array', 'exists:basedata_psic,id'],
-            'businessline.*' => ['distinct']
+            'businessline.*' => ['distinct'],
+            'draftmode' => ['boolean'],
+            'preferred_inspectiontype' => ['required', new InspectionType()],
+            'preferred_iinspectionschedule.day' => ['nullable'],
+            'preferred_iinspectionschedule.time' => ['nullable']
         ];
     }
 
@@ -71,12 +88,16 @@ class CreateRequest extends FormRequest
             'geomap.required' => $exception->getMessageString('AP001B'),
             'geomap.longitude.required' => $exception->getMessageString('AP001E', ['FieldName' => 'Longitude']),
             'geomap.latitude.required' => $exception->getMessageString('AP001E', ['FieldName' => 'Latitude']),
+            'address.street.required' => $exception->getMessageString('AP001A', ['FieldName' => 'Street Address']),
             'businesstype.required' => $exception->getMessageString('AP001A', ['FieldName' => 'Business Type']),
             'certificatetype.required' => $exception->getMessageString('AP001A', ['FieldName' => 'Certificate Type']),
             'businessline.required' => $exception->getMessageString('AP001F', ['Count' => '1']),
             'businessline.exists' => $exception->getMessageString('AP001G'),
             'businessline.*.distinct' => $exception->getMessageString('AP001H'),
-            'other.rdo_code.exists' => $exception->getMessageString('AP001I')
+            'other.rdo_code.exists' => $exception->getMessageString('AP001I'),
+            'draftmode.boolean' => $exception->getMessageString('AP001J'),
+            'preferred_inspectiontype' => $exception->getMessageString('AP001A', ['FieldName' => 'Inspection Type']),
+
         ];
     }
 

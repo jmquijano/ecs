@@ -6,6 +6,10 @@ use App\Core\Exception\Models\ExceptionModel;
 use App\Models\Applicant\User as ApplicantUser;
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Applicant User Identifier Must Exist Rule
+ * @package App\Rules
+ */
 class ApplicantUserIdentifierMustExist implements Rule
 {
     /**

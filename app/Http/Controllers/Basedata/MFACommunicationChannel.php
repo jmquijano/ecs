@@ -6,8 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\MFACommunicationChannel as ModelsMFACommunicationChannel;
 use Illuminate\Http\Request;
 
+/**
+ * Multi-Factor Authentication (MFA) Communication Channel
+ * @package App\Http\Controllers\Basedata
+ * 
+ * @route:prefix /mfa-channels
+ */
 class MFACommunicationChannel extends Controller
 {
+    /**
+     * Get MFA Channels which are active within the system.
+     * 
+     * @route:get /
+     * 
+     * @param Request $req
+     * 
+     * @return mixed
+     */
     public function getActiveChannels(Request $req) {
         try {
             // Find

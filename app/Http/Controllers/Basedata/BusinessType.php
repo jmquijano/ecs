@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Basedata\BusinessType as BasedataBusinessType;
 use Illuminate\Http\Request;
 
+/**
+ * Business Type
+ * @package App\Http\Controllers\Basedata
+ */
 class BusinessType extends Controller
 {
     public function getAll(Request $req) {

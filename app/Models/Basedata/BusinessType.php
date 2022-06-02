@@ -5,6 +5,14 @@ namespace App\Models\Basedata;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * Business Type
+ * @package App\Models\Basedata
+ * 
+ * @table basedata_businesstype
+ * @primarykey id
+ * 
+ */
 class BusinessType extends Model
 {
     protected $table = 'basedata_businesstype';

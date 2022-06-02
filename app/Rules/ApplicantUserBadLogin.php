@@ -10,6 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * Applicant User Bad Login Rule
+ * @package App\Rules
+ */
 class ApplicantUserBadLogin implements Rule
 {
     protected string $value;

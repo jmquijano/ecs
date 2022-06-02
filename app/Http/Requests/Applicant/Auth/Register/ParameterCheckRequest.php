@@ -1,8 +1,4 @@
 <?php 
-/**
- * app/Http/Requests/Applicant/Auth/Register/ParameterCheckRequest.php 
- * @author jmquijano
- */
 namespace App\Http\Requests\Applicant\Auth\Register;
 
 use App\Http\Requests\Applicant\Auth\Register\RegistrationRequest;
@@ -11,6 +7,10 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * Registration Parameter Check
+ * @package App\Http\Requests\Applicant\Auth\Register
+ */
 class ParameterCheckRequest extends FormRequest {
     use ContactChannelFormatTrait;
 

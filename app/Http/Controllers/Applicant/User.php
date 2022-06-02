@@ -25,13 +25,20 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\MFACommunicationChannel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * Applicant User
+ * @package App\Http\Controllers\Applicant
+ */
 class User extends Controller {
     /**
      * Get Profile
      * 
+     * @route:get /{id}
+     * 
      * @param Request $req
      * @param int $id
-     * @return response()
+     * 
+     * @return mixed
      */
     public function GetProfile(Request $req, int $id) {
         try {
@@ -60,6 +67,14 @@ class User extends Controller {
         }
     }
 
+    /**
+     * OTP Generation Flow. (Defunct)
+     * 
+     * @param int $mfa_communication_channel
+     * @param mixed $currentUser
+     * @param mixed $otp_request
+     * @param int $template_id
+     */
     protected function otpGenerationFlow(
         $mfa_communication_channel,
         $currentUser,
@@ -86,8 +101,14 @@ class User extends Controller {
     
     /**
      * Change Password
+     * 
+     * @route:put /{id}/password
+     * 
+     * @param ChangePasswordRequest $req
+     * 
+     * @return mixed
      */
-    public function changePassword(ChangePasswordRequest $req) {
+    public function changePassword(ChangePasswordRequest $req, int $id) {
         try {
             // Exception
             $exception = new ExceptionModel();
@@ -95,12 +116,16 @@ class User extends Controller {
             // Initialize ApplicantConfig
             $config = new ApplicantConfig();
 
-            // Current User
+            $user = ApplicantUser::query()->find($id);
+
+            // Check if the parameter value of "id" is the same as the "id" attribute value of Current Authenticated User.
             $currentUser = ApplicantAuthUtility::CurrentUser($req);
+            if ($user->id !== $currentUser->id) {
+                return response()->error('403', 'You do not have enough privilege to make changes on behalf of another user.');
+                die();
+            }
 
-            $user = ApplicantUser::query()->find($currentUser->id);
-
-            // Check Current Password match
+            // Compare current password to the request paramater value "currentpassword".
             $checkPasswordHash = Hash::check($req->currentpassword, $user->password);
             if (!$checkPasswordHash) {
                 return response()->error(
@@ -113,7 +138,7 @@ class User extends Controller {
                 die();
             }
 
-            // Password Recycling
+            // Check if prohibition of password recycling was enabled.
             if ($config->get('prohibitpasswordrecycling:enabled')) {
                 // Get all password history
                 $getChangePasswordHistory = ChangePasswordLog::query()->where(
@@ -131,6 +156,7 @@ class User extends Controller {
                     $matchedPassword[] = (bool) Hash::check($req->newpassword, $changeLog);
                 }
 
+                // If match(es) was/we're found then it will return an error.
                 if (in_array(true, $matchedPassword)) {
                     return response()->error(
                         400,
@@ -143,7 +169,8 @@ class User extends Controller {
                 }
             }
 
-            // Store Old Password
+            // Store old password hash value. 
+            // Password historical reference specifically being used when prohibition of password recycling was enabled.
             $storeOldPassword = ChangePasswordLog::query()->create([
                 'applicant_user_id' => $currentUser->id,
                 'password' => $user->password
@@ -159,16 +186,21 @@ class User extends Controller {
 
             
         } catch (\Exception $e) {
-            return $e;
-            // return response()->error(500, 'An internal server error has occured while changing the password.');
+            return response()->error(500, 'An internal server error has occured while changing the password.');
         }
     }
 
     /**
      * Change Email Address
      * 
+     * @route:post /{id}/emailaddress
+     * 
+     * @param ChangeEmailRequest $req
+     * @param int $id
+     * 
+     * @return mixed
      */
-    public function changeEmail(ChangeEmailRequest $req) {
+    public function changeEmail(ChangeEmailRequest $req, int $id) {
         try {
             // Exception
             $exception = new ExceptionModel();
@@ -179,8 +211,20 @@ class User extends Controller {
             // Communication Template
             $template = new CommunicationTemplates();
 
-            // Current User
+            // Get User Info
+            $user = ApplicantUser::query()->find($id);
+
+            if ($user == null) {
+                return response()->error('404', 'User not found.');
+                die();
+            }
+
+            // Check if the parameter value of "id" is the same as the "id" attribute value of Current Authenticated User.
             $currentUser = ApplicantAuthUtility::CurrentUser($req);
+            if ($user->id !== $currentUser->id) {
+                return response()->error('403', 'You do not have enough privilege to make changes on behalf of another user.');
+                die();
+            }
 
             // Get Communication Channel
             $mfa_communication_channel = MFACommunicationChannel::query()->where([
@@ -220,7 +264,7 @@ class User extends Controller {
             $storeChangeEmail = ChangeEmailConfirmation::query()->create([
                 'otp_id' => $otp['id'],
                 'emailaddress' => $req->emailaddress,
-                'applicant_user_id' => $currentUser->id,
+                'applicant_user_id' => $user->id,
                 'is_confirmed' => false,
                 'expires_at' => $otp['expires_at']
             ]);
@@ -253,6 +297,13 @@ class User extends Controller {
 
     /**
      * Change Email Address Confirmation
+     * 
+     * @route:put /{id}/emailaddress
+     * 
+     * @param ChangeEmailConfirmRequest $req
+     * @param int $id
+     * 
+     * @return mixed
      */
     public function changeEmailConfirm(ChangeEmailConfirmRequest $req, int $id) {
         try {
@@ -343,6 +394,13 @@ class User extends Controller {
 
     /**
      * Change Mobile Number
+     * 
+     * @route:post /{id}/mobilenumber
+     * 
+     * @param ChangeMobileNumberRequest $req
+     * @param int $id
+     * 
+     * @return mixed
      */
     public function changeMobileNumber(ChangeMobileNumberRequest $req, int $id) {
         try {
@@ -355,9 +413,6 @@ class User extends Controller {
             // Communication Template
             $template = new CommunicationTemplates();
 
-            // Current User
-            $currentUser = ApplicantAuthUtility::CurrentUser($req);
-
             // Get User Info
             $user = ApplicantUser::query()->find($id);
 
@@ -366,10 +421,10 @@ class User extends Controller {
                 die();
             }
 
-            // Check Current User
+            // Check if the parameter value of "id" is the same as the "id" attribute value of Current Authenticated User.
             $currentUser = ApplicantAuthUtility::CurrentUser($req);
             if ($user->id !== $currentUser->id) {
-                return response()->error('403', 'You do not have enought privilege to make changes on behalf of another user.');
+                return response()->error('403', 'You do not have enough privilege to make changes on behalf of another user.');
                 die();
             }
 
@@ -411,7 +466,7 @@ class User extends Controller {
             $storeChangeMobileNumber =  ChangeMobileNumberConfirmation::query()->create([
                 'otp_id' => $otp['id'],
                 'mobilenumber' => $req->mobilenumber,
-                'applicant_user_id' => $currentUser->id,
+                'applicant_user_id' => $user->id,
                 'is_confirmed' => false,
                 'expires_at' => $otp['expires_at']
             ]);
@@ -440,6 +495,13 @@ class User extends Controller {
 
     /**
      * Change Mobile Number Confirmation
+     * 
+     * @route:put /{id}/mobilenumber
+     * 
+     * @param ChangeMobileNumberConfirmRequest $req
+     * @param int $id
+     * 
+     * @return mixed
      */
     public function changeMobileNumberConfirm(ChangeMobileNumberConfirmRequest $req, int $id) {
         try {
@@ -530,9 +592,12 @@ class User extends Controller {
     /**
      * Edit Basic Profile Information
      * 
-     * @param Request $req
+     * @route:put /{id}
+     * 
+     * @param EditBasicProfileRequest $req
      * @param int $id
-     * @return response()
+     * 
+     * @return mixed
      */
     public function editBasicProfile(EditBasicProfileRequest $req, int $id) {
         try {

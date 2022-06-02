@@ -8,6 +8,10 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Core\Exception\Models\ExceptionModel;
 use App\Trait\ContactChannelFormatTrait;
 
+/**
+ * Change Mobile Number Request
+ * @package App\Http\Requests\Applicant\User
+ */
 class ChangeMobileNumberRequest extends FormRequest
 {
     use ContactChannelFormatTrait;

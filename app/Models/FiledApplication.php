@@ -6,6 +6,7 @@ use App\Models\Applicant\User as ApplicantUser;
 use App\Models\Basedata\BusinessType;
 use App\Models\Basedata\CertificateType;
 use App\Models\Basedata\FiledApplicationStatus;
+use App\Models\Basedata\InspectionType;
 use App\Models\Basedata\PSIC;
 use App\Models\Basedata\RevenueDistrictOffice;
 use App\Models\Boundaries\PSGC;
@@ -13,6 +14,30 @@ use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * Filed Application
+ * @package App\Models
+ * 
+ * @table filedapplication
+ * @primarykey id
+ * 
+ * @fillable (string) application_reference_number
+ * @fillable (string) business_id
+ * @fillable (string) taxpayer_name
+ * @fillable (string) trade_name
+ * @fillable (json) other_info
+ * @fillable (int) barangay
+ * @fillable (int) city
+ * @fillable (int) province
+ * @fillable (json) geomap
+ * @fillable (bool) status
+ * @fillable (int) client_info_link
+ * @fillable (json) created_by
+ * @fillable (timestamptz) created_by
+ * @fillable (int) businesstype
+ * @fillable (int) businessline
+ * @fillable (json) address
+ */
 class FiledApplication extends Model {
     protected $table = 'filedapplication';
     protected $primaryKey = 'id';
@@ -32,17 +57,23 @@ class FiledApplication extends Model {
         'geomap',
         'status',
         'client_info_link',
-        'created_by', // json
+        'created_by',
         'created_at',
         'businesstype',
         'certificationtype',
-        'businessline'
+        'businessline',
+        'address',
+        'preferred_inspectiontype',
+        'preferred_inspectionschedule'
     ];
 
     /**
      * Get "other_info" attribute
-     * 
      * Retrieve BIR RDO info (if available)
+     * 
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getOtherInfoAttribute($value) {
         $info = json_decode($value);
@@ -55,8 +86,11 @@ class FiledApplication extends Model {
 
     /**
      * Get "geomap" attribute
-     * 
      * Decode $value to json
+     * 
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getGeomapAttribute($value) {
         return json_decode($value);
@@ -65,6 +99,9 @@ class FiledApplication extends Model {
     /**
      * Get "created_by" attribute
      * 
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getCreatedByAttribute($value) {
         $created = json_decode($value);
@@ -87,8 +124,6 @@ class FiledApplication extends Model {
             null
         );
 
-        
-        
         return $user;
     }
 
@@ -96,7 +131,9 @@ class FiledApplication extends Model {
      * Get "businessline" attribute
      * Fetch from PSIC
      * 
-     * @param $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getBusinesslineAttribute($value) {
         // Retrieve from PSIC
@@ -113,7 +150,9 @@ class FiledApplication extends Model {
      * Get "barangay" attribute
      * Fetch from PSGC 
      * 
-     * @param int $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getBarangayAttribute($value) {
         // Retrieve from PSGC
@@ -126,7 +165,9 @@ class FiledApplication extends Model {
      * Get "city" attribute
      * Fetch from PSGC
      * 
-     * @param int $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getCityAttribute($value) {
         // Retrieve from PSGC
@@ -139,7 +180,9 @@ class FiledApplication extends Model {
      * Get "province" attribute
      * Fetch from PSGC
      * 
-     * @param int $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getProvinceAttribute($value) {
         // Retrieve from PSGC
@@ -151,7 +194,9 @@ class FiledApplication extends Model {
     /**
      * Get "businesstype" attribute
      * 
-     * @param int $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getBusinesstypeAttribute($value) {
         // Retrieve from Basedata
@@ -163,7 +208,9 @@ class FiledApplication extends Model {
     /**
      * Get "certificationtype" Attribute
      * 
-     * @param int $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getCertificationtypeAttribute($value) {
         // Retrieve from Basedata
@@ -173,9 +220,11 @@ class FiledApplication extends Model {
     }
 
     /**
-     * Get "status" attribute
+     * Get "status" attribute.
      * 
-     * @param int $value
+     * @param mixed $value
+     * 
+     * @return mixed
      */
     public function getStatusAttribute($value) {
         // Retrieve from Basedata
@@ -184,30 +233,70 @@ class FiledApplication extends Model {
         return $status;
     }
 
-    
+    /**
+     * Get "preferred_inspectionschedule" attribute.
+     * Decodes JSON value
+     * 
+     * @param mixed $value
+     * 
+     * @return mixed
+     */
+    public function getPrreferredInspectionschedule($value) {
+        return json_decode($value);
+    }
 
     #region PSGC Relationship
+    /**
+     * Attribute "barangay" relationship to "PSGC" Base Data.
+     * 
+     * @return Illuminate\Database\Eloquent\Concerns\HasRelationships::belongsTo
+     */
     public function barangay() {
         return $this->belongsTo(PSGC::class);
     }
 
+    /**
+     * Attribute "city" relationship to "PSGC" Base Data.
+     * 
+     * @return Illuminate\Database\Eloquent\Concerns\HasRelationships::belongsTo
+     */
     public function city() {
         return $this->belongsTo(PSGC::class);
     }
 
+    /**
+     * Attribute "province" relationship to "PSGC" Base Data.
+     * 
+     * @return Illuminate\Database\Eloquent\Concerns\HasRelationships::belongsTo
+     */
     public function province() {
         return $this->belongsTo(PSGC::class);
     }
     #endregion
 
+    /**
+     * Attribute "status" relationship to "FiledApplicationStatus" Base Data.
+     * 
+     * @return Illuminate\Database\Eloquent\Concerns\HasRelationships::belongsTo
+     */
     public function status() {
         return $this->belongsTo(FiledApplicationStatus::class);
     }
 
+    /**
+     * Attribute "businessType" relationship to "BusinessType" Base Data.
+     * 
+     * @return Illuminate\Database\Eloquent\Concerns\HasRelationships::belongsTo
+     */
     public function businesstype() {
         return $this->belongsTo(BusinessType::class);
     }
 
+    /**
+     * Attribute "certificationtype" relationship to "CertificateType" Base Data.
+     * 
+     * @return Illuminate\Database\Eloquent\Concerns\HasRelationships::belongsTo
+     */
     public function certificationtype() {
         return $this->belongsTo(CertificateType::class);
     }
@@ -235,8 +324,12 @@ class FiledApplication extends Model {
     }
 
     /**
-     * Generate Reference Number
+     * Generate Reference Number.
      * 
+     * Generated format is {YYYY}{MM}{Increment}, example is 20220400001, 
+     * The increment is the inndicative numeric value of the sequence the application has been created for the particular Month and Year.
+     * Within a particular month and year the range of which the increment is at 00001 to 99999.
+     *  
      * @return string
      */
     public function generateReferenceNumber() {
@@ -265,13 +358,30 @@ class FiledApplication extends Model {
      * Format Other Information
      * 
      * @param array $info
+     * @param bool $toJson -
+     * 
+     * @return string If param $toJson is set to True.
+     * @return array If param $toJson is set to False.
      */
     public function formatOtherInformation(array $info, bool $toJson = false) {
-        // Preconstruct array
+        /**
+         * Format the Array
+         * 
+         * "bir.tin":
+         * Branch Code is the last three (3) digit of the BIR TIN which can be found on your form 2303 (a.k.a. Certificate of Registration).
+         * For businesses having more than one (1) location, the branch code will increment starting from 000, 001, ...
+         * On my observation, the initial three (3) digit branch code has been expanded to 
+         * five (5) digits on multiple eWallet payment channels (e.g. GCash, Paymaya, and myEG)
+         * My verdict is to extend the "Branch Code" to five (5) digits for future use.
+         * 
+         * "bir.rdo": 
+         * It is the Revenue District Office of BIR where the business establishment is currently under at.
+         * 
+         */
         $other_info = [
             'bir' => [
                 'tin' => sprintf('%09d', $info['tin'] ?? null),
-                'branch_code' =>  sprintf('%05d', $info['branch_code'] ?? 0), // If head office use 0000
+                'branch_code' =>  sprintf('%05d', $info['branch_code'] ?? 0),
                 'rdo' => $info['rdo_code'] ?? null, // Revenue District Code
                 'taxpayer_name' => $info['taxpayer_name'] ?? null,
                 'date_of_birth' => $info['date_of_birth'] ?? null
@@ -286,28 +396,41 @@ class FiledApplication extends Model {
             ]
         ];
 
-        /**
-         * Check if Business Type is Corporation, Partnership and Cooperatives are registered under the Securities and Exchange Commission.
-         */ 
+        // Check if Business Type is Individual, Corporation, Partnership, or Cooperatives.
+        // This will ensure that the accepted and stored values from parameter(s) being received are under the correct Governing Body/Agency.
         $check = BusinessType::query()->find($info['businesstype']);
-
         if ($check !== null) {
+            // If the attribute value of shortname will match "CORP", "PRTN" or "COOP", 
+            // then it will accept value(s) from parameter(s) pertaining to the Securities and Exchange Commission (CDA)
             if (
                 in_array(
                     $check->shortname, 
-                    ['CORP', 'PRTN', ['COOP']]
+                    ['CORP', 'PRTN', 'COOP']
                 )
             ) {
                 $other_info['sec']['company_name'] = $info['taxpayer_name'] ?? $info['trade_name'] ?? $info['company_name'];
                 $other_info['sec']['registration_number'] = $info['sec_registration_number'] ?? null;
                 $other_info['sec']['date_of_incorporation'] = $info['date_of_birth'] ?? $info['date_of_incorporation'] ?? null;
-            } else if (
+
+                // If the attribute value of shortname is "COOP",
+                // then it will accept value(s) from parameter(s) pertaining to the Cooperative Development Authority (CDA)
+                if ($check->shortname == 'COOP') {
+                    $other_info['cda']['registration_number'] = $info['cda_registration_number'] ?? null;
+                    $other_info['cda']['registration_date'] = $info['cda_registration_date'] ?? null;
+                }
+
+            } 
+            // If the attribute value of shortname is "INDV",
+            // then it will accept value(s) from parameter(s) pertaining to the Department of Trade and Industry (DTI).
+            else if (
                 in_array(
                     $check->shortname, 
                     ['INDV']
                 )
             ) {
-                $other_info['dti']['trade_name'] = $info['trade_name'] ?? "No trade name specified.";
+                $other_info['dti']['trade_name'] = $info['trade_name'] ?? null;
+                $other_info['dti']['registration_number'] = $info['dti_registration_number'] ?? null;
+                $other_info['dti']['registration_date'] = $info['dti_registration_date'] ?? null;
             }
         }
 
@@ -342,8 +465,18 @@ class FiledApplication extends Model {
      * @param int $province
      * @param int $city
      * @param int $barangay
-     * @return bool|array|string
-     * @throws 
+     * @param array $geomap
+     * @param array $user
+     * @param int $businesstype
+     * @param int $certificatetype
+     * @param array|null $businessline
+     * @param array|null $address 
+     * @param bool $draftmode If this has been set to "True" then the "Status" would be set to "DRAFT" else it will be set to "CREATED".
+     * @param int|null $preferred_inspctiontype Can be set to null on certain occassion. 
+     * @param array|null $preferred_inspectionschedule
+     * 
+     * @return Illuminate\Database\Eloquent\Builder::create
+     * @throws \Exception $e
      */
     public function createNewApplication(
         string $business_id, 
@@ -357,10 +490,14 @@ class FiledApplication extends Model {
         array $user,
         int $businesstype,
         int $certificatetype,
-        ?array $businessline = []
+        ?array $businessline = [],
+        ?array $address = [],
+        bool $draftmode,
+        ?int $preferred_inspectiontype = 0,
+        ?array $preferred_inspectionschedule = []
     ) {
         try {
-            // Application Reference Number
+            // Generate Application Reference Number
             $application_reference_number = $this->generateReferenceNumber();
 
             // Format created by
@@ -375,15 +512,39 @@ class FiledApplication extends Model {
             // Format Business Line
             $businessline = json_encode($businessline);
 
+            // Format Address
+            $address = json_encode($address);
+
+            // Draft Mode
+            $draftmode = filter_var($draftmode, FILTER_VALIDATE_BOOLEAN);
+
             // Filed Application Status
             try {
                 $status = new FiledApplicationStatus();
-                $status = $status->findByShortname('CREATED');
+
+                if ($draftmode) {
+                    $status = $status->findByShortname('DRAFT');
+                } else {
+                    $status = $status->findByShortname('CREATED');
+                }
+                
             } catch (ModelNotFoundException $e) {
                 throw $e;
                 // stop the operation
                 die();
             }
+
+            // Preferred Inspection
+            try {
+                $inspectiontype = new InspectionType();
+                $inspectiontype = $inspectiontype->findById($preferred_inspectiontype, true)->id;
+            } catch (ModelNotFoundException $e) {
+                throw $e;
+                die();
+            }
+
+            // Inspection Schedule
+            $inspectionschedule = json_encode($preferred_inspectionschedule);
             
             // Store/Save in DB
             $save = $this->query()->create([
@@ -400,7 +561,10 @@ class FiledApplication extends Model {
                 'created_by' => $created_by, // json
                 'businesstype' => $businesstype,
                 'certificationtype' => $certificatetype,
-                'businessline' => $businessline
+                'businessline' => $businessline,
+                'address' => $address,
+                'preferred_inspectiontype' => $inspectiontype,
+                'preferred_inspectionschedule' => $inspectionschedule
             ]);
 
             return $save; 

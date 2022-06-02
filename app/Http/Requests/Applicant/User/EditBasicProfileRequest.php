@@ -9,6 +9,10 @@ use App\Core\Exception\Models\ExceptionModel;
 use App\Trait\ContactChannelFormatTrait;
 use Illuminate\Http\Request;
 
+/**
+ * Edit Basic Profile Request
+ * @package App\Http\Requests\Applicant\User
+ */
 class EditBasicProfileRequest extends FormRequest {
     use ContactChannelFormatTrait;
 

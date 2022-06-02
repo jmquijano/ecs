@@ -1,9 +1,4 @@
 <?php 
-/**
- * app/Http/Requests/Applicant/Auth/Register/VaerificationSmsRequest.php 
- * @author jmquijano
- */
-
 namespace App\Http\Requests\Applicant\Auth\Login;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -14,6 +9,10 @@ use App\Trait\ContactChannelFormatTrait;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * Login Request
+ * @package namespace App\Http\Requests\Applicant\Auth\Login
+ */
 class LoginRequest extends FormRequest {
     use ContactChannelFormatTrait;
     /**

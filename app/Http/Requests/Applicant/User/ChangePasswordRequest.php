@@ -9,6 +9,10 @@ use App\Core\Exception\Models\ExceptionModel;
 use App\Trait\ContactChannelFormatTrait;
 use Illuminate\Http\Request;
 
+/**
+ * Change Password Confirm Request
+ * @package App\Http\Requests\Applicant\User
+ */
 class ChangePasswordRequest extends FormRequest {
     use ContactChannelFormatTrait;
 

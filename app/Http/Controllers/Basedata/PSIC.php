@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Basedata;
 
 use App\Http\Controllers\Controller;
 use App\Models\Basedata\PSIC as BasedataPSIC;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class PSIC extends Controller
@@ -24,11 +25,12 @@ class PSIC extends Controller
             $fetch = BasedataPSIC::query()->orWhere('psic_industry_description', 'ilike', '%' . $keyword . '%')
                     ->orWhere('psic_class', 'LIKE', '%' . $keyword . '%')
                     ->paginate($limit)
-                    ->getCollection();
+                    ->toArray();
 
             return response()->success(
                 200,
                 'PSIC',
+                $fetch['data'] ?? $fetch ?? null,
                 $fetch
             );
     
@@ -38,5 +40,21 @@ class PSIC extends Controller
                 'An internal server error has occured while fetching PSIC'
             );
         }
-    } 
+    }
+    
+    public function getById(Request $req, $id) {
+        try {
+            // find
+            $fetch = BasedataPSIC::query()->findOrFail($id);
+
+            return response()->success(200, 'PSIC', $fetch);
+        } catch (ModelNotFoundException $e) {
+            return response()->error(404, 'PSIC not found.');
+        } catch (\Exception $e) {
+            return response()->error(
+                500,
+                'An internal server error has occured while fetching PSIC'
+            );
+        }
+    }
 }

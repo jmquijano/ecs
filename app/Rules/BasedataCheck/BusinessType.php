@@ -6,6 +6,10 @@ use App\Core\Exception\Models\ExceptionModel;
 use App\Models\Basedata\BusinessType as BasedataBusinessType;
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Business Type Rule
+ * @package App\Rules\BasedataCheck
+ */
 class BusinessType implements Rule
 {
     protected string $message;

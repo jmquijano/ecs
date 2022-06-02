@@ -7,7 +7,22 @@ use App\Http\Controllers\Controller;
 use App\Models\FiledApplication;
 use Illuminate\Http\Request;
 
+/**
+ * Dashboard
+ * @package App\Http\Controllers\Applicant
+ * 
+ * @route:prefix /dashboard
+ */
 class Dashboard extends Controller {
+    /**
+     * Widget Counter
+     * 
+     * @route:get /widget/counter
+     * 
+     * @param Request $req
+     * 
+     * @return mixed
+     */
     public function WidgetCounter(Request $req) {
         try {
             $counter = array();

@@ -16,10 +16,6 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-/**
- * Application
- * @package App\Http\Controllers\Applicant
- */
 class Application extends Controller {
     /**
      * Get All
@@ -346,7 +342,7 @@ class Application extends Controller {
 
             // Get All Files
             $uploadedFiles = UploadedFiles::query()->where([
-                'filedapplication' => $id
+                'filedapplication_id' => $id
             ])->orderBy('created_at', 'DESC');
             if ($uploadedFiles->count() <= 0) {
                 return response()->error(404, 'File(s) not found.');
@@ -399,7 +395,7 @@ class Application extends Controller {
 
             // Get All Files
             try {
-                $uploadedFiles = UploadedFiles::query()->findOrFail($file_id, ['id', 'context', 'created_at'])->makeHidden(['original_context_path', 'context_file']);
+                $uploadedFiles = UploadedFiles::query()->findOrFail($file_id, ['id', 'context', 'created_at']);
             } catch (ModelNotFoundException $fileNotFound) {
                 return response()->error(404, 'File not found.');
             }
@@ -479,5 +475,34 @@ class Application extends Controller {
         }
     }
 
-    
+    public function _uploadFile(Request $req, int $id) {
+        try {
+            if ($req->hasFile('document')) {
+                $fileContent = $req->file('document');
+                $fileHash = hash('sha1', file_get_contents($fileContent));
+                $contextFile = fopen($fileContent, 'r+');
+                $contextPath = 'filedapplication/' . $fileHash . '/' . $fileContent->getClientOriginalName();
+                // dd($fileContent);
+                try {
+                    
+                    $upload = Storage::disk('s3')->put(
+                        $contextPath, 
+                        $contextFile
+                    );
+
+                    // dd($upload);
+
+                    dd(Storage::disk('s3')->allFiles());
+
+                    return Storage::temporaryUrl($contextPath, now()->addHours(1));
+
+                } catch (\Exception $e) {
+                    throw $e;
+                }
+
+            }
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
 }

@@ -1,16 +1,15 @@
 <?php 
-/**
- * app/Http/Controllers/Boundaries.php 
- * @author jmquijano
- */
 namespace App\Http\Controllers;
 
 use App\Models\Boundaries\GeoPath;
 use App\Models\Boundaries\PSGC;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
+/**
+ * Boundaries (PSGC)
+ * @package App\Http\Controllers
+ */
 class Boundaries extends Controller {
     public function Provinces(Request $req) {
         try {
@@ -35,13 +34,16 @@ class Boundaries extends Controller {
 
     public function Cities(Request $req) {
         try {
-            $parent = intval($req->get('parent'));
-            $range = intval(str_replace('0', '9', $parent));
+            $parent = rtrim($req->get('parent'), '0');
+            // $range = intval(str_replace('0', '9', $parent));
             $serialize = [];
 
             if ($parent >= 1) {
-                $getpsgc = PSGC::query()->whereIn('type', ['CITY', 'MUNICIPALITY', 'SUB-MUNICIPALITY'])
-                ->whereBetween('id', [$parent, $range])->where('is_active', '=', true)
+                $getpsgc = PSGC::query()
+                ->whereIn('type', ['CITY', 'MUNICIPALITY', 'SUB-MUNICIPALITY'])
+                // ->whereBetween('id', [$parent, $range])
+                ->where('id', 'like',  $parent . '%')
+                ->where('is_active', '=', true)
                 ->orderBy('id', 'asc');
 
                 foreach ($getpsgc->get() as $psgc) {
@@ -63,14 +65,17 @@ class Boundaries extends Controller {
 
     public function Barangays(Request $req) {
         try {
-            $parent = intval($req->get('parent'));
-            $range = intval(str_replace('0', '9', $parent));
+            $parent = rtrim($req->get('parent'), '0');
+            // $range = intval(str_replace('0', '9', $parent));
             $serialize = [];
+
+           
 
             if ($parent >= 1) {
                 $cache_key = "Barangays_{$parent}";
                 $getpsgc = PSGC::query()->whereIn('type', ['BARANGAY'])
-                            ->whereBetween('id', [$parent, $range])
+                            // ->whereBetween('id', [$parent, $range])
+                            ->where('id', 'like',  $parent . '%')
                             ->where('is_active', '=', true)
                             ->orderBy('id', 'asc');
 

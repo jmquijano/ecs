@@ -1,9 +1,4 @@
 <?php 
-/**
- * app/Http/Requests/Applicant/Auth/Register/VaerificationSmsRequest.php 
- * @author jmquijano
- */
-
 namespace App\Http\Requests\Applicant\Auth\Register;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -11,6 +6,10 @@ use App\Core\Exception\Models\ExceptionModel;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * OTP Verification Request
+ * @package App\Http\Requests\Applicant\Auth\Register
+ */
 class OtpVerificationRequest extends FormRequest {
 
     /**
