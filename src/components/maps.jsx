@@ -1,3 +1,4 @@
+import { Text } from '@chakra-ui/react';
 import React, { useCallback, useState, useMemo, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 

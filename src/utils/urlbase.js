@@ -167,6 +167,30 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            BIR_RDO: {
+                url: 'basedata/rdo',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            PSIC: {
+                url: 'basedata/psic?limit={limit}&page={page}&keyword={keyword}',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            PSICByID: {
+                url: 'basedata/psic/{id}',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         },
         Boundaries: {

@@ -1,16 +1,292 @@
-import { Grid, GridItem, Container, Heading, Text, Button, Stack, Box, FormControl, Input, FormLabel, FormErrorMessage, Select, Divider, Modal, ModalOverlay, ModalContent, Center, InputGroup, InputRightElement } from "@chakra-ui/react"
-import { Fragment, useEffect, useState } from "react"
-import { BiArrowToLeft, BiCaretRight, BiChevronLeft, BiPlus } from "react-icons/bi"
+import { Grid, GridItem, Container, Heading, Text, Button, Stack, Box, FormControl, Input, FormLabel, FormErrorMessage, Select, Divider, Modal, ModalOverlay, ModalContent, Center, InputGroup, InputRightElement, useStyleConfig, Table, Tr, Th, Td, Thead, Tbody } from "@chakra-ui/react"
+import { Fragment, useEffect, useRef, useState } from "react"
+import { BiArrowToLeft, BiCaretRight, BiChevronLeft, BiChevronRight, BiPlus, BiSearch } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { Helmet } from "react-helmet-async";
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as Yup from 'yup';
 import { Form, FormikProvider, useFormik, Field } from "formik";
-import { fetchBusinessType, fetchCertificateType } from "../../../utils/basedata";
+import { fetchBusinessType, fetchCertificateType, fetchBirRDO, fetchPSIC, fetchPSICById } from "../../../utils/basedata";
 import { fetchBarangay, fetchCity, fetchProvince } from "../../../utils/boundaries";
 import { AutoComplete, AutoCompleteInput, AutoCompleteItem, AutoCompleteList } from "@choc-ui/chakra-autocomplete";
 import { Loader } from "../../../components/loaders";
 import { HandleGeolocPermission, Maps, Pin } from "../../../components/maps";
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import "../../../css/datepicker.css";
+
+
+function zeroPadding (num, places) {
+    return String(num).padStart(places, '0');
+}
+
+function PSICSearch(props) {
+    const _ref = useRef();
+
+    const [loading, setLoading] = useState({
+        field: {
+            psic_search: false,
+            psic_onChange: false
+        }
+    });
+    const [searchKeywordPSIC, setKeywordSearchPSIC] = useState('');
+    const [searchOptionPSIC, setSearchOptionPSIC] = useState([]);
+    const handleChangePSICKeyword = (e) => {
+        e = e?.target?.value ?? "";
+        setKeywordSearchPSIC(e);
+    }
+
+    const handleSearchPSIC = (e) => {
+        e = e?.target?.value ?? '';
+
+        fetchPSIC(
+            e => setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    psic_search: true,
+                    psic_onChange: true
+                }
+            }),
+            e,
+            5
+        )
+            .then(res => res.json())
+            .then(res => {
+                if (res?.success) {
+                    setSearchOptionPSIC(res?.data);
+                }
+            })
+            .finally(
+                e => setLoading({
+                    ...loading,
+                    field: {
+                        ...loading?.field,
+                        psic_search: false,
+                        psic_onChange: false
+                    }
+                })
+            )
+    }
+
+
+    const handleChangePSIC = (e) => {
+        e = parseInt(e) ?? null;
+        
+        if (e >= 1) {
+            fetchPSICById(
+                x => setLoading({
+                    ...loading,
+                    field: {
+                        ...loading?.field,
+                        psic_search: true
+                    }
+                }),
+                e
+            )
+                .then(res => res.json())
+                .then(res => {
+                    if (res?.success) {
+                        _ref?.current?.resetItems(true);
+                        props?.onChange(res?.data);
+                    }
+                })
+                .finally( 
+                    x => {
+                        setLoading({
+                            ...loading,
+                            field: {
+                                ...loading?.field,
+                                psic_search: false
+                            }
+                        });
+                    }
+                )
+        }
+    }
+
+    return (
+        <AutoComplete
+            ref={_ref}
+            onChange={handleChangePSIC}
+        >
+            <Stack direction='row'>
+                <InputGroup>
+                    <AutoCompleteInput
+                        autoComplete="no"
+                        fontSize={12}
+                        onChangeCapture={handleSearchPSIC}
+                    />
+                    {
+                        loading?.field?.psic_search ?
+                        <InputRightElement children={<Loader.Default size={'md'} thickness={'3px'} />} />
+                        :
+                        ''
+                    }
+                </InputGroup>
+                
+            </Stack>
+            <AutoCompleteList mt={1}>
+                {
+                    searchOptionPSIC?.map((d, i) => (
+                        <AutoCompleteItem
+                            key={d?.id}
+                            value={String(d?.id)}
+                            label={d?.psic_industry_description}
+                            fontSize={13}
+                            textAlign={'left'}
+                        >
+                            <Stack direction={'row'}>
+                                <Text>
+                                    {d?.psic_industry_description}
+                                </Text>
+                            </Stack>
+                            
+                        </AutoCompleteItem>
+                    ))
+                }
+            </AutoCompleteList>
+        </AutoComplete>
+    )
+}
+
+function BusinessLineTable (props) {
+
+    const [data, setData] = useState([]);
+
+    const handleOnRemove = (a, i) => {
+        props?.onRemove(a, i);
+    }
+
+    useEffect(() => {
+        console.log(props);
+    }, [props]);
+
+    return (
+        <Box
+            bg={'white'}
+            width={'100%'}
+            minHeight={'30vh'}
+            borderRadius={10}
+            border={'1px solid'}
+            borderColor={props?.errorMessage ? 'red' : 'gray.200'}
+            mt={5}
+            overflowX={'auto'}
+        >
+            {
+                props?.loading ?
+                <Center minHeight={'30vh'}>
+                    <Stack direction={'column'}>
+                        <Loader.ScaleLoader />
+                    </Stack>
+                    
+                </Center>
+                :
+                <Fragment>
+                    <Box minHeight={'30vh'}>
+                        <Table variant={'simple'}>
+                            <Thead background={'gray.100'}>
+                                <Tr>
+                                    <Th width={'11%'} textTransform={'revert'}>
+                                        <Text mt={0}>PSIC Class</Text>
+                                    </Th>
+                                    <Th width={'80%'} textTransform={'revert'}>
+                                        <Text mt={0}>Industry Description</Text>
+                                    </Th>
+                                    <Th width={'5%'} textTransform={'revert'}>
+
+                                    </Th>
+                                    
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                {
+                                props?.data?.length >= 1
+                                ?
+                                props?.data?.map((d, i) => (
+                                        <Tr cursor={'pointer'} _hover={{
+                                            background: 'gray.100'
+                                        }}>
+                                            
+                                            <Td>
+                                                <Text color={'gray.600'} fontSize={14}>
+                                                {d?.psic_class}
+                                                </Text>
+                                            </Td>
+                                            <Td>
+                                                <Text color={'gray.600'} fontSize={14}>
+                                                {d?.psic_industry_description}
+                                                </Text>
+                                            </Td>
+                                            <Td>
+                                                
+                                                <Stack direction={'row'}>
+                                                    <Button 
+                                                        width={['100%', 'auto']}
+                                                        colorScheme={'brand'}
+                                                        variant={'outline'}
+                                                        borderRadius={'full'}
+                                                        fontSize={13} 
+                                                        onClick={() => handleOnRemove(props?.data, i)}
+                                                    >
+                                                            Remove
+                                                    </Button>
+
+
+                                                </Stack>
+        
+                                            </Td>
+                                        </Tr>
+                                ))
+                                :
+                                <Td colSpan={3}>
+                                    <Center minHeight={'30vh'} width={'100%'}>
+                                        <Text></Text>
+                                    </Center>
+                                </Td>
+                            }
+                            </Tbody>
+                        </Table>
+                        {props?.errorMessage !== null ? 
+                            <Box 
+                                width={'100%'}
+                                py={2}
+                                px={4}
+                                bg={'transparent'}
+                            >
+                            {props?.errorMessage instanceof Map ? 
+                            props?.errorMessage?.map((d) => (
+                                
+                                <Text 
+                                    fontSize={13}
+                                    color={'red'}
+                                    fontWeight={600}
+                                    textAlign={'left'}
+                                >
+                                    {d}
+                                </Text>
+                            ))
+                            : 
+                            <Text 
+                                fontSize={13}
+                                color={'red'}
+                                fontWeight={600}
+                                textAlign={'left'}
+                            >
+                                {props?.errorMessage}
+                            </Text>
+                            }
+                            </Box>
+
+                        : ''}
+                        
+                        
+                    </Box>
+                </Fragment>
+            }
+        </Box>
+    )
+}
 
 function BusinessInformation ({props}) {
     const [formValues, setFormValues] = useState({
@@ -49,33 +325,31 @@ function BusinessInformation ({props}) {
 
 
     const validationSchema = Yup.object().shape({
-        business_id: Yup.string().required("Business ID is a mandatory field.").typeError(""),
-        taxpayer_name: Yup.string().required("This is a mandatory field.").nullable().typeError(""),
+        business_id: Yup.string().required("Business ID is a mandatory field.").typeError("Business ID is a mandatory field."),
+        taxpayer_name: Yup.string().required("This is a mandatory field.").typeError("This is a mandatory field."),
         trade_name: Yup.string().nullable(true),
-        businesstype: Yup.number().required("Business Type is a mandatory field.").nullable(false).typeError("Business Type is a mandatory field."),
-        certificationtype: Yup.string().required("Certificate Type is a mandatory field."),
-        barangay: Yup.number().required("Barangay is a mandatory field."),
-        city: Yup.number().required("City is a mandatory field."),
-        province: Yup.number().required("Barangay is a mandatory field."),
-        businessline: Yup.array().required("Business Line is a mandatory field"),
+        businesstype: Yup.number().required("Business Type is a mandatory field.").typeError("Business Type is a mandatory field."),
+        certificationtype: Yup.string().required("Certificate Type is a mandatory field.").typeError("Certificate Type is a mandatory field."),
+        barangay: Yup.number().required("Barangay is a mandatory field.").typeError("Barangay is a mandatory field."),
+        city: Yup.number().required("City is a mandatory field.").typeError("City is a mandatory field."),
+        province: Yup.number().required("Province is a mandatory field.").typeError("Province is a mandatory field."),
+        businessline: Yup.array().of(
+            Yup.number().required("Atleast one (1) business line is mandatory.").typeError("Atleast one (1) business line is mandatory.")
+        ),
         other: Yup.object().shape({
-            tin: Yup.addMethod(Yup.string, 'integer', () => {
-                if (this !== null) {
-                    return this.matches(/^\d+$/, 'The field should contain numeric characters.');
-                }
-            }),
-            branch_code: Yup.addMethod(Yup.string, 'integer', () => {
-                if (this !== null) {
-                    return this.matches(/^\d+$/, 'The field should contain numeric characters.');
-                }
-            }),
+            tin: Yup.number().nullable(true),
+            branch_code: Yup.number().nullable(true),
             rdo_code: Yup.number().nullable(true),
             sec_registration_number: Yup.string().nullable(true),
             date_of_birth: Yup.date().nullable(true)
-        }).nullable(true)
+        }).nullable(true),
+        address: Yup.object().shape({
+            street: Yup.string().required("Street is a mandatory field.").typeError("Street is a mandatory field.")
+        })
     });
 
     const formikSubmitHandler = async (values, { setErrors, resetForm }) => {
+    
     };
     const formikInit = useFormik({
         initialValues: formValues,
@@ -91,7 +365,9 @@ function BusinessInformation ({props}) {
             businessType: false,
             province: false,
             city: false,
-            barangay: false
+            barangay: false,
+            bir_rdo: false,
+            psic_search: false
         }
     });
     
@@ -99,6 +375,7 @@ function BusinessInformation ({props}) {
     const [businessType, setBusinessType] = useState([]);
     const [selectedBusinessType, setSelectedBusinessType] = useState({});
 
+    const [birRdo, setBirRdo] = useState([]);
     const [province, setProvince] = useState([]);
     const [city, setCity] = useState([]);
     const [barangay, setBarangay] = useState([]);
@@ -112,7 +389,14 @@ function BusinessInformation ({props}) {
     const [pinMap, setPinMap] = useState({
         lng: null,
         lat: null
-    })
+    });
+
+    const [tin, setTin] = useState({
+        tin1: "000",
+        tin2: "000",
+        tin3: "000",
+        tin4: "00000"
+    });
    
     useEffect(() => {
         HandleGeolocPermission();
@@ -176,6 +460,31 @@ function BusinessInformation ({props}) {
                     }
                 })    
             );
+
+        fetchBirRDO(() => {
+            setLoading({
+                ...loading,
+                field: {
+                    ...loading?.field,
+                    bir_rdo: true
+                }
+            })
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res?.success) {
+                    setBirRdo(res?.data);
+                }
+            })
+            .finally(e => 
+                setLoading({
+                    ...loading,
+                    field: {
+                        ...loading?.field,
+                        bir_rdo: false
+                    }
+                })
+            )
     }, []);
 
     useEffect(() => {
@@ -304,7 +613,74 @@ function BusinessInformation ({props}) {
             setPinMap(coordinates);
         }
     }
+
+    const datePickerStyle = useStyleConfig('theme');
+
+    const handleDateOfBirthChange = async (date) => {
+        formikInit?.setFieldValue('other.date_of_birth', date);
+    }
+
+    const handleTinChange = (o, e) => {
+        e = e?.target?.value;
+        switch (o) {
+            case 1: 
+                e = zeroPadding(e, 3);
+                setTin({
+                    ...tin,
+                    tin1: e
+                });
+            break;
+            case 2:
+                e = zeroPadding(e, 3);
+                setTin({
+                    ...tin,
+                    tin2: e
+                });
+            break;
+            case 3:
+                e = zeroPadding(e, 3);
+                setTin({
+                    ...tin,
+                    tin3: e
+                });
+            break;
+            case 4:
+                e = zeroPadding(e, 5);
+                setTin({
+                    ...tin,
+                    tin4: e
+                });
+            break;
+        }
+    }
     
+    const [businessLines, setBusinessLines] = useState([]);
+    const handleChangeBusinessLine = async (e) => {
+        if (e !== null) {
+            setBusinessLines([
+                ...businessLines,
+                e
+            ]);
+            
+        }
+    }
+
+    const handleRemoveBusinessLine = async (a, i) => {
+        a = a?.splice(0);
+        a?.splice(i, 1);
+
+        setBusinessLines(a);
+    }
+
+    useEffect(() => {
+        console.log(businessLines);
+        let _id = [];
+        businessLines?.map((d) => {
+            _id.push(d?.id);
+        });
+
+        formikInit?.setFieldValue("businessline", _id);
+    }, [businessLines])
 
     return (
         <Fragment>
@@ -489,6 +865,7 @@ function BusinessInformation ({props}) {
                                                 disabled={
                                                     selectedBusinessType?.id >= 1 ? false : true
                                                 }
+                                                variant={selectedBusinessType?.id >= 0 ? 'outline' : 'filled' }
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -531,6 +908,7 @@ function BusinessInformation ({props}) {
                                                 disabled={
                                                     selectedBusinessType?.id >= 1 ? false : true
                                                 }
+                                                variant={selectedBusinessType?.id >= 0 ? 'outline' : 'filled' }
                                             />
                                             <FormErrorMessage 
                                                 textAlign={'left'}
@@ -570,15 +948,27 @@ function BusinessInformation ({props}) {
                                                     "Date of Birth"
                                                 }
                                             </FormLabel>
-                                            <Input 
-                                                {...field} 
-                                                id='other.date_of_birth' 
-                                                placeholder='' 
-                                                fontSize={13}
+                                            <DatePicker
+                                                selected={form?.values?.other?.date_of_birth}
+                                                onChange={handleDateOfBirthChange}
+                                                customInput={
+                                                    <Input 
+                                                        {...field} 
+                                                        id='date_of_birth' 
+                                                        placeholder='' 
+                                                        fontSize={13}
+                                                        disabled={
+                                                            selectedBusinessType?.id >= 1 ? false : true
+                                                        }
+                                                        variant={selectedBusinessType?.id >= 0 ? 'outline' : 'filled' }
+                                                    />
+                                                }
                                                 disabled={
                                                     selectedBusinessType?.id >= 1 ? false : true
                                                 }
                                             />
+                                            
+                                            
                                             <FormErrorMessage 
                                                 textAlign={'left'}
                                                 fontSize={12}
@@ -874,9 +1264,7 @@ function BusinessInformation ({props}) {
                                 >
                                     {({ values, field, form }) => (
                                         <FormControl 
-                                            isInvalid={form.errors['address.room'] && form.touched?.address?.room} 
-                                            isRequired
-                                            
+                                            isInvalid={form.errors['address.room'] && form.touched?.address?.room}
                                         >
                                             <FormLabel 
                                                 htmlFor={'address.room'}
@@ -922,9 +1310,7 @@ function BusinessInformation ({props}) {
                                 >
                                     {({ values, field, form }) => (
                                         <FormControl 
-                                            isInvalid={form.errors['address.building'] && form.touched?.address?.building} 
-                                            isRequired
-                                            
+                                            isInvalid={form.errors['address.building'] && form.touched?.address?.building}
                                         >
                                             <FormLabel 
                                                 htmlFor={'address.building'}
@@ -970,7 +1356,7 @@ function BusinessInformation ({props}) {
                                 >
                                     {({ values, field, form }) => (
                                         <FormControl 
-                                            isInvalid={form.errors['address.street'] && form.touched?.address?.street} 
+                                            isInvalid={(form.errors['address.street'] ?? form?.errors?.address?.street) && form.touched?.address?.street } 
                                             isRequired
                                             
                                         >
@@ -1000,7 +1386,7 @@ function BusinessInformation ({props}) {
                                                 {
                                                     form.errors['address.street'] instanceof Map ? form.errors['address.street'].map((d, i) => {
                                                         return d;
-                                                    }) : form?.errors['address.street']
+                                                    }) : (form?.errors?.address?.street ?? form?.errors['address.street'])
                                                 }
                                             </FormErrorMessage>
                                         </FormControl>
@@ -1021,16 +1407,22 @@ function BusinessInformation ({props}) {
                                     <Maps
                                         
                                         center={focusMap}
-                                        zoom={focusMap?.zoom}
+                                        zoom={17}
                                         scrollWheelZoom={true}
                                     >
                                         <Pin 
                                             position={{
-                                                lng: focusMap?.lng,
-                                                lat: focusMap?.lat
+                                                lng: pinMap?.lng,
+                                                lat: pinMap?.lat
                                             }}
                                             PopupMessage={'Your are located here'}
-                                            onChange={(e) => setPinMap(e)}
+                                            onChange={(e) => {
+                                                setPinMap({
+                                                    ...pinMap,
+                                                    lng: e?.lng,
+                                                    lat: e?.lat
+                                                });
+                                            }}
                                         />
                                     </Maps>
 
@@ -1081,6 +1473,40 @@ function BusinessInformation ({props}) {
                                     
                                 </GridItem>
                                 : ''
+                            }
+                            {
+                                selectedBusinessType?.id >= 1 ?
+                                <GridItem colSpan={12}>
+                                    
+                                    
+                                    <Grid
+                                        templateColumns={'repeat(12, 1fr)'} 
+                                        width={'100%'} 
+                                    >
+                                        <GridItem colSpan={[12, 12, 12, 12, 12]}>
+                                            <PSICSearch 
+                                                onChange={handleChangeBusinessLine} 
+                                            />
+                                        </GridItem>
+                                        <GridItem colSpan={[12, 12, 12, 12, 12]}>
+                                            <Field>
+                                                {({form}) => (
+                                                    <BusinessLineTable 
+                                                        onRemove={handleRemoveBusinessLine}
+                                                        data={businessLines} 
+                                                        errorMessage={form?.errors?.businessline}
+                                                    />
+                                                )}
+                                                
+                                            </Field>
+                                            
+                                        </GridItem>
+                                    </Grid>
+                                    
+                                    
+                                </GridItem>
+                                :
+                                ''
                             }
                             
                             {/* Other Information */}
@@ -1376,6 +1802,144 @@ function BusinessInformation ({props}) {
                                 </Field>
                             </GridItem>
                             : ""}
+
+                            {/* BIR TIN */}
+                            {selectedBusinessType?.id >= 1 ? 
+                                <GridItem colSpan={[12, 12, 4, 4]}>
+                                    <Field 
+                                        name='other.tin'
+                                    >
+                                        {({ field, form }) => (
+                                            <FormControl 
+                                                isInvalid={form.errors?.other?.rdo_code && form.touched?.other?.rdo_code} 
+                                                
+                                            >
+                                                <FormLabel 
+                                                    htmlFor={'other.tin'}
+                                                    fontSize={12}
+                                                >
+                                                    BIR TIN
+                                                </FormLabel>
+                                                <Stack direction={'row'}>
+                                                    <Input
+                                                        name={'other.tin1'}
+                                                        fontSize={13}
+                                                        maxLength={3}
+                                                        placeholder={'000'}
+                                                        onChange={e => handleTinChange(1, e)}
+                                                    />
+                                                    <Input
+                                                        name={'other.tin2'}
+                                                        fontSize={13}
+                                                        maxLength={3}
+                                                        placeholder={'000'}
+                                                        onChange={e => handleTinChange(2, e)}
+                                                    />
+                                                    <Input
+                                                        name={'other.tin3'}
+                                                        fontSize={13}
+                                                        maxLength={3}
+                                                        placeholder={'000'}
+                                                        onChange={e => handleTinChange(3, e)}
+                                                    />
+                                                    <Input
+                                                        name={'other.branch_code'}
+                                                        fontSize={13}
+                                                        maxLength={5}
+                                                        placeholder={'00000'}
+                                                        onChange={e => handleTinChange(4, e)}
+                                                    />
+                                                </Stack>
+                                                
+                                                <FormErrorMessage 
+                                                    textAlign={'left'}
+                                                    fontSize={12}
+                                                >
+                                                    {
+                                                        form.errors['other.tin'] instanceof Map ? form.errors['other.tin'].map((d, i) => {
+                                                            return d;
+                                                        }) : form.errors?.other?.tin
+                                                    }
+                                                </FormErrorMessage>
+                                            </FormControl>
+                                        )}
+                                    </Field>
+                                </GridItem>
+                            :
+                            ''
+                            }
+
+                            {/* BIR RDO */}
+                            {selectedBusinessType?.id >= 1 ?
+                            <GridItem colSpan={[12, 12, 8, 8]}>
+                                <Field 
+                                    name='other.rdo_code'
+                                >
+                                    {({ field, form }) => (
+                                        <FormControl 
+                                            isInvalid={form.errors?.other?.rdo_code && form.touched?.other?.rdo_code} 
+                                            
+                                        >
+                                            <FormLabel 
+                                                htmlFor={'other.rdo_code'}
+                                                fontSize={12}
+                                            >
+                                                BIR RDO
+                                            </FormLabel>
+                                            <Select
+                                                name={'other.rdo_code'}
+                                                fontSize={13}
+                                            >
+                                                <option value=""></option>
+                                                {
+                                                    birRdo.map((d, i) => (
+                                                        <option value={d?.id}>{d?.code + " : " + d?.name}</option>
+                                                    ))
+                                                }
+                                            </Select>
+                                            <FormErrorMessage 
+                                                textAlign={'left'}
+                                                fontSize={12}
+                                            >
+                                                {
+                                                    form.errors?.other?.rdo_code instanceof Map ? form.errors?.other?.rdo_code.map((d, i) => {
+                                                        return d;
+                                                    }) : form.errors?.other?.rdo_code
+                                                }
+                                            </FormErrorMessage>
+                                        </FormControl>
+                                    )}
+                                </Field>
+                            </GridItem>
+                            : ''
+                            }
+
+                            <GridItem 
+                                colSpan={[12, 12, 12, 12]}
+                                textAlign={'right'}
+                            >
+                                <Field>
+                                    {({ field, form }) => (
+                                        <Button 
+                                            width={['100%', 'auto']}
+                                            colorScheme={'brand'}
+                                            variant={'active'}
+                                            borderRadius={'full'}
+                                            fontSize={16}
+                                            py={'1em'}
+                                            px={'2em'}
+                                            fontWeight={400} 
+                                            mt={3}
+                                            disabled={selectedBusinessType?.id >= 1 ? false : true}
+                                            onClick={() => formikInit?.submitForm()}
+                                        >
+                                                Next
+                                        </Button>
+                                    )}
+                                </Field>
+                                
+                                
+                            </GridItem>
                         </Grid>
                     </Form>
                 </FormikProvider>
@@ -1402,11 +1966,11 @@ export default function CreateApplication () {
         {
             label: 'Upload Documents',
             description: '',
-            component: <BusinessInformation />
+            component: <Text></Text>
         },
         {
             label: 'Submit',
-            component: <BusinessInformation />
+            component: <Text></Text>
         }
     ];
 
@@ -1418,7 +1982,6 @@ export default function CreateApplication () {
             <Container 
                 maxWidth={'1200px'}
                 py={[5, 5, 5, 5, 10]}
-                
             >
                 <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={[2, 5, 10, 10]}>
                     <GridItem 
@@ -1494,6 +2057,7 @@ export default function CreateApplication () {
                             justifyContent={'start'}
                             width={'100%'}
                             minWidth={'100%'}
+                            height={'100%'}
                         >
                             {_steps.map(({label, description, component}, i) => (
                             <Step 
