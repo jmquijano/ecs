@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { BiPlus } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { Loader } from "../../../components/loaders";
-import { ApiBaseUrl, UrlWithParam } from "../../../utils/urlbase"; 
+import { ApiBaseUrl, PageBaseUrl, UrlWithParam } from "../../../utils/urlbase"; 
 
 const CreateCounter = (maxValue) => {
     let arr = [];
@@ -296,7 +296,7 @@ export default function ApplicationIndex() {
                             direction={'row'}
                             justify={'end'}
                         >
-                            <Link to={'/application/create'} style={{
+                            <Link to={PageBaseUrl.Application.New.Index} style={{
                                 width: '100%',
                                 textAlign: 'right'
                             }}>

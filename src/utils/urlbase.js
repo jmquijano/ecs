@@ -15,6 +15,17 @@ const UrlWithParam = (param, url) => {
     return _url;
 }
 
+const PageRouteWithParam = (param, pathname) => {
+    let _pathname = pathname;
+    for (const [key, value] of Object.entries(param)) {
+        const _key = ':' + key;
+
+        _pathname = _pathname.replace(_key, value);
+    }
+
+    return _pathname;
+}
+
 const ApiBaseUrl = {
     Applicant: { 
         Base: 'http://api-dev.bfp-ecs.com/applicant/v1/',
@@ -191,6 +202,14 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            InspectionType: {
+                url: 'basedata/inspection-type',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         },
         Boundaries: {
@@ -227,6 +246,22 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            Create: {
+                url: 'application',
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            ApplicationById: {
+                url: 'application/{id}',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         }
     }
@@ -246,11 +281,23 @@ const PageBaseUrl = {
         InternalServerError: '/error/500'
     },
     Dashboard: '/',
-    Application: '/application', // parent to Dashboard
-    CreateNewApplication: '/application/create',
+    Application: {
+        Index: '/application',
+        New: {
+            Index: '/application/new',
+            WithType: '/application/new/:id/:path'
+        },
+        Manage: {
+            Index: '/application/manage/:id'
+        }
+    },
     User: {
         Profile: '/profile'
+    },
+    Go: {
+        External: '/go/external'
     }
+    
 }
 
-export { ApiBaseUrl, PageBaseUrl, UrlWithParam }
+export { ApiBaseUrl, PageBaseUrl, UrlWithParam, PageRouteWithParam }

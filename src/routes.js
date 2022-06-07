@@ -12,6 +12,7 @@ import Home from "./pages/portal/home";
 import ApplicationIndex from "./pages/portal/application";
 import { UserProfile } from "./pages/portal/user/profile";
 import CreateApplication from "./pages/portal/application/create";
+import { GoExternalLink } from "./pages/go/external";
 
 export default function AppRoutes() {
     return (
@@ -29,11 +30,15 @@ export default function AppRoutes() {
                         <Route path={PageBaseUrl.Dashboard} element={
                             <Home />
                         } />
-                        <Route path={PageBaseUrl.Application} element={
+                        <Route path={PageBaseUrl.Application.Index} element={
                             <ApplicationIndex />
                         } />
 
-                        <Route path={PageBaseUrl.CreateNewApplication} element={
+                        <Route path={PageBaseUrl.Application.New.Index} element={
+                            <CreateApplication />
+                        } />
+
+                        <Route path={PageBaseUrl.Application.New.WithType} element={
                             <CreateApplication />
                         } />
 
@@ -48,6 +53,11 @@ export default function AppRoutes() {
                     <Route 
                         path={PageBaseUrl.Auth.Register} 
                         element={<Register />}
+                    />
+
+                    <Route 
+                        path={PageBaseUrl.Go.External}
+                        element={<GoExternalLink />}
                     />
 
                     {/** Page/Components Test Routes */}

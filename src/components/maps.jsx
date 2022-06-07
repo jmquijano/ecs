@@ -10,16 +10,30 @@ function HandleGeolocPermission() {
   }
 }
 
-
-function ChangeMapView({ coords, zoom }) {
+/**
+ * Change Map View
+ * @param { coords, zoom, onChange } props
+ * @returns 
+ */
+function ChangeMapView(props) {
+  const { coords, zoom } = props;
   const map = useMap();
+
   map.setView(coords, zoom ?? 5);
 
   return null;
 }
 
+/**
+ * Maps
+ * @param { center, zoom, scrollWheelZoom, height, width } props 
+ * @returns 
+ */
 const Maps = (props) => {
+  const [currentZoom, setCurrentZoom] = useState(7);
+
   
+
   return (
     <MapContainer 
       center={props.center} 
@@ -31,7 +45,10 @@ const Maps = (props) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <ChangeMapView coords={props?.center} zoom={props.zoom} />
+        <ChangeMapView 
+          coords={props?.center} 
+          zoom={props.zoom}
+        />
         {props.children}
     </MapContainer>
 

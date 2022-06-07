@@ -1,4 +1,4 @@
-import { ApiBaseUrl, UrlWithParam } from "./urlbase";
+import { ApiBaseUrl, UrlWithParam } from "../urlbase";
 
 const { Applicant } = ApiBaseUrl;
 

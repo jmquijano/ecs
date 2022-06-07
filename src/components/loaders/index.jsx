@@ -35,6 +35,7 @@ const Loader = {
                 emptyColor='gray.200'
                 color={props?.color ?? 'var(--bfp-colors-brand-200)'}
                 {...props}
+                
             />
         )
     }

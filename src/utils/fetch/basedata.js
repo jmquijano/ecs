@@ -1,4 +1,4 @@
-import { ApiBaseUrl, UrlWithParam } from "./urlbase";
+import { ApiBaseUrl, UrlWithParam } from "../urlbase";
 
 const { Applicant } = ApiBaseUrl;
 
@@ -61,4 +61,23 @@ const fetchPSICById = (callback, id = 0) => {
     return _f;
 }
 
-export { fetchCertificateType, fetchBusinessType, fetchBirRDO, fetchPSIC, fetchPSICById };
+const fetchInspectionType = (callback) => {
+    callback();
+
+    const { url, method, headers } = Applicant?.Basedata?.InspectionType; 
+    const _f = fetch(Applicant?.Base + url, {
+        method: method,
+        headers: headers
+    });
+
+    return _f;
+}
+
+export { 
+    fetchCertificateType, 
+    fetchBusinessType, 
+    fetchBirRDO, 
+    fetchPSIC, 
+    fetchPSICById,
+    fetchInspectionType
+};
