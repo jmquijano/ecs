@@ -12,7 +12,7 @@ function HandleGeolocPermission() {
 
 /**
  * Change Map View
- * @param { coords, zoom, onChange } props
+ * @param {{ coords: decimal, zoom: integer, onChange }} props
  * @returns 
  */
 function ChangeMapView(props) {

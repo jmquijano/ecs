@@ -1,5 +1,10 @@
 import { Box, GridItem, Text } from "@chakra-ui/react"
 
+/**
+ * Section Title
+ * @param {{ title: string }} props 
+ * @returns 
+ */
 export default function SectionTitle(props) {
     return (
         <GridItem 
