@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { Badge, Box, Button, Center, Divider, Image, Text, Stack } from "@chakra-ui/react";
 import ecs_logo from '../assets/images/ECS-Logo-300dpi.png';
@@ -15,11 +15,12 @@ export default function Login() {
     const AuthContext = useAuth();
 
     let [searchParams, setSearchParams] = useSearchParams();
+
+    const [hasError, setHasError] = useState(false);
     
     const authFromBackend = () => {
        setLoadingState(true);
        Login({userId:"test",password:"tests"});
-       
     }
 
     /**
@@ -40,7 +41,8 @@ export default function Login() {
      const [formikInitialValues, setFormikInitialValues] = useState({
         LoginForm: {
             username: '',
-            password: ''
+            password: '',
+            captcha: ''
         }
     });
 
@@ -57,7 +59,10 @@ export default function Login() {
                     localStorage.setItem('token', res?.data?.access_token);
                     navigate(redirect_url);
                 },
-                onFailure: error => setErrors(error),
+                onFailure: error => {
+                    setErrors(error);
+                    setHasError(true);
+                },
                 onEnd: end => setLoadingState(false)
             });
         }
@@ -104,6 +109,7 @@ export default function Login() {
                                 md: 'block',
                                 
                             }}
+                            fontSize={14}
                         >
                             Electronic Certification System
                         </Text>
@@ -137,6 +143,7 @@ export default function Login() {
                             <LoginForm 
                                 formik={formik.LoginForm} 
                                 loading={loadingState} 
+                                hasError={hasError}
                             />
                             
                             
@@ -160,12 +167,12 @@ export default function Login() {
                                     <Button 
                                         disabled={loadingState}
                                         variant={'outline'}
-                                        size={'sm'}
-                                        paddingX={5}
-                                        paddingY={5}
+                                        
+                                        width={'100%'}
                                         onClick={(e) => navigate(PageBaseUrl.Auth.Register)}
+                                        fontSize={14}
                                     >
-                                        Create an account
+                                        Sign Up
                                     </Button>
                                 </Box>
                             </Stack>

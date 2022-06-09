@@ -38,31 +38,6 @@ const Select = {
   },
 }
 
-/**
- * Component: Button
- */
-const Button = {
-    baseStyle: { 
-        _focus: { 
-            boxShadow: 'none' 
-        }
-    },
-    variants: {
-        outline: {
-            borderColor: 'brand.500',
-            color: 'brand.500',
-            _hover: {
-                borderColor: 'brand.500',
-                background: 'brand.500',
-                color: 'white'
-            },
-            _active: {
-                color: 'brand.500'
-            }
-        }
-    }
-}
-
 const theme = extendTheme({
   fonts: {
     heading: "Poppins",
@@ -170,6 +145,7 @@ const theme = extendTheme({
           },
         },
         ghost: {
+          cursor: 'pointer',
           bg: 'transparent',
           color: 'brand.200',
           border: '1px solid',

@@ -19,31 +19,39 @@ function ChangeMapView(props) {
   const { coords, zoom } = props;
   const map = useMap();
 
-  map.setView(coords, zoom ?? 5);
-
+  map.setView(coords);
+  map.attributionControl.setPrefix('BFP-ECS');
   return null;
 }
 
 /**
  * Maps
- * @param { center, zoom, scrollWheelZoom, height, width } props 
+ * @param {{ 
+ *    center: {
+ *      lat: number, 
+ *      lng: number
+ *    }, 
+ *    zoom: number, 
+ *    scrollWheelZoom: boolean, 
+ *    height: number, 
+ *    width: number 
+ * }} props 
  * @returns 
  */
 const Maps = (props) => {
   const [currentZoom, setCurrentZoom] = useState(7);
-
-  
+  const mapContainerRef = useRef();
 
   return (
-    <MapContainer 
+    <MapContainer
       center={props.center} 
       zoom={props.zoom} 
       scrollWheelZoom={props.scrollWheelZoom || false}
       style={{height: props?.height ?? '100%', width: props?.width ?? '100%'}}
       >
         <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='<a href="https://www.openstreetmap.org/copyright" target="__blank">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <ChangeMapView 
           coords={props?.center} 

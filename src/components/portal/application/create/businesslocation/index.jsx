@@ -247,9 +247,8 @@ export default function BusinessLocation(props) {
                 >
                     <Maps
                         center={props?.map?.position}
-                        zoom={17}
                         scrollWheelZoom={true}
-                        
+                        zoom={17}
                     >
                         <Pin 
                             position={props?.map?.position}

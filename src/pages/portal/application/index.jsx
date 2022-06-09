@@ -4,6 +4,8 @@ import { Helmet } from "react-helmet-async";
 import { BiPlus } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { Loader } from "../../../components/loaders";
+import FiledApplication from "../../../components/portal/application/index/FIledApplication";
+import PageContainer from "../../../components/portal/reusable-layout/containers/PageContainer";
 import { ApiBaseUrl, PageBaseUrl, UrlWithParam } from "../../../utils/urlbase"; 
 
 const CreateCounter = (maxValue) => {
@@ -15,7 +17,7 @@ const CreateCounter = (maxValue) => {
     return arr;
 }
 
-const FiledApplicationTable = () => {
+/* function FiledApplicationTable() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState();
     const [limit, setLimit] = useState(5);
@@ -76,7 +78,7 @@ const FiledApplicationTable = () => {
             borderRadius={10}
             border={'1px solid'}
             borderColor={'gray.200'}
-            mt={5}
+            mt={0}
             overflowX={'auto'}
         >
             {
@@ -263,66 +265,24 @@ const FiledApplicationTable = () => {
             }
         </Box>
     )
-}
+} */
 
 export default function ApplicationIndex() {
     return (
-        <Fragment>
-            <Helmet>
-                <title>My Application</title>
-            </Helmet>
-            <Container 
-                maxWidth={'1200px'}
-                py={[5, 5, 5, 5, 10]}
-            >
-                <Grid templateColumns={'repeat(12, 1fr)'} width={'100%'} gap={[2, 5, 10, 10]}>
-                    <GridItem 
-                        colSpan={[12, 6, 6, 6, 6]} 
-                        maxWidth={'100%'}
-                    >
-                        <Heading 
-                            color={'brand.300'}
-                            fontSize={['150%']}
-                            cursor={'pointer'}
-                        >
-                            My Application
-                        </Heading>
-                    </GridItem>
-                    <GridItem 
-                        colSpan={[12, 6, 6, 6, 6]} 
-                        maxWidth={'100%'}
-                    >
-                        <Stack 
-                            direction={'row'}
-                            justify={'end'}
-                        >
-                            <Link to={PageBaseUrl.Application.New.Index} style={{
-                                width: '100%',
-                                textAlign: 'right'
-                            }}>
-                                <Button 
-                                    width={['100%', 'auto', 'auto', 'auto']}
-                                    my={[3, 0, 0, 0]}
-                                    colorScheme={'brand.200'} 
-                                    variant={'outline'}
-                                    fontSize={13}
-                                    px={4}
-                                    py={2}
-                                    borderRadius={'full'}
-                                    fontWeight={600}
-                                >
-                                    <BiPlus size={20} />
-                                    <Text ml={1}>
-                                        Create
-                                    </Text>
-                                </Button>
-                            </Link>
-                            
-                        </Stack>
-                    </GridItem>
-                </Grid>
-                <FiledApplicationTable />
-            </Container>
-        </Fragment>
+        <PageContainer
+            title={'My Application'}
+            heading={{
+                title: 'My Application',
+                menu: [
+                    {
+                        to: '/application/new',
+                        icon: <BiPlus size={20} />,
+                        text: 'Create'
+                    }
+                ]
+            }}
+        >
+            <FiledApplication />
+        </PageContainer>
     );
 }
