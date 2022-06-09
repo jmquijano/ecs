@@ -39,7 +39,7 @@ class CreateRequest extends FormRequest
         return [
             'business_id' => ['required'],
             'taxpayer_name' => ['required'],
-            'trade_name' => ['required'],
+            'trade_name' => ['required_if:businesstype,1'],
             'barangay' => ['required', new Barangay()],
             'city' => ['required', new City()],
             'province' => ['required', new Province()],
@@ -68,7 +68,15 @@ class CreateRequest extends FormRequest
             'draftmode' => ['boolean'],
             'preferred_inspectiontype' => ['required', new InspectionType()],
             'preferred_iinspectionschedule.day' => ['nullable'],
-            'preferred_iinspectionschedule.time' => ['nullable']
+            'preferred_iinspectionschedule.time' => ['nullable'],
+
+            // Supplemental Contact
+            'supplementalcontact' => ['nullable', 'array'],
+            'supplementalcontact.*.name' => ['sometimes'],
+            'supplementalcontact.*.designation' => ['sometimes'],
+            'supplementalcontact.*.mobilenumber' => ['sometimes', 'numeric'],
+            'supplementalcontact.*.emailaddress' => ['sometimes', 'email'],
+            'supplementalcontact.*.viberenabled' => ['sometimes', 'boolean']
         ];
     }
 

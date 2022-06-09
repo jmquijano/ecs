@@ -77,10 +77,12 @@ class FiledApplication extends Model {
      */
     public function getOtherInfoAttribute($value) {
         $info = json_decode($value);
-        
-        // Retrieve RDO info
-        $info->bir->rdo = RevenueDistrictOffice::query()->find($info->bir->rdo)->makeHidden(['is_active']);
+        try {
+            // Retrieve RDO info
+            $info->bir->rdo = RevenueDistrictOffice::query()->findOrFail($info->bir->rdo)->makeHidden(['is_active']);
+        } catch (ModelNotFoundException $e) {
 
+        }
         return $info;
     }
 
@@ -460,7 +462,7 @@ class FiledApplication extends Model {
      * 
      * @param string $business_id
      * @param string $taxpayer_name
-     * @param string $trade_name
+     * @param string|null $trade_name
      * @param array|null $other_information
      * @param int $province
      * @param int $city
@@ -481,7 +483,7 @@ class FiledApplication extends Model {
     public function createNewApplication(
         string $business_id, 
         string $taxpayer_name,
-        string $trade_name,
+        ?string $trade_name = null,
         ?array $other_information = null,
         int $province,
         int $city,
@@ -492,7 +494,7 @@ class FiledApplication extends Model {
         int $certificatetype,
         ?array $businessline = [],
         ?array $address = [],
-        bool $draftmode,
+        ?bool $draftmode = false,
         ?int $preferred_inspectiontype = 0,
         ?array $preferred_inspectionschedule = []
     ) {

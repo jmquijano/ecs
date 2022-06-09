@@ -9,6 +9,7 @@ use App\Http\Controllers\Boundaries;
 use App\Http\Controllers\Applicant\Application;
 use App\Http\Controllers\Basedata\BusinessType;
 use App\Http\Controllers\Basedata\CertificateType;
+use App\Http\Controllers\Basedata\InspectionType;
 use App\Http\Controllers\Basedata\MFACommunicationChannel;
 use App\Http\Controllers\Basedata\PSIC;
 use App\Utility\SMS;
@@ -56,6 +57,11 @@ Route::prefix('basedata')->group(function () {
      * Business Type
      */
     Route::get('/business-type', [BusinessType::class, 'getAll']);
+
+    /**
+     * Inspection Type
+     */
+    Route::get('/inspection-type', [InspectionType::class, 'getAll']);
 });
 
 /**
@@ -63,7 +69,7 @@ Route::prefix('basedata')->group(function () {
  */
 Route::prefix('auth')->group(function () {
     // Token
-    Route::post('/token', [Token::class, 'Login']);
+    Route::post('/token', [Token::class, 'Login'])->middleware(['captchaguard']);
     Route::get('/token', [Token::class, 'GetTokenInfo'])->middleware(['authguard.applicant']);
     Route::get('/token/validate', [Token::class, 'ValidateToken'])->middleware(['authguard.applicant']);
 
