@@ -307,7 +307,7 @@ function Navigation({onClockTicking}) {
                 display={['none', 'none', 'none', 'block']}
             >
                 <Container
-                    maxWidth={'1200px'}
+                    maxWidth={'100%'}
                     py={2}
                     height={'100%'}
                     
@@ -347,7 +347,7 @@ function Navigation({onClockTicking}) {
                 padding={0}
             >
                 <Container
-                    maxWidth={'1200px'}
+                    maxWidth={'100%'}
                     padding={'0px auto'}
                     height={'100%'}
                 >

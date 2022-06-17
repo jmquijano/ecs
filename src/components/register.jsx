@@ -11,9 +11,9 @@ const UserCredentials = (props) => {
                         <Field name='username'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.username && form.touched?.username} isRequired>
-                                <FormLabel htmlFor={'username'}>Username</FormLabel>
-                                <Input {...field} id={'username'} />
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormLabel htmlFor={'username'} fontSize={14}>Username</FormLabel>
+                                <Input {...field} id={'username'} fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.username instanceof Map ? form.errors?.username.map((d, i) => {
                                             return d;
@@ -31,9 +31,9 @@ const UserCredentials = (props) => {
                         <Field name='emailaddress'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.emailaddress && form.touched?.emailaddress} isRequired>
-                                <FormLabel htmlFor={'emailaddress'}>Email Address</FormLabel>
-                                <Input {...field} id={'emailaddress'} />
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormLabel htmlFor={'emailaddress'} fontSize={14}>Email Address</FormLabel>
+                                <Input {...field} id={'emailaddress'} fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.emailaddress instanceof Map ? form.errors?.emailaddress.map((d, i) => {
                                             return d;
@@ -48,9 +48,9 @@ const UserCredentials = (props) => {
                         <Field name='mobilenumber'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.mobilenumber && form.touched?.mobilenumber} isRequired>
-                                <FormLabel htmlFor={'mobilenumber'}>Mobile Number</FormLabel>
-                                <Input {...field} id={'mobilenumber'} />
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormLabel htmlFor={'mobilenumber'} fontSize={14}>Mobile Number</FormLabel>
+                                <Input {...field} id={'mobilenumber'} fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.mobilenumber instanceof Map ? form.errors?.mobilenumber.map((d, i) => {
                                             return d;
@@ -65,9 +65,9 @@ const UserCredentials = (props) => {
                         <Field name='password'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.password && form.touched?.password} isRequired>
-                                <FormLabel htmlFor={'password'}>Password</FormLabel>
-                                <Input {...field} id={'password'} type={'password'} />
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormLabel htmlFor={'password'} fontSize={14}>Password</FormLabel>
+                                <Input {...field} id={'password'} type={'password'} fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.password instanceof Map ? form.errors?.password.map((d, i) => {
                                             return d;
@@ -111,14 +111,24 @@ const UserInformation = (props) => {
                         <Field name='salutation'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.salutation && form.touched?.salutation} isRequired>
-                                <FormLabel htmlFor={'salutation'}>Salutation</FormLabel>
-                                <Select {...field} id='salutation' placeholder=''>
+                                <FormLabel 
+                                    htmlFor={'salutation'}
+                                    fontSize={14}
+                                >
+                                    Salutation
+                                </FormLabel>
+                                <Select 
+                                    {...field} 
+                                    id='salutation' 
+                                    placeholder=''
+                                    fontSize={13}
+                                >
                                     <option value=""></option>
                                     {salutations.map((s) => (
                                         <option value={s}>{s}</option>
                                     ))}
                                 </Select>
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.salutation instanceof Map ? form.errors?.salutation.map((d, i) => {
                                             return d;
@@ -132,10 +142,19 @@ const UserInformation = (props) => {
                     <GridItem colSpan={[12, 12, 12, 8]}>
                         <Field name='firstname'>
                             {({ field, form }) => (
-                            <FormControl isDisabled={props.loading} isInvalid={form.errors?.firstname && form.touched?.firstname} isRequired>
-                                <FormLabel htmlFor={'firstname'}>First name</FormLabel>
-                                <Input {...field} id='firstname' placeholder='' />
-                                <FormErrorMessage textAlign={'left'}>
+                            <FormControl 
+                                isDisabled={props.loading} 
+                                isInvalid={form.errors?.firstname && form.touched?.firstname} 
+                                isRequired
+                            >
+                                <FormLabel 
+                                    htmlFor={'firstname'} 
+                                    fontSize={14}
+                                >
+                                    First name
+                                </FormLabel>
+                                <Input {...field} id='firstname' placeholder='' fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.firstname instanceof Map ? form.errors?.firstname.map((d, i) => {
                                             return d;
@@ -150,9 +169,14 @@ const UserInformation = (props) => {
                         <Field name='middlename'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.middlename && form.touched?.middlename} >
-                                <FormLabel htmlFor={'middlename'}>Middle name</FormLabel>
-                                <Input {...field} id='middlename' placeholder='' />
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormLabel 
+                                    htmlFor={'middlename'} 
+                                    fontSize={14}
+                                >
+                                    Middle name
+                                </FormLabel>
+                                <Input {...field} id='middlename' placeholder='' fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.middlename instanceof Map ? form.errors?.middlename.map((d, i) => {
                                             return d;
@@ -167,9 +191,14 @@ const UserInformation = (props) => {
                         <Field name='lastname'>
                             {({ field, form }) => (
                             <FormControl isDisabled={props.loading} isInvalid={form.errors?.lastname && form.touched?.lastname} isRequired>
-                                <FormLabel htmlFor={'lastname'}>Last name</FormLabel>
-                                <Input {...field} id='lastname' placeholder='' />
-                                <FormErrorMessage textAlign={'left'}>
+                                <FormLabel 
+                                    htmlFor={'lastname'}
+                                    fontSize={14}
+                                >
+                                    Last name
+                                </FormLabel>
+                                <Input {...field} id='lastname' placeholder='' fontSize={13} />
+                                <FormErrorMessage textAlign={'left'} fontSize={13}>
                                     {
                                         form.errors?.lastname instanceof Map ? form.errors?.lastname.map((d, i) => {
                                             return d;

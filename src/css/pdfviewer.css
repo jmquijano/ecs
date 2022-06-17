@@ -1,0 +1,13 @@
+.pdfViewerCanvas {
+    height: 630px;
+    max-height: 80%;
+    width: 100%;
+    overflow: auto;
+    text-align: center;
+    margin: 0 auto;
+    overflow: auto;
+}
+
+.pdfViewerCanvas > canvas {
+    margin: 0 auto;
+}

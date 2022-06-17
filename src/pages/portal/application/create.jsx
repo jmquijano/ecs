@@ -9,7 +9,7 @@ import { PageBaseUrl, PageRouteWithParam } from "../../../utils/urlbase";
 import { fetchApplicationById } from "../../../utils/fetch/application";
 import BusinessInformation from "../../../components/portal/application/create/businessinformation";
 import PageContainer from "../../../components/portal/reusable-layout/containers/PageContainer";
-
+import FileUpload from "../../../components/portal/application/create/fileupload"
 
 export default function CreateApplication () {
     const { activeStep, setStep } = useSteps({
@@ -17,6 +17,8 @@ export default function CreateApplication () {
     })
 
     const [loading, setLoading] = useState(false);
+
+    const [applicationData, setApplicationData] = useState([]);
 
     const handlePrecheckApplicationId = (_id) => {
         fetchApplicationById(
@@ -36,6 +38,9 @@ export default function CreateApplication () {
                         )
                     );
                 }
+                
+                setApplicationData(res?.data);
+
             } else {
                 navigate(PageBaseUrl?.Application.Index);
             }
@@ -75,7 +80,7 @@ export default function CreateApplication () {
         {
             label: 'Upload Documents',
             description: '',
-            component: <Text></Text>
+            component: <FileUpload id={id} applicationData={applicationData}  />
         },
         {
             label: 'Submit',
@@ -126,6 +131,7 @@ export default function CreateApplication () {
                         width={'100%'}
                         minWidth={'100%'}
                         height={'100%'}
+                        borderBottom={'1px solid'} borderBottomColor={'gray.200'}
                     >
                         {_steps.map(({label, description, component}, i) => (
                         <Step 
@@ -141,6 +147,8 @@ export default function CreateApplication () {
                             } 
                             key={i}
                             width={['100%', '100%', 'auto', 'auto']}
+                            paddingTop={0}
+                            marginTop={'0 !important'}
                         >
                             
                             {loading ?  

@@ -111,7 +111,7 @@ const LoginForm = (props) => {
                             <Box width={'100%'}>
                                 <Button 
                                     isLoading={props?.loading}
-                                    spinner={<PulseLoader size={8} color='white' />}
+                                    spinner={<PulseLoader size={6} color='white' />}
                                     colorScheme={'brand'} 
                                     width={'100%'}
                                     type={'submit'}

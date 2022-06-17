@@ -15,7 +15,7 @@ export default function PageLinkButton(props) {
     const { to, text, icon } = props;
 
     useEffect(() => {
-        console.log(props);
+        // console.log(props);
     }, [props]);
 
     return (

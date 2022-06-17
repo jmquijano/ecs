@@ -23,7 +23,6 @@ export default function PageContainer(props) {
     const { title, heading, children } = props;
 
     useEffect(() => {
-        console.log(props);
     }, [props]);
 
     return (
@@ -77,10 +76,9 @@ export default function PageContainer(props) {
                     width={'100%'}
                     borderRadius={10}
                     border={'1px solid'}
-                    borderColor={'gray.200'}
+                    borderColor={'gray.100'}
                     mt={5}
                     overflowX={'auto'}
-                    shadow={'xl'}
                 >
                     {children}
                 </Box>

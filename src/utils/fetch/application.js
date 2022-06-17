@@ -20,4 +20,22 @@ const fetchApplicationById = (clbk, id) => {
     return _f;
 }
 
-export { fetchApplicationById }
+const fetchUploadedFilesApplicationById = (clbk, id) => {
+    clbk();
+
+    let { url, method, headers } = Applicant?.Application?.UploadedFilesApplicationById;
+
+    const _f = fetch(Applicant?.Base + UrlWithParam({
+        'id': id
+    }, url), {
+        method: method,
+        headers: {
+            ...headers,
+            Authorization: 'Bearer ' + localStorage?.getItem('token')
+        }
+    });
+
+    return _f;
+}
+
+export { fetchApplicationById, fetchUploadedFilesApplicationById }

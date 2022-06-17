@@ -262,6 +262,14 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            UploadedFilesApplicationById: {
+                url: 'application/{id}/file',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         }
     }
