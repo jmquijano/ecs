@@ -9,6 +9,7 @@ use App\Http\Controllers\Boundaries;
 use App\Http\Controllers\Applicant\Application;
 use App\Http\Controllers\Basedata\BusinessType;
 use App\Http\Controllers\Basedata\CertificateType;
+use App\Http\Controllers\Basedata\DocType;
 use App\Http\Controllers\Basedata\InspectionType;
 use App\Http\Controllers\Basedata\MFACommunicationChannel;
 use App\Http\Controllers\Basedata\PSIC;
@@ -62,6 +63,11 @@ Route::prefix('basedata')->group(function () {
      * Inspection Type
      */
     Route::get('/inspection-type', [InspectionType::class, 'getAll']);
+
+    /**
+     * Document Type
+     */
+    Route::get('/document-type', [DocType::class, 'getAll']);
 });
 
 /**

@@ -8,6 +8,7 @@ use App\Core\Utilities\Generator\Uuid;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\ApplicantAuthGuard;
 use App\Http\Requests\Applicant\Application\CreateRequest;
+use App\Http\Resources\FiledApplication\GetFilesByApplicationIdResource;
 use App\Models\Basedata\DocType;
 use App\Models\FiledApplication;
 use App\Models\FiledApplication\UploadedFiles;
@@ -212,7 +213,6 @@ class Application extends Controller {
                 return response()->error(404, 'Application not found.');
             }
             
-
             // Check if document file was present
             if (!$req->hasFile('document')) {
                 return response()->error(
@@ -387,19 +387,24 @@ class Application extends Controller {
             $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
 
             try {
-                // Fetch
+                // Fetch Filed Application
                 $fetch = $filed_application->query()
                 ->where('id', '=', $id)
                 ->where('created_by->type', '=', 'applicant')
                 ->where('created_by->user_id', '=', $currentUser)
                 ->firstOrFail();
+
+                
             } catch (ModelNotFoundException $applicationNotFound) {
                 return response()->error(404, 'Application not found.');
             }
 
             // Get All Files
             try {
-                $uploadedFiles = UploadedFiles::query()->findOrFail($file_id, ['id', 'context', 'created_at'])->makeHidden(['original_context_path', 'context_file']);
+                $uploadedFiles = UploadedFiles::query()
+                    ->findOrFail($file_id, ['id', 'context', 'created_at'])
+                    ->makeHidden(['original_context_path', 'context_file'])
+                    ->append('filelink');
             } catch (ModelNotFoundException $fileNotFound) {
                 return response()->error(404, 'File not found.');
             }
@@ -450,13 +455,14 @@ class Application extends Controller {
 
             // Get All Files
             try {
-                $uploadedFile = UploadedFiles::query()->findOrFail($file_id, ['id', 'context', 'created_at']);
+                $uploadedFile = UploadedFiles::query()->findOrFail($file_id, ['id', 'context', 'created_at'])->append('original_context');
+
             } catch (ModelNotFoundException $fileNotFound) {
                 return response()->error(404, $exception->getMessageString('FS002'));
             }
 
             // Check if file exist in S3
-            $checkFromS3 = Storage::disk('s3')->exists($uploadedFile->originalContextPath);
+            $checkFromS3 = Storage::disk('s3')->exists($uploadedFile->original_context);
 
             if (!$checkFromS3) {
                 $uploadedFile->delete();
@@ -468,7 +474,7 @@ class Application extends Controller {
             }
 
             // Delete from S3
-            $deleteFromS3 = Storage::disk('s3')->delete($uploadedFile->originalContextPath);
+            $deleteFromS3 = Storage::disk('s3')->delete($uploadedFile->original_context);
 
             return response()->success(
                 200,
