@@ -1,4 +1,4 @@
-import { Center, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
+import { Center, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react";
 import { Document } from "react-pdf";
 import PDFViewer from 'pdf-viewer-reactjs'
 import { Fragment, useEffect } from "react";
@@ -7,7 +7,7 @@ import "../../../../css/pdfviewer.css";
 
 export default function Viewer(props) {
     useEffect(() => {
-        console.log(props?.path);
+        // console.log(props?.path);
     }, [props])
     return (
         <Fragment>
@@ -19,8 +19,9 @@ export default function Viewer(props) {
             >
                 <ModalOverlay 
                     bg={'blackAlpha.500'} 
-                    backdropFilter='blur(10px)'
+                    backdropFilter='blur(5px)'
                 />
+                
                 <ModalContent
                     bg={'white'}
                     shadow={'none'}
@@ -35,9 +36,14 @@ export default function Viewer(props) {
                         bg={'brand.200'}
                         borderBottom={'1px solid'} 
                         borderBottomColor={'gray.200'}
+                        alignItems={'center'}
+                        justifyContent={'center'}
                     >
-                        {props?.name}
+                        <Text fontSize={14}>{props?.name}</Text>
+
+                        <ModalCloseButton onClick={props?.onClose} />
                     </ModalHeader>
+                    
                     <ModalBody px={0} py={0} textAlign={'center'}>
                         
                             <PDFViewer

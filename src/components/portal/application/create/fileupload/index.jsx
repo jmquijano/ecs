@@ -1,8 +1,10 @@
-import { Box, Center, Grid, GridItem, Stack, Text } from "@chakra-ui/react";
+import { Box, Center, Grid, GridItem, Input, Stack, Text } from "@chakra-ui/react";
 import { Fragment, useEffect, useState } from "react";
-import { fetchUploadedFilesApplicationById } from "../../../../../utils/fetch/application";
+import { deleteUploadedFile, fetchUploadedFilesApplicationById, uploadFilesByApplicationId } from "../../../../../utils/fetch/application";
+import { fetchDocType } from "../../../../../utils/fetch/basedata";
 import { Loader } from "../../../../loaders";
 import FileManager from "../../../reusable-layout/filemanager";
+import Upload from "../../../reusable-layout/filemanager/upload";
 import Viewer from "../../../reusable-layout/filemanager/viewer";
 import ApplicationDetails from "./applicationdetails";
 
@@ -24,13 +26,14 @@ function serializeFile(f) {
                         sha1: d?.context?.hash?.sha1,
                         sha256: d?.context?.hash?.sha256
                     },
+                    isRemoving: d?.isRemoving,
                     created_at: d?.created_at,
                     locale: 'en-ph'
                 });
             }
             
         })
-        console.log(serialize);
+        // console.log(serialize);
         return serialize;
     }
 }
@@ -41,18 +44,43 @@ export default function FileUpload(props) {
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState([]);
     const [fileViewer, setFileViewer] = useState({});
+    const [fileUpload, setFileUpload] = useState({});
 
-    useEffect(() => {
+    // The purpose of this state is to store the file that is currently being uploaded, so that a progress bar can be shown.
+    const [fileUploadQueue, setFileUploadQueue] = useState([]);
+    // The purpose of this state is to set the upload state whether or not the file is being uploaded.
+    const [uploadState, setUploadState] = useState(false);
+
+    // Handle fetching of Uploaded Files
+    const handleFetchUploadedFiles = () => {
         fetchUploadedFilesApplicationById(
             () => setLoading(true),
             id
         )
+        .then(res => res.json())
+        .then(res => {
+            if (res?.success) {
+                setFiles(res?.data);
+            } else {
+
+            }
+        })
+        .finally(e => setLoading(false))
+    }
+
+    useEffect(() => {
+        handleFetchUploadedFiles();
+
+        fetchDocType(
+            () => setLoading(true)
+        )
             .then(res => res.json())
             .then(res => {
                 if (res?.success) {
-                    setFiles(res?.data);
-                } else {
-
+                    setFileUpload({
+                        ...fileUpload,
+                        docType: res?.data
+                    });
                 }
             })
             .finally(e => setLoading(false))
@@ -66,6 +94,126 @@ export default function FileUpload(props) {
         });
     }
 
+    const handleCloseFile = (e) => {
+        setFileViewer({
+            isOpen: fileViewer?.isOpen ? false : true
+        });
+    }
+
+    const handleToggleFileUpload = (e) => {
+        setFileUpload({
+            ...fileUpload,
+            isOpen: fileUpload?.isOpen ? false : true
+        })
+    }
+
+    // Handle update of index in fileUploadQueue
+    const handleFileUploadQueueUpdate = (i, progressPercentage, status) => {
+        let a = fileUploadQueue?.splice(0);
+        a[i] = {
+            status: status,
+            percentage: progressPercentage
+        };
+        setFileUploadQueue(a);
+    }
+
+    // Handle file upload
+    const handleUploadFile = (e) => {
+        if (e?.length >= 1) {
+            // For each element in e, upload to server
+            e.map((file, i) => {
+                // read file
+                const formdata = new FormData();
+                formdata.append('document', file.file, file?.file?.name);
+                
+                uploadFilesByApplicationId(
+                    () => setUploadState(true),
+                    // Application ID
+                    id,
+                    // Document Type
+                    file?.docType,
+                    // Form data to be uploaded
+                    formdata,
+                    // Handle progress
+                    (p) => {
+                        // console.log(p.loaded / p.total);
+                        handleFileUploadQueueUpdate(i, (p.loaded / p.total) * 100, 'in_progress');
+                    }
+                )
+                .then(res => res.json())
+                .then(res => {
+                    if (res?.success) {
+                        
+                    } else {
+                        alert(res?.message);
+                    }
+                })
+                .finally(e => {
+                    setUploadState(false);
+                    handleFileUploadQueueUpdate(i, 100, 'done')
+                })
+            });
+            
+        }
+    }
+
+    const setFileRemoveLoadState = (e, state) => {
+        // find in files[x].id === e.id && set files[x].removeLoadState = true;
+        let a = files?.splice(0);
+        a.map((file, i) => {
+            if (file?.id === e?.id) {
+                a[i] = {
+                    ...file,
+                    isRemoving: state
+                }
+
+                setFiles(a);
+            }
+        });
+    }
+
+    const handleRemoveFile = (e) => {
+        // console.log(e);
+
+        deleteUploadedFile(
+            () => {
+                setFileRemoveLoadState(e, true);
+            },
+            id,
+            e?.id
+        )
+        .then(res => res.json())
+        .then(res => {
+            if (res?.success) {
+                handleFetchUploadedFiles();
+            } else {
+                alert(res?.message);
+            }
+        })
+        .finally(e => {
+            setFileRemoveLoadState(e, false);
+        });
+        
+    }
+
+    useEffect(() => {
+       // Find fileUploadQueue[i]?.status if all are done, then set uploadState to false
+         if (fileUploadQueue?.length > 0) {
+            let allDone = true;
+            fileUploadQueue?.map((d) => {
+                if (d?.status !== 'done') {
+                    allDone = false;
+                }
+            })
+            if (allDone) {
+                handleToggleFileUpload();
+                handleFetchUploadedFiles();
+            } else {
+                // console.log('not all done');
+            }
+        }
+    }, [fileUploadQueue]);
+
     return (
         <Box minHeight={'40vh'} mt={'0 !important'}>
             {loading ?
@@ -75,8 +223,25 @@ export default function FileUpload(props) {
                 :
                 <>
                     <ApplicationDetails {...applicationData} />
-                    <FileManager files={serializeFile(files)} onOpen={handleOpenFile} onRemove={e => console.log(e)}>
-                        <Viewer {...fileViewer}/>
+                    <FileManager 
+                        files={serializeFile(files)} 
+                        onOpen={handleOpenFile} 
+                        onRemove={handleRemoveFile}
+                        onAddFile={handleToggleFileUpload}
+                    >
+                        <Viewer 
+                            {...fileViewer} 
+                            onClose={handleCloseFile} 
+                        />
+                        <Upload 
+                            {...fileUpload} 
+                            onClose={handleToggleFileUpload}
+                            onUpload={handleUploadFile}
+                            progress={fileUploadQueue}
+                    
+                        >
+                            
+                        </Upload>
                     </FileManager>
                 </>
             }

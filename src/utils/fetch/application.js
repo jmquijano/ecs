@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ApiBaseUrl, UrlWithParam } from "../urlbase";
 
 const { Applicant } = ApiBaseUrl;
@@ -38,4 +39,44 @@ const fetchUploadedFilesApplicationById = (clbk, id) => {
     return _f;
 }
 
-export { fetchApplicationById, fetchUploadedFilesApplicationById }
+const uploadFilesByApplicationId = async (clbk, id, doctype, body, uploadProgress) => {
+    clbk();
+
+    let { url, method, headers } = Applicant?.Application?.UploadFilesByApplicationId;
+
+    const _f = await axios.request({
+        method: method,
+        url: Applicant?.Base + UrlWithParam({
+            'id': id,
+            'doctype': doctype,
+        }, url),
+        data: body,
+        onUploadProgress: uploadProgress,
+        headers: {
+            Authorization: 'Bearer ' + localStorage?.getItem('token')
+        }
+    });
+
+    return _f;
+}
+
+const deleteUploadedFile = async (clbk, id, fileId) => {
+    clbk();
+
+    let { url, method, headers } = Applicant?.Application?.DeleteUploadedFilesApplicationById;
+
+    const _f = await fetch(Applicant?.Base + UrlWithParam({
+        'id': id,
+        'fileId': fileId
+    }, url), {
+        method: method,
+        headers: {
+            ...headers,
+            Authorization: 'Bearer ' + localStorage?.getItem('token')
+        }
+    });
+
+    return _f;
+}
+
+export { fetchApplicationById, fetchUploadedFilesApplicationById, uploadFilesByApplicationId, deleteUploadedFile}

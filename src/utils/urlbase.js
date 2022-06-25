@@ -210,6 +210,14 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            DocType: {
+                url: 'basedata/document-type',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         },
         Boundaries: {
@@ -266,6 +274,21 @@ const ApiBaseUrl = {
             UploadedFilesApplicationById: {
                 url: 'application/{id}/file',
                 method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            },
+            UploadFilesByApplicationId: {
+                url: 'application/{id}/file?doctype={doctype}',
+                method: 'POST',
+                headers: {
+                    
+                }
+            },
+            DeleteUploadedFilesApplicationById: {
+                url: 'application/{id}/file/{fileId}',
+                method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

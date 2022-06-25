@@ -88,7 +88,7 @@ export default function Login() {
                bg={'gray.50'} 
                height={'100vh'} 
                display="flex"
-               margin={["0px", "30px", "30px", "30px"]}
+               margin={["0px", "0px", "0px", "0px"]}
             >
                 <Box 
                     width={'100%'}

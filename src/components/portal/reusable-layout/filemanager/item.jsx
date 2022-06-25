@@ -2,6 +2,7 @@ import { Box, Stack, Text } from "@chakra-ui/react"
 import UIButton from "../button/UIButton"
 import { FileIcon, defaultStyles } from "react-file-icon";
 import moment from "moment";
+import { Loader } from "../../../loaders";
 
 /**
  * Bytes to File Size
@@ -67,7 +68,13 @@ export default function Item(props) {
                     <Box>
                         <UIButton  
                             onClick={(e) => props?.onRemove(props)} 
+                            disabled={props?.isRemoving}
                         >
+                            {props?.isRemoving ? 
+                                <Loader.Default size={'sm'} mr={2} />
+                                : 
+                                ''
+                            }
                             <Text>Remove</Text>
                         </UIButton>
                     </Box>

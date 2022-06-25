@@ -11,6 +11,7 @@ export default function FileManager(props) {
     useEffect(() => {
         
     }, [props]);
+
     return (
         <Fragment>
             <Container
@@ -45,6 +46,7 @@ export default function FileManager(props) {
                             <Box>
                                 <UIButton
                                     variant={'ghost'}
+                                    onClick={props?.onAddFile}
                                 >
                                     <BiUpload size={17} />
                                     <Text fontSize={13} ms={2}>
@@ -59,7 +61,11 @@ export default function FileManager(props) {
                         props?.files?.length >= 1 ?
                         props?.files?.map((d, i) => (
                             <GridItem colSpan={[12, 12, 12, 12]}>
-                                <Item {...d} onRemove={props?.onRemove} onOpen={props?.onOpen} />
+                                <Item 
+                                    {...d} 
+                                    onRemove={props?.onRemove} 
+                                    onOpen={props?.onOpen} 
+                                />
                             </GridItem>
                         ))
                         :

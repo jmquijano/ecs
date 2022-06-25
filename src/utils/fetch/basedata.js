@@ -73,11 +73,24 @@ const fetchInspectionType = (callback) => {
     return _f;
 }
 
+const fetchDocType = (callback) => {
+    callback();
+
+    const { url, method, headers } = Applicant?.Basedata?.DocType; 
+    const _f = fetch(Applicant?.Base + url, {
+        method: method,
+        headers: headers
+    });
+
+    return _f;
+}
+
 export { 
     fetchCertificateType, 
     fetchBusinessType, 
     fetchBirRDO, 
     fetchPSIC, 
     fetchPSICById,
-    fetchInspectionType
+    fetchInspectionType,
+    fetchDocType
 };
