@@ -71,7 +71,7 @@ function RenderFooter(props) {
                             py={0} 
                             background={'white'}
                             onChange={(e) => {
-                                props?.setLimit(e?.target?.value);
+                                props?.onPageLimitChange(e?.target?.value);
                             }}
                         >
                             {limitSelector?.map((d, k) => {
@@ -198,6 +198,7 @@ export default function DataTable(props) {
                     <RenderFooter 
                         pageCount={props?.pagination?.pageCount}
                         onPageChange={props?.pagination?.onPageChange}
+                        onPageLimitChange={props?.pagination?.onPageLimitChange}
                         totalItemCount={props?.pagination?.totalItemCount}
                         currentPage={props?.pagination?.currentPage}
                     />

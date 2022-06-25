@@ -142,6 +142,7 @@ export default function FiledApplication(props) {
             pagination={{
                 pageCount: pageCount,
                 onPageChange: e => setPage(e),
+                onPageLimitChange: e => setLimit(e),
                 totalItemCount: totalItemCount,
                 currentPage: page
             }}
