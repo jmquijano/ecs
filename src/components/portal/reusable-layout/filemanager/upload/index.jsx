@@ -21,6 +21,10 @@ export default function Upload(props) {
     const [uploadState, setUploadState] = useState(false);
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone();  
     
+    useEffect(() => {
+        setFilesForUpload([]);
+    }, [props?.isOpen]);
+
     // Monitor changes/updates on acceptedFiles
     useEffect(() => {
         acceptedFiles?.map((file) => {
@@ -87,8 +91,12 @@ export default function Upload(props) {
             setUploadState(false);
         }
 
+        console.log(props?.progress);
+
 
     }, [props?.progress]);
+
+    
 
     return (
         <Fragment>
@@ -187,7 +195,7 @@ export default function Upload(props) {
                                             <Item 
                                                 key={i} 
                                                 index={i}
-                                                progress={props?.progress[i]}
+                                                
                                                 {...file} 
                                                 docTypeSelector={props?.docType} 
                                                 onRemove={handleFileRemove}

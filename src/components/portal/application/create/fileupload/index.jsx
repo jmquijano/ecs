@@ -50,11 +50,13 @@ export default function FileUpload(props) {
     const [fileUploadQueue, setFileUploadQueue] = useState([]);
     // The purpose of this state is to set the upload state whether or not the file is being uploaded.
     const [uploadState, setUploadState] = useState(false);
+    // The purpose of this state is to set whether or not the file list is in loading state.
+    const [fileListLoadingState, setFileListLoadingState] = useState(false);
 
     // Handle fetching of Uploaded Files
-    const handleFetchUploadedFiles = () => {
+    const handleFetchUploadedFiles = (disableLoading = false, finallyClbk) => {
         fetchUploadedFilesApplicationById(
-            () => setLoading(true),
+            () => !disableLoading ? setFileListLoadingState(true) : null,
             id
         )
         .then(res => res.json())
@@ -64,8 +66,11 @@ export default function FileUpload(props) {
             } else {
 
             }
+
+            finallyClbk();
         })
-        .finally(e => setLoading(false))
+        .catch(e => { setFileListLoadingState(false); })
+        .finally(e => { setFileListLoadingState(false); })
     }
 
     useEffect(() => {
@@ -100,10 +105,10 @@ export default function FileUpload(props) {
         });
     }
 
-    const handleToggleFileUpload = (e) => {
+    const handleToggleFileUpload = (e, forcedClose = false) => {
         setFileUpload({
             ...fileUpload,
-            isOpen: fileUpload?.isOpen ? false : true
+            isOpen: forcedClose ? false : (fileUpload?.isOpen ? false : true)
         })
     }
 
@@ -111,12 +116,15 @@ export default function FileUpload(props) {
     const handleFileUploadQueueUpdate = (i, progressPercentage, status) => {
         let a = fileUploadQueue?.splice(0);
         a[i] = {
+            id: i,
             status: status,
             percentage: progressPercentage
         };
-        setFileUploadQueue(a);
+        setFileUploadQueue(fileUploadQueue => a);
     }
 
+    
+    
     // Handle file upload
     const handleUploadFile = (e) => {
         if (e?.length >= 1) {
@@ -185,20 +193,23 @@ export default function FileUpload(props) {
         .then(res => res.json())
         .then(res => {
             if (res?.success) {
-                handleFetchUploadedFiles();
+                // DisableLoading = true;
+                handleFetchUploadedFiles(true, () => {
+                    setFileRemoveLoadState(e, false);
+                });
             } else {
                 alert(res?.message);
             }
         })
         .finally(e => {
-            setFileRemoveLoadState(e, false);
+            
         });
         
     }
 
     useEffect(() => {
-       // Find fileUploadQueue[i]?.status if all are done, then set uploadState to false
-         if (fileUploadQueue?.length > 0) {
+        // Find fileUploadQueue[i]?.status if all are done, then set uploadState to false
+        if (fileUploadQueue?.length > 0) {
             let allDone = true;
             fileUploadQueue?.map((d) => {
                 if (d?.status !== 'done') {
@@ -206,12 +217,19 @@ export default function FileUpload(props) {
                 }
             })
             if (allDone) {
-                handleToggleFileUpload();
-                handleFetchUploadedFiles();
+                // console.log('All done');
+                // window.location.reload();
+
+                // Set ToogleFileUpload to false
+                handleToggleFileUpload(null, true);
+                handleFetchUploadedFiles(false);
             } else {
-                // console.log('not all done');
+                console.log('not all done');
             }
         }
+
+        
+
     }, [fileUploadQueue]);
 
     return (
@@ -228,6 +246,7 @@ export default function FileUpload(props) {
                         onOpen={handleOpenFile} 
                         onRemove={handleRemoveFile}
                         onAddFile={handleToggleFileUpload}
+                        isFileListLoading={fileListLoadingState}
                     >
                         <Viewer 
                             {...fileViewer} 

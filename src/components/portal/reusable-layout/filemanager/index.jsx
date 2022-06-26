@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, GridItem, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Grid, GridItem, Stack, Text, Progress } from "@chakra-ui/react";
 import { cloneElement, Fragment, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight, BiUpload } from "react-icons/bi";
 import UIButton from "../button/UIButton";
@@ -56,6 +56,18 @@ export default function FileManager(props) {
                                 </UIButton>
                             </Box>
                         </Stack>
+                        {
+                            props?.isFileListLoading
+                            ?
+                            <Progress 
+                                colorScheme={'brand'}
+                                size='xs' 
+                                isIndeterminate 
+                            />
+                            :
+                            null
+                        }
+                        
                     </GridItem>
                     {
                         props?.files?.length >= 1 ?
