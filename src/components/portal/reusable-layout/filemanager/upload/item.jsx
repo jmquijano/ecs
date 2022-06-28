@@ -33,17 +33,31 @@ export default function Item(props) {
             ''}
             
             <Box p={4}>
-                <Stack direction={'row'} mb={3}>
-                    <Stack direction={'column'} alignItems={'center'}>
+                <Stack 
+                    direction={'row'} 
+                    mb={3}
+                >
+                    <Stack 
+                        direction={'column'} 
+                        alignItems={'center'}
+                    >
                         <Box
                             width={'50px'}
                             height={'auto'}
                         >
-                            <FileIcon extension={props?.extension} {...defaultStyles[props?.extension]} />
+                            <FileIcon 
+                                extension={props?.extension} 
+                                {...defaultStyles[props?.extension]} 
+                            />
                         </Box>
                     </Stack>
-                    <Stack direction={'column'} width={'100%'}>
-                        <Text fontSize={13}>{props?.name ?? props?.file?.name}</Text>
+                    <Stack 
+                        direction={'column'} 
+                        width={'100%'}
+                    >
+                        <Text fontSize={13}>
+                            {props?.name ?? props?.file?.name}
+                        </Text>
                         <Select 
                             name="doctype" 
                             fontSize={13}

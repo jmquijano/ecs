@@ -15,18 +15,19 @@ export default function OtherInformation(props) {
             {/* DTI Trade Name */}
             {props?.businesstype?.selected?.shortname == "INDV" ?
             <GridItem colSpan={[12, 12, 12, 6]}>
-                <Field name='other.dti_registration_number'>
+                <Field name='trade_name'>
                     {({ field, form }) => (
                         <InputField 
                             formControl={{
                                 isInvalid: form.errors.trade_name && form.touched?.trade_name,
-                                isRequired: false,
+                                isRequired: true,
                                 label: {
                                     htmlFor: 'trade_name',
                                     text: 'Trade Name'
                                 },
                                 input: {
-                                    id: 'trade_name'
+                                    id: 'trade_name',
+                                    field: field
                                 },
                                 errorMessage: (
                                     form.errors?.trade_name instanceof Map ? form.errors?.trade_name.map((d, i) => {
@@ -35,10 +36,6 @@ export default function OtherInformation(props) {
                                 )
                                 
                             }}
-                            formik={{
-                                field: field
-                            }}
-                            fieldName={'trade_name'}
                         />
                     )}
                 </Field>

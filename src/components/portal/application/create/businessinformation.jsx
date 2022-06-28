@@ -89,19 +89,20 @@ export default function BusinessInformation(props) {
             street: Yup.string().required("Street is a mandatory field.").typeError("Street is a mandatory field.")
         }),
         preferred_inspectiontype: Yup.number().required("Inspection Type is a mandatory field.").typeError("Inspection Type is a mandatory field."),
-        preferred_inspectionscheduke: Yup.object().shape({
+        preferred_inspectionschedule: Yup.object().shape({
             day: Yup.string().required("Preferred day is mandatory field.").typeError("Preferred day is mandatory field."),
             time: Yup.string().required("Preferred time is mandatory field.").typeError("Preferred time is mandatory field.")
         })
     });
 
     const formikSubmitHandler = async (values, { setErrors, resetForm, errors }) => {
+
         setLoading({
             ...loading,
             general: true
         });
 
-        // console.log(values);
+        console.log(errors);
 
         values = {
             ...values,
@@ -132,6 +133,8 @@ export default function BusinessInformation(props) {
                         'path': 'file'
                     }, PageBaseUrl?.Application?.New?.WithType)
                 )
+            } else {
+                setErrors(res?.errordata);
             }
             
         })
@@ -150,6 +153,10 @@ export default function BusinessInformation(props) {
         dirty: true,
         enableReinitialize: true
     });
+
+    useEffect(() => {
+        console.log(formikInit);
+    }, [formikInit]);
 
     const [loading, setLoading] = useState({
         general: false,

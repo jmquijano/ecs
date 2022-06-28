@@ -10,15 +10,18 @@ import { fetchApplicationById } from "../../../utils/fetch/application";
 import BusinessInformation from "../../../components/portal/application/create/businessinformation";
 import PageContainer from "../../../components/portal/reusable-layout/containers/PageContainer";
 import FileUpload from "../../../components/portal/application/create/fileupload"
+import Submit from "../../../components/portal/application/create/submit"
 
 export default function CreateApplication () {
     const { activeStep, setStep } = useSteps({
-        initialStep: 0,
+        initialStep: null,
     })
 
     const [loading, setLoading] = useState(false);
-
     const [applicationData, setApplicationData] = useState([]);
+
+    // isComplete is a boolean state that is used to determine if the whole steps are completed
+    const [isComplete, setIsComplete] = useState(false);
 
     const handlePrecheckApplicationId = (_id) => {
         fetchApplicationById(
@@ -62,7 +65,20 @@ export default function CreateApplication () {
                         setStep(1);
                         handlePrecheckApplicationId(id);
                     break;
+                    case "submit":
+                        setStep(2);
+                        handlePrecheckApplicationId(id);
+                    break;
                 }
+
+            } else {
+                // Navigate to file upload page
+                navigate(
+                    PageRouteWithParam({
+                        'id': id,
+                        'path': 'file'
+                    }, PageBaseUrl?.Application?.New?.WithType)
+                );
             }
         } else {
             setStep(0);
@@ -75,16 +91,28 @@ export default function CreateApplication () {
         {
             label: 'Business Information',
             description: '',
-            component: <BusinessInformation />
+            component: (
+                <BusinessInformation />
+            )
         },
         {
             label: 'Upload Documents',
             description: '',
-            component: <FileUpload id={id} applicationData={applicationData}  />
+            component: (
+                <FileUpload 
+                    id={id} 
+                    applicationData={applicationData}  
+                />
+            )
         },
         {
-            label: 'Submit',
-            component: <Text></Text>
+            label: 'Finish',
+            component: (
+                <Submit 
+                    id={id} 
+                    applicationData={applicationData}
+                />
+            )
         }
     ];
 
@@ -133,10 +161,13 @@ export default function CreateApplication () {
                         height={'100%'}
                         borderBottom={'1px solid'} borderBottomColor={'gray.200'}
                     >
-                        {_steps.map(({label, description, component}, i) => (
+                        {_steps.map(({label, description, component, icon}, i) => (
                         <Step 
                             label={
-                                <Text color={'blackAlpha.800'} fontSize={14}>
+                                <Text 
+                                    color={'blackAlpha.800'} 
+                                    fontSize={14}
+                                >
                                     {label}
                                 </Text>
                             } 
@@ -149,12 +180,17 @@ export default function CreateApplication () {
                             width={['100%', '100%', 'auto', 'auto']}
                             paddingTop={0}
                             marginTop={'0 !important'}
+                            icon={icon}
+                            {...(isComplete ? {isCompletedStep: true} : null)}
                         >
                             
                             {loading ?  
                             <>
                                 <Center height={'40vh'}>
-                                    <Loader.Default size={'xl'} thickness={'5px'} />
+                                    <Loader.Default 
+                                        size={'xl'} 
+                                        thickness={'5px'} 
+                                    />
                                 </Center>
                             </>
                             : component}

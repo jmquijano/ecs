@@ -21,6 +21,25 @@ const fetchApplicationById = (clbk, id) => {
     return _f;
 }
 
+const editApplicationById = (clbk, id, params) => {
+    clbk();
+
+    let { url, method, headers } = Applicant?.Application?.EditApplicationById;
+
+    const _f = fetch(Applicant?.Base + UrlWithParam({
+        'id': id
+    }, url), {
+        method: method,
+        headers: {
+            ...headers,
+            Authorization: 'Bearer ' + localStorage?.getItem('token')
+        },
+        body: JSON.stringify(params)
+    });
+
+    return _f;
+}
+
 const fetchUploadedFilesApplicationById = (clbk, id) => {
     clbk();
 
@@ -79,4 +98,10 @@ const deleteUploadedFile = async (clbk, id, fileId) => {
     return _f;
 }
 
-export { fetchApplicationById, fetchUploadedFilesApplicationById, uploadFilesByApplicationId, deleteUploadedFile}
+export { 
+    fetchApplicationById,
+    editApplicationById,
+    fetchUploadedFilesApplicationById, 
+    uploadFilesByApplicationId, 
+    deleteUploadedFile
+}

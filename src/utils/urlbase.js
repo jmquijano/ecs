@@ -293,6 +293,14 @@ const ApiBaseUrl = {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
+            },
+            EditApplicationById: {
+                url: 'application/{id}',
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
         }
     }

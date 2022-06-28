@@ -1,8 +1,11 @@
 import { Box, Center, Grid, GridItem, Input, Stack, Text } from "@chakra-ui/react";
 import { Fragment, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { deleteUploadedFile, fetchUploadedFilesApplicationById, uploadFilesByApplicationId } from "../../../../../utils/fetch/application";
 import { fetchDocType } from "../../../../../utils/fetch/basedata";
+import { PageBaseUrl, PageRouteWithParam } from "../../../../../utils/urlbase";
 import { Loader } from "../../../../loaders";
+import UIButton from "../../../reusable-layout/button/UIButton";
 import FileManager from "../../../reusable-layout/filemanager";
 import Upload from "../../../reusable-layout/filemanager/upload";
 import Viewer from "../../../reusable-layout/filemanager/viewer";
@@ -41,6 +44,9 @@ function serializeFile(f) {
 export default function FileUpload(props) {
     const { id, applicationData } = props;
 
+    // useNavigate
+    const navigate = useNavigate();
+
     const [loading, setLoading] = useState(false);
     const [files, setFiles] = useState([]);
     const [fileViewer, setFileViewer] = useState({});
@@ -71,6 +77,18 @@ export default function FileUpload(props) {
         })
         .catch(e => { setFileListLoadingState(false); })
         .finally(e => { setFileListLoadingState(false); })
+    }
+
+    // Navigate to the next step
+    
+    // Handle next step
+    const handleNextStep = () => {
+        navigate(
+            PageRouteWithParam({
+                'id': id,
+                'path': 'submit'
+            }, PageBaseUrl?.Application?.New?.WithType)
+        )
     }
 
     useEffect(() => {
@@ -233,7 +251,7 @@ export default function FileUpload(props) {
     }, [fileUploadQueue]);
 
     return (
-        <Box minHeight={'40vh'} mt={'0 !important'}>
+        <Box minHeight={'auto'} mt={'0 !important'}>
             {loading ?
                 <Center height={'40vh'}>
                     <Loader.Default size={'xl'} thickness={'5px'} />
@@ -246,8 +264,16 @@ export default function FileUpload(props) {
                         onOpen={handleOpenFile} 
                         onRemove={handleRemoveFile}
                         onAddFile={handleToggleFileUpload}
+                        noFilesText={
+                            <>
+                                <Text fontSize={13} textAlign={'center'} display={'block'}>You haven't added any file.</Text>
+                                <Text fontSize={10} display={'block'}>You can still add files after submission.</Text>
+                            </>
+                            
+                        }
                         isFileListLoading={fileListLoadingState}
                     >
+
                         <Viewer 
                             {...fileViewer} 
                             onClose={handleCloseFile} 
@@ -261,7 +287,19 @@ export default function FileUpload(props) {
                         >
                             
                         </Upload>
+                        <Box px={[5, 5, 10, 10]} py={[5, 5, 5, 5]}>
+                            <Stack direction={'row'} justifyContent={'end'} alignItems={'center'}>
+                                <UIButton 
+                                    variant={'active'}
+                                    onClick={handleNextStep}
+                                >
+                                    Next
+                                </UIButton>
+                            </Stack>
+                        </Box>
+                        
                     </FileManager>
+                    
                 </>
             }
         </Box>

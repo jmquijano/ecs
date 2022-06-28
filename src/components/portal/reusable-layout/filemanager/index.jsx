@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, GridItem, Stack, Text, Progress } from "@chakra-ui/react";
+import { Box, Center, Container, Grid, GridItem, Stack, Text, Progress } from "@chakra-ui/react";
 import { cloneElement, Fragment, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight, BiUpload } from "react-icons/bi";
 import UIButton from "../button/UIButton";
@@ -18,7 +18,7 @@ export default function FileManager(props) {
                 maxWidth={'100%'}
                 py={0}
                 px={0}
-                minHeight={'40vh'}
+                minHeight={'auto'}
             >
 
                 <Grid
@@ -81,7 +81,11 @@ export default function FileManager(props) {
                             </GridItem>
                         ))
                         :
-                        ''
+                        <GridItem colSpan={[12, 12, 12, 12]} >
+                            <Center minHeight={'20vh'} flexDirection={'column'}>
+                                {props?.noFilesText}
+                            </Center>
+                        </GridItem>
                     }
                     
                     

@@ -153,8 +153,19 @@ export default function Upload(props) {
                             })}
                         >
                             <Input {...getInputProps()} />
-                            <Text cursor={'pointer'} fontSize={13}>Drag files here</Text>
-                            <Text cursor={'pointer'} fontSize={13} ml={2}>or</Text>
+                            <Text 
+                                cursor={'pointer'} 
+                                fontSize={13}
+                            >
+                                Drag files here
+                            </Text>
+                            <Text 
+                                cursor={'pointer'} 
+                                fontSize={13} 
+                                ml={2}
+                            >
+                                or
+                            </Text>
                             <Text 
                                 fontSize={13} 
                                 ml={2} 
