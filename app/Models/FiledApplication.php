@@ -617,6 +617,26 @@ class FiledApplication extends Model {
             
             // Format Business Line
             $businessline = json_encode($data['businessline'] ?? $this->getId($update->businessline, false));
+            // If status is integer then use findById else use findByShortname
+            $status = new FiledApplicationStatus();
+            if (is_int($data['status'])) {
+                try {
+                    $status = $status->query()->findOrFail($data['status']);
+                    $status = $status->id;
+                } catch (ModelNotFoundException $e) {
+                    throw new \Exception('Invalid Status');
+                }
+            } else {
+                try {
+                    $status = $status->findByShortname($data['status'], true)->id;
+                } catch (ModelNotFoundException $e) {
+                    throw new \Exception('Invalid Status');
+                }
+                
+            }
+
+            // Restrict allowable IDs to be set to status
+            $status = $status ?? $update->status->id;
             
             // Update in DB
             $update = $update->update([
@@ -628,7 +648,7 @@ class FiledApplication extends Model {
                 'province' => $data['province'] ?? $update->province->id,
                 'businesstype' => $data['businesstype'] ?? $update->businesstype->id,
                 'certificationtype' => $data['certificationtype'] ?? $update->certificationtype->id,
-                'status' => $data['status'] ?? $update->status->id,
+                'status' => $status,
                 'other_info' => $other_info, // json
             ]);
             

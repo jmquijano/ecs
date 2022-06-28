@@ -4,7 +4,11 @@ namespace App\Http\Requests\Applicant\Application;
 
 use App\Rules\BasedataCheck\BusinessType;
 use App\Rules\BasedataCheck\CertificateType;
+use App\Rules\BasedataCheck\FiledApplicationStatus\ForApplicant;
 use Illuminate\Foundation\Http\FormRequest;
+
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateApplicationRequest extends FormRequest
 {
@@ -39,7 +43,7 @@ class UpdateApplicationRequest extends FormRequest
             'address.building' => ['nullable'],
             'address.street' => ['nullable'],
             'address.landmark' => ['nullable'],
-            'other' => [],
+            'other' => ['nullable'],
             'businesstype' => ['nullable', new BusinessType()],
             'certificatetype' => ['nullable', new CertificateType()],
             'other.tin' => ['nullable'],
@@ -54,7 +58,26 @@ class UpdateApplicationRequest extends FormRequest
             'other.dti_registration_date' => ['nullable'],
             'businessline' => ['nullable', 'array'],
             'businessline.*' => ['nullable', 'exists:basedata_psic,id'],
-            'status' => ['nullable'],
+            'status' => ['nullable', new ForApplicant()],
         ];
+    }
+
+    protected function getValidatorInstance()
+    {
+        $factory = $this->container->make('Illuminate\Validation\Factory');
+
+        if (method_exists($this, 'validator'))
+        {
+            return $this->container->call([$this, 'validator'], compact('factory'));
+        }
+
+        return $factory->make(
+            $this->json()->all(), $this->container->call([$this, 'rules']), $this->messages(), $this->attributes()
+        );
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->error(400, 'Validation Error', $validator->errors()));
     }
 }

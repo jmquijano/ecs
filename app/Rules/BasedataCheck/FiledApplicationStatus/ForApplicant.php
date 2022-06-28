@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Rules\BasedataCheck;
+namespace App\Rules\BasedataCheck\FiledApplicationStatus;
 
 use App\Core\Exception\Models\ExceptionModel;
 use App\Models\Basedata\FiledApplicationStatus as BasedataFiledApplicationStatus;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class FiledApplicationStatus implements Rule
+class ForApplicant implements Rule
 {
     protected string $message;
 
@@ -30,18 +31,37 @@ class FiledApplicationStatus implements Rule
     public function passes($attribute, $value)
     {
         $filedApplicationStatus = new BasedataFiledApplicationStatus();
-
+        $find = null;
         // Find Filed Application Status
         if (is_int($value)) {
-            $find = $filedApplicationStatus->query()->find($value);
+            try {
+                $find = $filedApplicationStatus->query()->findOrFail($value);
+            } catch (ModelNotFoundException $e) {
+
+            }
+            
         } else {
-            $find = $filedApplicationStatus->findByShortname($value);
+            try {
+                $find = $filedApplicationStatus->findByShortname($value, true);
+            } catch (ModelNotFoundException $e) {
+
+            } 
         }
 
-        
-
         // Set bool
-        $status = ($find == null ? false : true);
+        $status = (
+            $find == null 
+            ? 
+            false 
+            : 
+            (
+                $find->policy['can_be_set_by']['applicant'] 
+                ? 
+                true 
+                : 
+                false
+            )
+        );
 
         // Exception message
         $exception = new ExceptionModel();
@@ -52,6 +72,7 @@ class FiledApplicationStatus implements Rule
             $exception->getMessageString('AP001C', ['FieldName' => 'Filed Application Status'])
         );
 
+        return $status;
     }
 
     /**

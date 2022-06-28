@@ -216,7 +216,7 @@ class Application extends Controller {
                 // Update
                 $filed_application->updateApplication($id, $req->toArray());
             } catch (\Exception $e) {
-                return $e;
+                return response()->error(500, $e->getMessage());
             }
             
 

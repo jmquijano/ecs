@@ -26,7 +26,17 @@ class FiledApplicationStatus extends Model
      * @return mixed
      */
     public function getDescriptionAttribute($value) {
-        return json_decode($value);
+        return json_decode($value, true);
+    }
+
+    /**
+     * Get "policy" attribute
+     * 
+     * @param mixed $value
+     * 
+     */
+    public function getPolicyAttribute($value) {
+        return json_decode($value, true);
     }
 
     /**
@@ -38,8 +48,9 @@ class FiledApplicationStatus extends Model
      * 
      * @throws ModelNotFoundException
      */
-    public function findByShortname(string $shortname) {
+    public function findByShortname(string $shortname, bool $toUppercase = false) {
         try {
+            $shortname = $toUppercase ? strtoupper($shortname) : $shortname;
             $find = $this->query()->where('shortname', '=', $shortname)->firstOrFail();
 
             return $find;
