@@ -45,15 +45,30 @@ const theme = extendTheme({
   },
   colors: {
     brand: {
-        50: 'rgba(224, 90, 44, 0.2)',
-        100: 'e46d43',
+        50: 'rgba(224, 90, 44, 0.1)',
+        100: 'rgba(224, 90, 44, 0.2)',
         200: '#e05a2c',
         300: '#e05a2c',
         400: '#e05a2c',
-        500: '#e05a2c' 
+        500: '#e05a2c', 
+        600: '#e05a2c',
+        700: '#e05a2c'
     }
   },
-  components: { 
+  components: {
+    Tabs: {
+      baseStyle: {
+        _focus: {
+          boxShadow: 'none'
+        },
+        tab: {
+          color: 'gray.600',
+          _focus: {
+            boxShadow: 'none'
+          }
+        }
+      }
+    },
     Link: { baseStyle: { _focus: { boxShadow: 'none' } } }, 
     Button: {
       baseStyle: {

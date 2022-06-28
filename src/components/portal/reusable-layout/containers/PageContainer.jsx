@@ -20,7 +20,7 @@ import PageLinkButton from "../button/PageLinkButton";
  * @returns 
  */
 export default function PageContainer(props) {
-    const { title, heading, children } = props;
+    const { title, heading, children, boxProps } = props;
 
     useEffect(() => {
     }, [props]);
@@ -74,14 +74,16 @@ export default function PageContainer(props) {
                 <Box
                     bg={'white'}
                     width={'100%'}
-                    borderRadius={10}
-                    border={'1px solid'}
+                    borderRadius={boxProps?.borderRadius ?? 10}
+                    border={boxProps?.border ?? '1px solid'}
                     borderColor={'gray.100'}
-                    mt={5}
-                    overflowX={'auto'}
+                    mt={boxProps?.mt ?? 5}
+                    overflowX={boxProps?.overflowX ?? 'auto'}
+                    {...boxProps}
                 >
                     {children}
                 </Box>
+                
             </Container>
         </Fragment>
     )

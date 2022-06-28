@@ -13,6 +13,7 @@ import ApplicationIndex from "./pages/portal/application";
 import { UserProfile } from "./pages/portal/user/profile";
 import CreateApplication from "./pages/portal/application/create";
 import { GoExternalLink } from "./pages/go/external";
+import ApplicationManage from "./pages/portal/application/manage";
 
 export default function AppRoutes() {
     return (
@@ -40,6 +41,10 @@ export default function AppRoutes() {
 
                         <Route path={PageBaseUrl.Application.New.WithType} element={
                             <CreateApplication />
+                        } />
+
+                        <Route path={PageBaseUrl.Application.Manage.Index} element={
+                            <ApplicationManage />
                         } />
 
                         <Route path={PageBaseUrl.User.Profile} element={
