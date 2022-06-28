@@ -157,6 +157,9 @@ Route::prefix('application')->middleware(['authguard.applicant'])->group(functio
     // Get Application by ID
     Route::get('/{id}', [Application::class, 'GetById']);
 
+    // Update Application by ID
+    Route::put('/{id}', [Application::class, 'UpdateApplication']);
+
     // Upload File
     Route::post('/{id}/file', [Application::class, 'UploadFile']);
 

@@ -76,10 +76,13 @@ class FiledApplication extends Model {
      * @return mixed
      */
     public function getOtherInfoAttribute($value) {
-        $info = json_decode($value);
+        $info = json_decode($value, true);
         try {
             // Retrieve RDO info
-            $info->bir->rdo = RevenueDistrictOffice::query()->findOrFail($info->bir->rdo)->makeHidden(['is_active']);
+            if (isset($info->bir->rdo)) {
+                $info->bir->rdo = RevenueDistrictOffice::query()->findOrFail($info->bir->rdo)->makeHidden(['is_active']);
+            }
+            
         } catch (ModelNotFoundException $e) {
 
         }
@@ -365,7 +368,7 @@ class FiledApplication extends Model {
      * @return string If param $toJson is set to True.
      * @return array If param $toJson is set to False.
      */
-    public function formatOtherInformation(array $info, bool $toJson = false) {
+    public function formatOtherInformation(array $info = [], bool $toJson = false, $oldValue = null) {
         /**
          * Format the Array
          * 
@@ -379,14 +382,14 @@ class FiledApplication extends Model {
          * "bir.rdo": 
          * It is the Revenue District Office of BIR where the business establishment is currently under at.
          * 
-         */
+         */        
         $other_info = [
             'bir' => [
-                'tin' => sprintf('%09d', $info['tin'] ?? null),
-                'branch_code' =>  sprintf('%05d', $info['branch_code'] ?? 0),
-                'rdo' => $info['rdo_code'] ?? null, // Revenue District Code
-                'taxpayer_name' => $info['taxpayer_name'] ?? null,
-                'date_of_birth' => $info['date_of_birth'] ?? null
+                'tin' => sprintf('%09d', $info['tin'] ?? $oldValue->other_info['bir']['tin'] ?? 0),
+                'branch_code' => sprintf('%05d', $info['branch_code'] ?? $oldValue->other_info['bir']['branch_code'] ?? null),
+                'rdo' => $info['rdo_code'] ?? $oldValue->other_info['bir']['rdo'] ?? 0, // Revenue District Code
+                'taxpayer_name' => $info['taxpayer_name'] ?? $oldValue->other_info['bir']['taxpayer_name'] ?? null,
+                'date_of_birth' => $info['date_of_birth'] ?? $oldValue->other_info['bir']['date_of_birth'] ?? null
             ],
             'sec' => [
                 'registration_number' => null,
@@ -400,7 +403,8 @@ class FiledApplication extends Model {
 
         // Check if Business Type is Individual, Corporation, Partnership, or Cooperatives.
         // This will ensure that the accepted and stored values from parameter(s) being received are under the correct Governing Body/Agency.
-        $check = BusinessType::query()->find($info['businesstype']);
+        $check = BusinessType::query()->find($oldValue->businesstype->id ?? $info['businesstype']);
+
         if ($check !== null) {
             // If the attribute value of shortname will match "CORP", "PRTN" or "COOP", 
             // then it will accept value(s) from parameter(s) pertaining to the Securities and Exchange Commission (CDA)
@@ -410,15 +414,15 @@ class FiledApplication extends Model {
                     ['CORP', 'PRTN', 'COOP']
                 )
             ) {
-                $other_info['sec']['company_name'] = $info['taxpayer_name'] ?? $info['trade_name'] ?? $info['company_name'];
-                $other_info['sec']['registration_number'] = $info['sec_registration_number'] ?? null;
-                $other_info['sec']['date_of_incorporation'] = $info['date_of_birth'] ?? $info['date_of_incorporation'] ?? null;
+                $other_info['sec']['company_name'] = $info['taxpayer_name'] ?? $info['trade_name'] ?? $info['company_name'] ?? $oldValue->other_info['sec']['company_name'] ?? null;
+                $other_info['sec']['registration_number'] = $info['sec_registration_number'] ?? $oldValue->other_info['sec']['registration_number'] ?? null;
+                $other_info['sec']['date_of_incorporation'] = $info['date_of_birth'] ?? $info['date_of_incorporation'] ?? $oldValue->other_info['sec']['date_of_incorporation'] ?? null;
 
                 // If the attribute value of shortname is "COOP",
                 // then it will accept value(s) from parameter(s) pertaining to the Cooperative Development Authority (CDA)
                 if ($check->shortname == 'COOP') {
-                    $other_info['cda']['registration_number'] = $info['cda_registration_number'] ?? null;
-                    $other_info['cda']['registration_date'] = $info['cda_registration_date'] ?? null;
+                    $other_info['cda']['registration_number'] = $info['cda_registration_number'] ?? $oldValue->other_info['cda']['registration_number'] ?? null;
+                    $other_info['cda']['registration_date'] = $info['cda_registration_date'] ?? $oldValue->other_info['cda']['registration_date'] ?? null;
                 }
 
             } 
@@ -430,9 +434,9 @@ class FiledApplication extends Model {
                     ['INDV']
                 )
             ) {
-                $other_info['dti']['trade_name'] = $info['trade_name'] ?? null;
-                $other_info['dti']['registration_number'] = $info['dti_registration_number'] ?? null;
-                $other_info['dti']['registration_date'] = $info['dti_registration_date'] ?? null;
+                $other_info['dti']['trade_name'] = $info['trade_name'] ?? $oldValue->other_info['dti']['trade_name'] ?? null;
+                $other_info['dti']['registration_number'] = $info['dti_registration_number'] ?? $oldValue->other_info['dti']['registration_number'] ?? null;
+                $other_info['dti']['registration_date'] = $info['dti_registration_date'] ?? $oldValue->other_info['dti']['registration_date'] ?? null;
             }
         }
 
@@ -509,7 +513,10 @@ class FiledApplication extends Model {
             $other_info = $this->formatOtherInformation($other_information, true);
 
             // Format Geomap
-            $geomap = json_encode($geomap);
+            $geomap = json_encode([
+                'longitude' => floatval($geomap['longitude']) ?? 0,
+                'latitude' => floatval($geomap['latitude']) ?? 0
+            ]);
 
             // Format Business Line
             $businessline = json_encode($businessline);
@@ -572,6 +579,60 @@ class FiledApplication extends Model {
             return $save; 
 
             
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    private function getId(array $payload = [], bool $asJson = false) {
+        // For each item in payload, get the id
+        $ids = [];
+        foreach ($payload as $key => $value) {
+            $ids[] = $value['id'];
+        }
+
+        return $asJson ? json_encode($ids) : $ids;
+    }
+
+    /**
+     * Update Application 
+     * 
+     * @param int $id
+     * 
+     * @return Illuminate\Database\Eloquent\Builder::update
+     * @throws \Exception $e
+     */
+    public function updateApplication(int $id, array $data) {
+        try {
+            $update = $this->query()->findOrFail($id);
+
+            // Format Other Information
+            $other_info = $this->formatOtherInformation($data['other'] ?? [], true, $update);
+
+            // Format Geomap
+            $geomap = json_encode([
+                'longitude' => str($data['geomap']['longitude'] ?? $update->geomap->longitude) ?? null,
+                'latitude' => str($data['geomap']['latitude'] ?? $update->geomap->latitude) ?? null
+            ]);  
+            
+            // Format Business Line
+            $businessline = json_encode($data['businessline'] ?? $this->getId($update->businessline, false));
+            
+            // Update in DB
+            $update = $update->update([
+                'trade_name' => $data['trade_name'] ?? $update->trade_name,
+                'taxpayer_name' => $data['taxpayer_name'] ?? $update->taxpayer_name,
+                'business_id' => $data['business_id'] ?? $update->business_id,
+                'barangay' => $data['barangay'] ?? $update->barangay->id,
+                'city' => $data['city'] ?? $update->city->id,
+                'province' => $data['province'] ?? $update->province->id,
+                'businesstype' => $data['businesstype'] ?? $update->businesstype->id,
+                'certificationtype' => $data['certificationtype'] ?? $update->certificationtype->id,
+                'status' => $data['status'] ?? $update->status->id,
+                'other_info' => $other_info, // json
+            ]);
+            
+            return $update;
         } catch (\Exception $e) {
             throw $e;
         }

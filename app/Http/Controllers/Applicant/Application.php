@@ -8,6 +8,7 @@ use App\Core\Utilities\Generator\Uuid;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\ApplicantAuthGuard;
 use App\Http\Requests\Applicant\Application\CreateRequest;
+use App\Http\Requests\Applicant\Application\UpdateApplicationRequest;
 use App\Http\Resources\FiledApplication\GetFilesByApplicationIdResource;
 use App\Models\Basedata\DocType;
 use App\Models\FiledApplication;
@@ -178,6 +179,50 @@ class Application extends Controller {
         } catch (\Exception $e) {
             // throw $e;
             return response()->error(500, 'An internal server error has occured while creating a new application.');
+        }
+    }
+
+    /**
+     * Update Application
+     * 
+     * @route:put /{id}
+     * 
+     * @param Request $req
+     * @param int $id
+     * @return response()
+     */
+    public function updateApplication(UpdateApplicationRequest $req, $id) {
+        try {
+            // Initialize FiledApplicaton model
+            $filed_application = new FiledApplication();
+            
+            // Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
+            
+            // Fetch
+            $fetch = $filed_application->query()
+                ->where('id', '=', $req->id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->first();
+            
+            // No item results in fetch
+            if ($fetch == null) {
+                return response()->error(404, 'Application not found.');
+                die();
+            }
+            
+            try {
+                // Update
+                $filed_application->updateApplication($id, $req->toArray());
+            } catch (\Exception $e) {
+                return $e;
+            }
+            
+
+            return response()->success(200, 'Application has been updated successfully.');
+        } catch (\Exception $e) {
+            return response()->error(500, 'An internal server error has occured while updating an application.');
         }
     }
 
@@ -475,6 +520,9 @@ class Application extends Controller {
 
             // Delete from S3
             $deleteFromS3 = Storage::disk('s3')->delete($uploadedFile->original_context);
+
+            // Delete from DB
+            $uploadedFile->delete();
 
             return response()->success(
                 200,
