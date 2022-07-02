@@ -91,9 +91,6 @@ export default function Upload(props) {
             setUploadState(false);
         }
 
-        console.log(props?.progress);
-
-
     }, [props?.progress]);
 
     

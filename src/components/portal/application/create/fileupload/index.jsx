@@ -67,11 +67,7 @@ export default function FileUpload(props) {
         )
         .then(res => res.json())
         .then(res => {
-            if (res?.success) {
-                setFiles(res?.data);
-            } else {
-
-            }
+            setFiles(res?.data);
 
             finallyClbk();
         })
@@ -242,7 +238,7 @@ export default function FileUpload(props) {
                 handleToggleFileUpload(null, true);
                 handleFetchUploadedFiles(false);
             } else {
-                console.log('not all done');
+                // console.log('not all done');
             }
         }
 

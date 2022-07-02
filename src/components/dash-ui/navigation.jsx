@@ -307,7 +307,7 @@ function Navigation({onClockTicking}) {
                 display={['none', 'none', 'none', 'block']}
             >
                 <Container
-                    maxWidth={'100%'}
+                    maxWidth={'1200px'}
                     py={2}
                     height={'100%'}
                     
@@ -327,7 +327,7 @@ function Navigation({onClockTicking}) {
                 borderColor={'gray.200'}
             >
                 <Container
-                    maxWidth={'100%'}
+                    maxWidth={'1200px'}
                     py={2}
                     height={'100%'}
                     alignItems={'end'}
@@ -347,7 +347,7 @@ function Navigation({onClockTicking}) {
                 padding={0}
             >
                 <Container
-                    maxWidth={'100%'}
+                    maxWidth={'1200px'}
                     padding={'0px auto'}
                     height={'100%'}
                 >

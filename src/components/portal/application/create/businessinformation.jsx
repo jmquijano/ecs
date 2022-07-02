@@ -1,5 +1,20 @@
-import { Box, Button, Checkbox, FormControl, Grid, GridItem, Stack, Text, useStyleConfig } from "@chakra-ui/react";
-import { Field, Form, FormikProvider, useFormik } from "formik";
+import { 
+    Box, 
+    Button, 
+    Checkbox, 
+    FormControl, 
+    Grid, 
+    GridItem, 
+    Stack, 
+    Text, 
+    useStyleConfig 
+} from "@chakra-ui/react";
+import { 
+    Field, 
+    Form, 
+    FormikProvider, 
+    useFormik 
+} from "formik";
 import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from 'yup';
@@ -10,13 +25,26 @@ import { DataPrivacyPolicyModal, LoadingModal } from "./modals";
 import OtherInformation from "./otherinformation";
 import PreferredInspection from "./preferredinspection";
 import PrimaryInformation from "./primaryinformation";
-import { ApiBaseUrl, PageBaseUrl, PageRouteWithParam } from "../../../../utils/urlbase";
+import { 
+    ApiBaseUrl, 
+    PageBaseUrl, 
+    PageRouteWithParam 
+} from "../../../../utils/urlbase";
 import moment from "moment";
 // import { fetchBusinessType, fetchCertificateType, fetchBirRDO, fetchInspectionType } from "../../../../utils/fetch/basedata";
 // import { fetchBarangay, fetchCity, fetchProvince } from "../../../utils/fetch/boundaries";
 import { HandleGeolocPermission } from "../../../maps";
-import { fetchBirRDO, fetchBusinessType, fetchCertificateType, fetchInspectionType } from "../../../../utils/fetch/basedata";
-import { fetchBarangay, fetchCity, fetchProvince } from "../../../../utils/fetch/boundaries";
+import { 
+    fetchBirRDO, 
+    fetchBusinessType, 
+    fetchCertificateType, 
+    fetchInspectionType 
+} from "../../../../utils/fetch/basedata";
+import { 
+    fetchBarangay, 
+    fetchCity, 
+    fetchProvince 
+} from "../../../../utils/fetch/boundaries";
 
 export default function BusinessInformation(props) {
     const { Applicant } = ApiBaseUrl;
@@ -155,9 +183,10 @@ export default function BusinessInformation(props) {
     });
 
     useEffect(() => {
-        console.log(formikInit);
+        // console.log(formikInit);
     }, [formikInit]);
 
+    // Loading State
     const [loading, setLoading] = useState({
         general: false,
         field: {

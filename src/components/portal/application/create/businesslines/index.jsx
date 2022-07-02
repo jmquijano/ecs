@@ -16,9 +16,7 @@ export default function BusinessLines(props) {
                     width={'100%'} 
                 >
                     <GridItem colSpan={[12, 12, 12, 12, 12]}>
-                        <PSICSearch 
-                            onChange={props?.search?.onChange} 
-                        />
+                        <PSICSearch onChange={props?.search?.onChange} />
                     </GridItem>
                     <GridItem colSpan={[12, 12, 12, 12, 12]}>
                         <Field>

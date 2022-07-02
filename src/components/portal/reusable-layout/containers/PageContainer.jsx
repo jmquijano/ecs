@@ -46,6 +46,7 @@ export default function PageContainer(props) {
                         >
                             {heading?.title ?? title}
                         </Heading>
+                        {heading?.leftAdornment}
                     </GridItem>
                     <GridItem 
                         colSpan={[12, 12, 6, 6, 6]} 
@@ -69,6 +70,7 @@ export default function PageContainer(props) {
                             }
                             
                         </Stack>
+                        {heading?.rightAdornment}
                     </GridItem>
                 </Grid>
                 <Box

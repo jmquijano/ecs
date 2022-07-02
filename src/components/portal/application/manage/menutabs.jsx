@@ -6,9 +6,9 @@ export default function MenuTabs(props) {
     const { children } = props;
 
     useEffect(() => {
-        console.log(children);
+        // console.log(children);
 
-        console.log(children instanceof Array)
+        // console.log(children instanceof Array)
     }, [props]);
     return (
         <Tabs 
@@ -17,15 +17,23 @@ export default function MenuTabs(props) {
                 boxShadow: 'none'
             }}
             variant={'enclosed-colored'}
+            isFitted
         >
             <TabList 
                 pt={0.2} 
                 marginLeft={-0.5}
+                maxWidth={'100%'}
+                overflowX={'auto'}
+                overflowY={'hidden'}
             >
                 {
                     children instanceof Array ?
                     children.map(({ props }) => (
-                        <Tab px={5} py={5} minWidth={'100% auto'}>
+                        
+                        (props?.hidden === true) ?
+                        null
+                        :
+                        <Tab px={5} py={5} width={'100%'}>
                             {props?.icon ? props?.icon: null}
                             <Text 
                                 fontSize={13} 
@@ -36,6 +44,8 @@ export default function MenuTabs(props) {
                             </Text>
                             
                         </Tab>
+                        
+                        
                     )) :
                     null
                 }

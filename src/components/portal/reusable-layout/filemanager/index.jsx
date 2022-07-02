@@ -8,6 +8,9 @@ import Footer from "./footer";
 export default function FileManager(props) {
     const Child = cloneElement(props?.children);
 
+    // Style Props
+    const { styleProps } = props;
+
     useEffect(() => {
         
     }, [props]);
@@ -41,7 +44,12 @@ export default function FileManager(props) {
                             <Box
                                 fontWeight={'800'}
                             >
-                                <Text color={'gray.600'}>My Uploaded Files</Text>
+                                <Text 
+                                    color={ styleProps?.title?.color ?? 'gray.600'}
+                                    fontSize={ styleProps?.title?.fontSize ?? 15}
+                                >
+                                    { props?.title ?? 'My Uploaded Files' }
+                                </Text>
                             </Box>
                             <Box>
                                 <UIButton
@@ -72,7 +80,7 @@ export default function FileManager(props) {
                     {
                         props?.files?.length >= 1 ?
                         props?.files?.map((d, i) => (
-                            <GridItem colSpan={[12, 12, 12, 12]}>
+                            <GridItem minHeight={'30vh'} colSpan={[12, 12, 12, 12]}>
                                 <Item 
                                     {...d} 
                                     onRemove={props?.onRemove} 
@@ -82,7 +90,7 @@ export default function FileManager(props) {
                         ))
                         :
                         <GridItem colSpan={[12, 12, 12, 12]} >
-                            <Center minHeight={'20vh'} flexDirection={'column'}>
+                            <Center minHeight={'30vh'} flexDirection={'column'}>
                                 {props?.noFilesText}
                             </Center>
                         </GridItem>
