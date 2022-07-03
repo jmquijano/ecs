@@ -549,7 +549,8 @@ export default function BusinessInformation(props) {
     }, [businessLines])
 
     const handlePrefTimeChange = (e) => {
-        formikInit?.setFieldValue('preferred_inspectionschedule.time', e);
+        // console.log(new Date(e).toLocaleTimeString())
+        formikInit?.setFieldValue('preferred_inspectionschedule.time', new Date(e).toLocaleTimeString());
     }
 
     // Data Privacy Policy 

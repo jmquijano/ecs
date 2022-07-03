@@ -35,6 +35,8 @@ import { LoadingModal } from "../../create/modals";
 import moment from "moment";
 import BusinessLines from "./businesslines";
 import BusinessLocation from "./businesslocation";
+import OtherInformation from "./otherinformation";
+import PreferredInspection from "./preferredinspection";
 
 export default function BusinessInformation(props) {
     const { applicationData } = props;
@@ -598,10 +600,16 @@ export default function BusinessInformation(props) {
             other: {
                 ...formValues?.other,
                 ...applicationData?.other_info,
+                tin: applicationData?.other_info?.bir?.tin,
+                branch_code: applicationData?.other_info?.bir?.branch_code,
+                rdo_code: applicationData?.other_info?.bir?.rdo?.id,
                 businessline: applicationData?.businessline?.map(x => x.id),
                 date_of_birth: moment(applicationData?.other_info?.bir?.date_of_birth ?? applicationData?.other_info?.sec?.date_of_incorporation)?.toDate()
-            }
+            },
+            preferred_inspectiontype: applicationData?.preferred_inspectiontype?.id
         });
+
+        console.log(applicationData?.other_info?.bir?.rdo);
         
         // Prefecth PSGC
         handlePreFetchPSGC(applicationData?.province?.id, applicationData?.city?.id);
@@ -766,10 +774,52 @@ export default function BusinessInformation(props) {
                                 }
                             </TabPanel>
                             <TabPanel minHeight={'30vh'}>
-                                {/* Other Information */}
+                                 {/* Other Information */}
+                                 {
+                                    tab == 3 ?
+                                    <Container maxWidth={'100%'} py={2}>
+                                        <OtherInformation
+                                            businesstype={{
+                                                selected: selectedBusinessType
+                                            }}
+                                            other={{
+                                                tin1: e => handleTinChange(1, e),
+                                                tin2: e => handleTinChange(2, e),
+                                                tin3: e => handleTinChange(3, e),
+                                                tin4: e => handleTinChange(4, e),
+                                                tin: formikInit?.values?.other?.tin,
+                                                branch_code: formikInit?.values?.other?.branch_code,
+                                                rdo_code: {
+                                                    data: birRdo,
+                                                    selected: formikInit?.values?.other?.rdo_code,
+                                                }
+                                            }}
+                                        />
+                                    </Container>
+                                    :
+                                    null
+                                }
                             </TabPanel>
                             <TabPanel minHeight={'30vh'}>
                                 {/* Preferred Inspection */}
+                                {
+                                    tab == 4 ?
+                                    <Container maxWidth={'100%'} py={2}>
+                                        <PreferredInspection
+                                            inspectiontype={{
+                                                data: inspectionType
+                                            }}
+                                            businesstype={{
+                                                selected: selectedBusinessType
+                                            }}
+                                            preferredtime={{
+                                                onChange: handlePrefTimeChange
+                                            }}
+                                        />
+                                    </Container>
+                                    :
+                                    null
+                                }
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

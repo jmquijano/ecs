@@ -9,6 +9,7 @@ import setMinutes from 'date-fns/setMinutes'
 import { businessDays } from "../../../../../utils/static-data/business-days";
 import BusinessDaySelector from "../businessdayselector";
 import moment from "moment";
+import { time2DateTime } from "../../../../misc/formatTime";
 
 export default function PreferredInspection(props) {
     const { businesstype, inspectiontype, preferredtime } = props;
@@ -115,7 +116,7 @@ export default function PreferredInspection(props) {
                                 Preferred Time
                             </FormLabel>
                             <DatePicker
-                                selected={form?.values?.preferred_inspectionschedule?.time}
+                                selected={time2DateTime(form?.values?.preferred_inspectionschedule?.time)}
                                 onChange={preferredtime?.onChange}
                                 showTimeSelect
                                 showTimeSelectOnly
