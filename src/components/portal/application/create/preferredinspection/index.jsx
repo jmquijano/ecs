@@ -14,6 +14,10 @@ import { time2DateTime } from "../../../../misc/formatTime";
 export default function PreferredInspection(props) {
     const { businesstype, inspectiontype, preferredtime } = props;
 
+    useEffect(() => {
+        // console.log(props);
+    }, [props]);
+
     return (
         <Fragment>
             <SectionTitle title={'Preferred Inspection'} />

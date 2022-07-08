@@ -50,6 +50,7 @@ export default function Dropdown (props) {
         } else {
             setInputProp(null);
         }
+
     }, [autoComplete?.selected]);
 
     return (

@@ -1,6 +1,6 @@
 const time2DateTime = (time) => {
     // Format time into a dummy date, to conform with DatePicker's selected format
-    console.log(time);
+    time = time ?? (new Date()).toLocaleTimeString();
     return ((new Date('01 Jan 1970 ' + time)));
 }
 

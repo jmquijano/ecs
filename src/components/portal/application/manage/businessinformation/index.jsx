@@ -37,6 +37,7 @@ import BusinessLines from "./businesslines";
 import BusinessLocation from "./businesslocation";
 import OtherInformation from "./otherinformation";
 import PreferredInspection from "./preferredinspection";
+import { editApplicationById } from "../../../../../utils/fetch/application";
 
 export default function BusinessInformation(props) {
     const { applicationData } = props;
@@ -155,9 +156,63 @@ export default function BusinessInformation(props) {
         }
     });
 
+    // PSGC Selected Value State
+    // In this state we store the selected value in full JSON array format.
+    const [psgcSelectedValue, setPsgcSelectedValue] = useState({
+        city: {
+            id: null,
+            name: null,
+            type: null
+        },
+        barangay: {
+            id: null,
+            name: null,
+            type: null
+        },
+        province: {
+            id: null,
+            name: null,
+            type: null
+        }
+    });
+
     // Formik Submit Handler
     const formikSubmitHandler = async (values, { setErrors, resetForm, errors }) => {
+        
 
+        values = {
+            ...values,
+            other: {
+                ...values?.other,
+                date_of_birth: values?.other?.date
+            }
+        };
+
+        editApplicationById(
+            () => setLoading({
+                ...loading,
+                general: true
+            }),
+            applicationData?.id,
+            values
+        )
+        .then(res => res.json())
+        .then(res => {
+            if (res?.success) {
+                
+            } else {
+                alert(res?.message);
+                setErrors(res?.errordata);
+            }
+        })
+        .finally(e =>
+            setLoading({
+                ...loading,
+                general: false
+            }),    
+        );
+
+        console.log(values);
     }
 
     // Formik Validation Schema
@@ -193,10 +248,10 @@ export default function BusinessInformation(props) {
     // Formik Init
     const formikInit = useFormik({
         initialValues: formValues,
-        onSubmit: formikSubmitHandler,
         validationSchema: validationSchema,
-        enableReinitialize: true,
-        dirty: true
+        onSubmit: formikSubmitHandler,
+        dirty: true,
+        enableReinitialize: true
     });
 
     // Handle Tab Change
@@ -215,7 +270,11 @@ export default function BusinessInformation(props) {
     const handleProvinceChange = async (e, form) => {
         let _id = e?.target?.value ?? e;
 
-        // console.log(_id);
+        // Set PSGC Selected Value
+        setPsgcSelectedValue({
+            ...psgcSelectedValue,
+            province: null
+        });
 
         // Set Field Value
         formikInit?.setFieldValue('province', parseInt(_id));
@@ -261,6 +320,12 @@ export default function BusinessInformation(props) {
     const handleCityChange = async (e) => {
         let _id = e?.target?.value ?? e;
 
+        // Set PSGC Selected Value
+        setPsgcSelectedValue({
+            ...psgcSelectedValue,
+            city: null
+        });
+
         // Set Field Value
         formikInit?.setFieldValue('city', parseInt(_id));
 
@@ -304,6 +369,12 @@ export default function BusinessInformation(props) {
     // Handle Barangay Change
     const handleBarangayChange = async (e) => {
         let _id = e?.target?.value ?? e;
+
+        // Set PSGC Selected Value
+        setPsgcSelectedValue({
+            ...psgcSelectedValue,
+            barangay: null
+        });
 
         // Set Field Value
         formikInit?.setFieldValue('barangay', parseInt(_id));
@@ -349,8 +420,6 @@ export default function BusinessInformation(props) {
                         zoom: 9
                     };
 
-                    // console.log(coordinates);
-                    // setFocusMap(coordinates);
                 }
             }
         })
@@ -401,7 +470,6 @@ export default function BusinessInformation(props) {
 
     // Handle Date of Birth Change
     const handleDateOfBirthChange = async (date) => {
-        console.log(date);
         formikInit?.setFieldValue('other.date_of_birth', date);
     }
 
@@ -440,6 +508,11 @@ export default function BusinessInformation(props) {
         }
     }
 
+    useEffect(() => {
+        formikInit?.setFieldValue('other.tin', tin?.tin1 + tin?.tin2 + tin?.tin3);
+        formikInit?.setFieldValue('other.branch_code', tin?.tin4);
+    }, [tin]);
+
     // Handle Business Line Change
     const handleChangeBusinessLine = async (e) => {
         if (e !== null) {
@@ -461,7 +534,8 @@ export default function BusinessInformation(props) {
 
     // Handle Preferred Time Change
     const handlePrefTimeChange = (e) => {
-        formikInit?.setFieldValue('preferred_inspectionschedule.time', e);
+        // console.log(e);
+        formikInit?.setFieldValue('preferred_inspectionschedule.time', new Date(e).toLocaleTimeString());
     }
 
     // Run on Mount
@@ -587,30 +661,7 @@ export default function BusinessInformation(props) {
 
         // Get the ids of applicationData?.businessline[]
         setBusinessLines(applicationData?.businessline);
-        // console.log(applicationData?.businessline?.map(x => x.id));
 
-        // Set Form Field Value
-        setFormValues({
-            ...formValues,
-            ...applicationData,
-            barangay: applicationData?.barangay,
-            city: applicationData?.city,
-            province: applicationData?.province,
-            businesstype: applicationData?.businesstype?.id,
-            other: {
-                ...formValues?.other,
-                ...applicationData?.other_info,
-                tin: applicationData?.other_info?.bir?.tin,
-                branch_code: applicationData?.other_info?.bir?.branch_code,
-                rdo_code: applicationData?.other_info?.bir?.rdo?.id,
-                businessline: applicationData?.businessline?.map(x => x.id),
-                date_of_birth: moment(applicationData?.other_info?.bir?.date_of_birth ?? applicationData?.other_info?.sec?.date_of_incorporation)?.toDate()
-            },
-            preferred_inspectiontype: applicationData?.preferred_inspectiontype?.id
-        });
-
-        console.log(applicationData?.other_info?.bir?.rdo);
-        
         // Prefecth PSGC
         handlePreFetchPSGC(applicationData?.province?.id, applicationData?.city?.id);
         
@@ -619,8 +670,66 @@ export default function BusinessInformation(props) {
             lat: applicationData?.geomap?.latitude,
         });
 
+        // Primary Information
+        formikInit?.setFieldValue('certificatetype', applicationData?.certificationtype?.id);
+        formikInit?.setFieldValue('businesstype', applicationData?.businesstype?.id);
+        formikInit?.setFieldValue('business_id', applicationData?.business_id);
+        formikInit?.setFieldValue('taxpayer_name', applicationData?.taxpayer_name);
+        formikInit?.setFieldValue('trade_name', applicationData?.other_info?.sec?.company_name ?? applicationData?.other_info?.dti?.trade_name ?? applicationData?.taxpayer_name);
+        formikInit?.setFieldValue('other.date_of_birth', moment(applicationData?.other_info?.bir?.date_of_birth ?? applicationData?.other_info?.sec?.date_of_incorporation)?.toDate());
+        
+        // PSGC
+        formikInit?.setFieldValue('province', applicationData?.province?.id);
+        formikInit?.setFieldValue('city', applicationData?.city?.id);
+        formikInit?.setFieldValue('barangay', applicationData?.barangay?.id);
+
+        // Set PSGC Selected Values, for visual purposes only.
+        setPsgcSelectedValue({
+            province: applicationData?.province,
+            city: applicationData?.city,
+            barangay: applicationData?.barangay
+        });
+
+        // Business Line
+        formikInit?.setFieldValue('businessline', applicationData?.businessline?.map(x => x.id));
+
+        // BIR
+        formikInit?.setFieldValue('other.tin', applicationData?.other_info?.bir?.tin);
+        formikInit?.setFieldValue('other.branch_code', applicationData?.other_info?.bir?.branch_code);
+        formikInit?.setFieldValue('other.rdo_code', applicationData?.other_info?.bir?.rdo?.id);
+        
+        setTin({
+            ...tin,
+            tin1: applicationData?.other_info?.bir?.tin?.substring(0, 3),
+            tin2: applicationData?.other_info?.bir?.tin?.substring(3, 6),
+            tin3: applicationData?.other_info?.bir?.tin?.substring(6, 9),
+            tin4: applicationData?.other_info?.bir?.branch_code,
+        })
+
+        // SEC
+        formikInit?.setFieldValue('other.sec_registration_number', applicationData?.other_info?.sec?.registration_number);
+
+        // CDA
+        formikInit?.setFieldValue('other.cda_registration_number', applicationData?.other_info?.cda?.registration_number);
+        formikInit?.setFieldValue('other.cda_registration_date', applicationData?.other_info?.cda?.registration_date);
+
+        // DTI
+        formikInit?.setFieldValue('other.dti_registration_number', applicationData?.other_info?.dti?.registration_number);
+        formikInit?.setFieldValue('other.dti_registration_date', applicationData?.other_info?.dti?.registration_date);
+
+        // Address
+        formikInit?.setFieldValue('address.street', applicationData?.address?.street);
+        formikInit?.setFieldValue('address.room', applicationData?.address?.room);
+        formikInit?.setFieldValue('address.building', applicationData?.address?.building);
+        formikInit?.setFieldValue('address.landmark', applicationData?.address?.landmark);
+        
+        // Geomap
         formikInit?.setFieldValue('geomap.longitude', applicationData?.geomap?.longitude);
         formikInit?.setFieldValue('geomap.latitude', applicationData?.geomap?.latitude);
+
+        // Preferred Inspection Type and Schedule
+        formikInit?.setFieldValue('preferred_inspectiontype', applicationData?.preferred_inspectiontype?.id);
+        formikInit?.setFieldValue('preferred_inspectionschedule', applicationData?.preferred_inspectionschedule);
     }, [props?.applicationData]);
 
     // Monitor post-render changes in pinMap state
@@ -662,7 +771,18 @@ export default function BusinessInformation(props) {
                         <Box maxWidth={'100%'} overflowX={'auto'} overflowY={'hidden'}>
                             <TabList 
                                 maxWidth={'100%'}
-                                overflowY={'none'}
+                                
+                                css={{
+                                    '&::-webkit-scrollbar': {
+                                        display: 'none'
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        display: 'none'
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        display: 'none'
+                                    }
+                                }}
                             >
                                 <Tab px={5} py={5}>
                                     <Text fontSize={13}>Primary Information</Text>
@@ -737,19 +857,19 @@ export default function BusinessInformation(props) {
                                                 onChange: handleProvinceChange,
                                                 data: province,
                                                 loading: loading?.field?.province,
-                                                selected: formikInit?.values?.province
+                                                selected: psgcSelectedValue?.province
                                             }}
                                             city={{
                                                 onChange: handleCityChange,
                                                 data: city,
                                                 loading: loading?.field?.city,
-                                                selected: formikInit?.values?.city
+                                                selected: psgcSelectedValue?.city
                                             }}
                                             barangay={{
                                                 onChange: handleBarangayChange,
                                                 data: barangay,
                                                 loading: loading?.field?.barangay,
-                                                selected: formikInit?.values?.barangay
+                                                selected: psgcSelectedValue?.barangay
                                             }}
                                             map={{
                                                 position: pinMap,
@@ -783,12 +903,22 @@ export default function BusinessInformation(props) {
                                                 selected: selectedBusinessType
                                             }}
                                             other={{
-                                                tin1: e => handleTinChange(1, e),
-                                                tin2: e => handleTinChange(2, e),
-                                                tin3: e => handleTinChange(3, e),
-                                                tin4: e => handleTinChange(4, e),
-                                                tin: formikInit?.values?.other?.tin,
-                                                branch_code: formikInit?.values?.other?.branch_code,
+                                                tin1: {
+                                                    value: tin?.tin1,
+                                                    onChange: e => handleTinChange(1, e)
+                                                },
+                                                tin2: {
+                                                    value: tin?.tin2,
+                                                    onChange: e => handleTinChange(2, e)
+                                                },
+                                                tin3: {
+                                                    value: tin?.tin3,
+                                                    onChange: e => handleTinChange(3, e)
+                                                },
+                                                tin4: {
+                                                    value: tin?.tin4,
+                                                    onChange: e => handleTinChange(4, e)
+                                                },
                                                 rdo_code: {
                                                     data: birRdo,
                                                     selected: formikInit?.values?.other?.rdo_code,
@@ -823,24 +953,32 @@ export default function BusinessInformation(props) {
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
-                
-                    <Box 
-                        px={[2, 3, 3, 5, 5]} 
-                        py={0}
-                        mb={5}
-                        borderColor={'gray.200'}
-                    >
-                        <Stack
-                            px={3}
-                            direction={'row'} 
-                            justifyContent={'start'}
-                        >
-                            <UIButton>
-                                Save Changes
-                            </UIButton>
-                        </Stack>
-                        
-                    </Box>
+                                
+                    <Field>
+                        {({ field, form }) => (
+                            <Box 
+                                px={[2, 3, 3, 5, 5]} 
+                                py={0}
+                                mb={5}
+                                borderColor={'gray.200'}
+                            >
+                                <Stack
+                                    px={3}
+                                    direction={'row'} 
+                                    justifyContent={'start'}
+                                >
+                                    
+                                    <UIButton 
+                                        onClick={formikInit?.submitForm}
+                                        {...(applicationData?.id == null || applicationData?.id == undefined ? {disabled: true} : null)}
+                                    >
+                                        Save Changes
+                                    </UIButton>
+                                </Stack>
+                                
+                            </Box>
+                        )}
+                    </Field>
                 </Form>
             </FormikProvider>
         </Fragment>

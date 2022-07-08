@@ -41,7 +41,7 @@ export default function PageContainer(props) {
                     >
                         <Heading 
                             color={'brand.300'}
-                            fontSize={['150%']}
+                            fontSize={['120%', '130%', '150%']}
                             cursor={'pointer'}
                         >
                             {heading?.title ?? title}
@@ -53,17 +53,27 @@ export default function PageContainer(props) {
                         maxWidth={'100%'}
                     >
                         <Stack 
-                            direction={'row'}
+                            direction={['column', 'column', 'row']}
                             justify={'end'}
+                            gap={0}
                         >
                             {
                                 heading?.menu instanceof Object ?
-                                heading?.menu?.map((d) => (
+                                heading?.menu?.map((d, i) => (
+                                    
+                                    d?.visible ?
                                     <PageLinkButton 
+                                        width={d?.width}
                                         to={d?.to}
                                         icon={d?.icon}
                                         text={d?.text}
+                                        variant={d?.variant}
+                                        key={i}
                                     />
+                                    :
+                                    null
+                                    
+                                    
                                 ))
                                 :
                                 ''

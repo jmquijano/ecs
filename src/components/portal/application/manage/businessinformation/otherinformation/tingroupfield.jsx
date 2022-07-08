@@ -35,6 +35,10 @@ import ZeroPadding from "../../../../../misc/zeropadding";
 export default function TinGroupField(props) {
     const {formControl, tin1, tin2, tin3, tin4, tin, branch_code} = props;
 
+    useEffect(() => {
+        console.log(tin);
+    }, [props]);
+
     return (
         <FormControl 
             isInvalid={formControl?.isInvalid} 
@@ -53,7 +57,7 @@ export default function TinGroupField(props) {
                     maxLength={3}
                     placeholder={'000'}
                     onChange={tin1?.onChange}
-                    value={tinFormat(tin, 0)}
+                    value={tin1?.value}
                 />
                 <Input
                     name={'other.tin2'}
@@ -61,7 +65,7 @@ export default function TinGroupField(props) {
                     maxLength={3}
                     placeholder={'000'}
                     onChange={tin2?.onChange}
-                    value={tinFormat(tin, 1)}
+                    value={tin2?.value}
                 />
                 <Input
                     name={'other.tin3'}
@@ -69,15 +73,16 @@ export default function TinGroupField(props) {
                     maxLength={3}
                     placeholder={'000'}
                     onChange={tin3?.onChange}
-                    value={tinFormat(tin, 2)}
+                    value={tin3?.value}
                 />
+                
                 <Input
                     name={'other.branch_code'}
                     fontSize={13}
                     maxLength={5}
                     placeholder={'00000'}
                     onChange={tin4?.onChange}
-                    value={ZeroPadding(branch_code)}
+                    value={tin4?.value}
                 />
             </Stack>
             

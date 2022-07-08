@@ -34,7 +34,7 @@ const UserProfileContextProvider = ({children}) => {
             )
             .then(res => res.json())
             .then((res) => {
-                setProfile(res?.data)
+                setProfile(res?.data);
             })
             .catch((error) => { 
                 console.log('error');

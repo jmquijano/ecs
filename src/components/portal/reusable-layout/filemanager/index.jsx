@@ -77,24 +77,36 @@ export default function FileManager(props) {
                         }
                         
                     </GridItem>
-                    {
-                        props?.files?.length >= 1 ?
-                        props?.files?.map((d, i) => (
-                            <GridItem minHeight={'30vh'} colSpan={[12, 12, 12, 12]}>
-                                <Item 
-                                    {...d} 
-                                    onRemove={props?.onRemove} 
-                                    onOpen={props?.onOpen} 
-                                />
-                            </GridItem>
-                        ))
-                        :
-                        <GridItem colSpan={[12, 12, 12, 12]} >
-                            <Center minHeight={'30vh'} flexDirection={'column'}>
-                                {props?.noFilesText}
-                            </Center>
-                        </GridItem>
-                    }
+                    <GridItem colSpan={[12, 12, 12, 12]} minHeight={'30vh'}>
+                        <Grid
+                            templateColumns={'repeat(12, 1fr)'} 
+                            width={'100%'} 
+                            
+                            gap={0}
+                            marginTop={'0px !important'}
+                        >   
+                            {
+                                props?.files?.length >= 1 ?
+                                props?.files?.map((d, i) => (
+                                    <GridItem colSpan={[12, 12, 12, 12]}>
+                                        <Item 
+                                            {...d} 
+                                            onRemove={props?.onRemove} 
+                                            onOpen={props?.onOpen} 
+                                        />
+                                    </GridItem>
+                                ))
+                                :
+                                <GridItem colSpan={[12, 12, 12, 12]} >
+                                    <Center minHeight={'30vh'} flexDirection={'column'}>
+                                        {props?.noFilesText}
+                                    </Center>
+                                </GridItem>
+                            }
+                        </Grid>
+                    </GridItem>
+                    
+                    
                     
                     
                 </Grid>

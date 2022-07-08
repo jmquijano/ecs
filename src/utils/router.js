@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { ApiBaseUrl, PageBaseUrl } from './urlbase';
 
 import { Splash } from '../components/splash';
-import { Navigate, matchPath, useLocation, useNavigate} from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { UserProfileContextProvider } from '../context/UserProfileContext';
 import { AuthTokenContextProvider } from '../context/AuthTokenContext';
-
-
+import { Route } from "react-router-dom";
 
 const HandleTokenValidation = (callback) => {
     const token = localStorage.getItem('token');
@@ -84,10 +83,59 @@ const PrivateRoute = ({children}) => {
 
     return !Loading ? Exception ? <Navigate to={`${PageBaseUrl.Error.InternalServerError}`} /> :
         (
-            Authenticated ? <AuthTokenContextProvider><UserProfileContextProvider>{children}</UserProfileContextProvider></AuthTokenContextProvider> : <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
+            Authenticated ? 
+                <AuthTokenContextProvider>
+                    <UserProfileContextProvider>
+                        {children}
+                    </UserProfileContextProvider>
+                </AuthTokenContextProvider> 
+                : 
+                <Navigate to={`${PageBaseUrl.Auth.Login}?next=${redirect_url}`} />
         ) : <Splash text="Fetching resources"/>;
+}
+
+const AppRoute = ({ component: Component, type,  ...rest }) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [canProceed, setCanProceed] = useState(false);
+
+    const navigate = useNavigate();
+
+    const { pathname } = useLocation();
+    const post_auth_redirect_url = pathname ?? '/';
+
+    useEffect(() => {
+        switch (type) {
+            case 'public':
+                setIsLoading(false);
+                setCanProceed(true);
+            break;
+            case 'private':
+                HandleTokenValidation((res) => {
+                    if (res?.success) {
+                        setIsLoading(false);
+                        setCanProceed(true);
+
+                    } else {        
+                        navigate(`${PageBaseUrl.Auth.Login}?next=${post_auth_redirect_url}`);
+                    }
+            
+                    setIsLoading(false);
+                });
+            break;
+        }
+    }, []);
+
+    return (
+        <Route
+            {...rest}
+            element={canProceed ? <Component /> 
+            :
+            <Navigate to={`${PageBaseUrl.Auth.Login}?next=${post_auth_redirect_url}`} />
+        }
+        />
+    );
 }
 
 
 
-export { PublicRoute, PrivateRoute, HandleTokenValidation}
+export { PublicRoute, PrivateRoute, HandleTokenValidation, AppRoute }

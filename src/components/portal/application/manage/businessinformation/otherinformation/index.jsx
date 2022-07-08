@@ -7,7 +7,9 @@ import TinGroupField from "./tingroupfield";
 
 
 export default function OtherInformation(props) {
-
+    useEffect(() => {
+        // console.log(props);
+    }, [props]);
     return (
         <Fragment>
             <Grid
@@ -230,7 +232,7 @@ export default function OtherInformation(props) {
 
                 {/* BIR TIN */}
                 {props?.businesstype?.selected?.id >= 1 ? 
-                    <GridItem colSpan={[12, 12, 4, 4]}>
+                    <GridItem colSpan={[12, 7, 6, 4]}>
                         <Field 
                             name='other.tin'
                         >
@@ -244,12 +246,10 @@ export default function OtherInformation(props) {
                                             text: 'BIR TIN'
                                         }
                                     }}
-                                    tin={props?.other?.tin}
-                                    branch_code={props?.other?.branch_code}
-                                    tin1={props?.other?.tin1?.onChange}
-                                    tin2={props?.other?.tin2?.onChange}
-                                    tin3={props?.other?.tin3?.onChange}
-                                    tin4={props?.other?.tin4?.onChange}
+                                    tin1={props?.other?.tin1}
+                                    tin2={props?.other?.tin2}
+                                    tin3={props?.other?.tin3}
+                                    tin4={props?.other?.tin4}
                                 />
                             )}
                         </Field>
@@ -260,7 +260,7 @@ export default function OtherInformation(props) {
 
                 {/* BIR RDO */}
                 {props?.businesstype?.selected?.id >= 1 ?
-                <GridItem colSpan={[12, 12, 8, 8]}>
+                <GridItem colSpan={[12, 5, 6, 8]}>
                     <Field 
                         name='other.rdo_code'
                     >

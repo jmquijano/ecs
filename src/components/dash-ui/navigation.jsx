@@ -301,7 +301,7 @@ function Navigation({onClockTicking}) {
     return (
         <Fragment>
             {/** Philippine Standard Time - Desktop */}
-            <Box
+            {/* <Box
                 bgColor={'brand.200'}
                 width={'100%'}
                 display={['none', 'none', 'none', 'block']}
@@ -317,12 +317,12 @@ function Navigation({onClockTicking}) {
                     <Text color={'white'} fontSize={13} display={'inline'} ml={1.5}><Clock format={'h:mm:ss A'} timezone={'Asia/Manila'} ticking={true} /></Text>
                 </Container>
                 
-            </Box>
+            </Box> */}
             {/** Philippine Standard Time - Mobile and Tables */}
             <Box
                 bgColor={'white'}
                 width={'100%'}
-                display={['block', 'block', 'block', 'none']}
+                display={['block', 'block', 'block', 'block']}
                 borderBottom={'1px solid'}
                 borderColor={'gray.200'}
             >
@@ -332,9 +332,9 @@ function Navigation({onClockTicking}) {
                     height={'100%'}
                     alignItems={'end'}
                 >
-                    <Text color={'gray.500'} fontSize={[10, 11]} display={'inline'}><Clock format={'dddd, MMMM D, YYYY'} timezone={'Asia/Manila'} /></Text>
-                    <Text color={'gray.500'} fontSize={[10, 11]} display={'inline'} ml={1}><Clock format={'h:mm:ss A'} timezone={'Asia/Manila'} ticking={true} /></Text>
-                    <Text color={'gray.500'} fontSize={[10, 11]} display={'inline'} ml={1}>(Philippine Standard Time)</Text>
+                    <Text color={'gray.500'} fontSize={[10, 11, 12]} display={'inline'}><Clock format={'dddd, MMMM D, YYYY'} timezone={'Asia/Manila'} /></Text>
+                    <Text color={'gray.500'} fontSize={[10, 11, 12]} display={'inline'} ml={1}><Clock format={'h:mm:ss A'} timezone={'Asia/Manila'} ticking={true} /></Text>
+                    <Text color={'gray.500'} fontSize={[10, 11, 12]} display={'inline'} ml={1}>(Philippine Standard Time)</Text>
                 </Container>
                 
             </Box>

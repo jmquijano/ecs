@@ -1,6 +1,20 @@
-import { Text, Badge, Stack, Box } from "@chakra-ui/react";
+import { 
+    Text, 
+    Badge, 
+    Stack, 
+    Box, 
+    Center,
+    Skeleton
+} from "@chakra-ui/react";
 import { useEffect } from "react"
-import { BiBuilding, BiChevronLeft, BiFile, BiInfoCircle, BiMoney } from "react-icons/bi"
+import { 
+    BiBuilding, 
+    BiCheck, 
+    BiChevronLeft, 
+    BiFile, 
+    BiInfoCircle, 
+    BiMoney 
+} from "react-icons/bi"
 import BusinessInformation from "../../../../components/portal/application/manage/businessinformation";
 import MenuTabs from "../../../../components/portal/application/manage/menutabs";
 import TabItem from "../../../../components/portal/application/manage/tabitem";
@@ -10,6 +24,8 @@ import { fetchApplicationById } from "../../../../utils/fetch/application";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import Documents from "../../../../components/portal/application/manage/documents";
+import { Loader } from "../../../../components/loaders";
+
 
 export default function ApplicationManage() {
     // Loading State
@@ -43,30 +59,44 @@ export default function ApplicationManage() {
             heading={{
                 title: (
                     <>
-                        <Stack direction={'row'} alignItems={'center'}>
+                        <Stack direction={['column', 'row', 'row']} alignItems={'center'}>
                             <Stack direction={'column'} gap={0}>
-                                <Text display={'inline'}>Manage Application</Text>
-                                <Text 
-                                    my={0}
-                                    fontSize={13}
-                                    color={'gray.500'}
-                                >
-                                    Filing Reference Number: <b>{applicationData?.application_reference_number}</b>
-                                </Text>
+                                <Skeleton isLoaded={!loading}>
+                                    <Text 
+                                        textAlign={['center', 'left', 'left']}
+                                    >
+                                        Manage Application
+                                    </Text>
+                                </Skeleton>
+                                <Skeleton isLoaded={!loading}>
+                                    <Text 
+                                        my={0}
+                                        fontSize={13}
+                                        color={'gray.500'}
+                                    >
+                                        Filing Reference Number: <b>{applicationData?.application_reference_number}</b>
+                                    </Text>
+                                </Skeleton>
+                                
+                                
                             </Stack>
-                            <Box>
-                                <Badge 
-                                    variant='solid' 
-                                    colorScheme='green'
-                                    textTransform={'none'}
-                                    py={2}
-                                    px={3}
-                                    fontWeight={600}
-                                    borderRadius={'full'}
-                                    
-                                >
-                                    {applicationData?.status?.fullname}
-                                </Badge>
+                            <Box display={'flex'} gap={1}>
+                                <Skeleton isLoaded={!loading}>
+                                    <Badge 
+                                        variant='solid' 
+                                        colorScheme='green'
+                                        textTransform={'none'}
+                                        py={2}
+                                        px={3}
+                                        fontWeight={600}
+                                        borderRadius={'full'}
+                                        width={'100%'}
+                                        display={'block'}
+                                        
+                                    >
+                                        {applicationData?.status?.fullname}
+                                    </Badge>
+                                </Skeleton>
                             </Box>
                         </Stack>
                     </>
@@ -76,10 +106,21 @@ export default function ApplicationManage() {
                     </>
                 ),
                 menu: [
+                    
+                    {
+                        to: '/application/new/' + applicationData?.id + '/submit?prompt=true',
+                        variant: 'active',
+                        icon: <BiCheck size={25} />,
+                        text: 'Submit',
+                        width: ['100%', '100%', 'auto'],
+                        visible: applicationData?.status?.shortname === "DRAFT"
+                    },
                     {
                         to: '/application',
                         icon: <BiChevronLeft size={25} />,
-                        text: 'Go Back'
+                        text: 'Go Back',
+                        width: ['100%', '100%', 'auto'],
+                        visible: true
                     }
                 ]
             }}
@@ -92,7 +133,12 @@ export default function ApplicationManage() {
                 <TabItem 
                     title={'Business Information'} 
                     icon={<BiInfoCircle size={20} />}
+                    skeleton={{
+                        enable: true,
+                        isLoaded: !loading
+                    }}
                 >
+                    
                     <BusinessInformation 
                         applicationData={applicationData}
                     />
@@ -100,26 +146,44 @@ export default function ApplicationManage() {
                 <TabItem 
                     title={'Documents'}
                     icon={<BiFile size={20} />}
+                    skeleton={{
+                        enable: true,
+                        isLoaded: !loading
+                    }}
                 >
                     <Documents id={id} />
                 </TabItem>
                 <TabItem 
                     title={'Equipments'}
                     icon={<BiBuilding />}
+                    skeleton={{
+                        enable: true,
+                        isLoaded: !loading
+                    }}
                 >
                 </TabItem>
                 <TabItem 
                     title={'Virtual Inspection'}
                     icon={<RiVideoChatLine />}
+                    skeleton={{
+                        enable: true,
+                        isLoaded: !loading
+                    }}
                 >
                 </TabItem>
                 <TabItem 
                     hidden
                     title={'Payments'}
                     icon={<BiMoney size={20} />}
+                    skeleton={{
+                        enable: true,
+                        isLoaded: !loading
+                    }}
                 >
                 </TabItem>
             </MenuTabs>
         </PageContainer>
+        
+        
     )
 }

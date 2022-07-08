@@ -9,7 +9,7 @@ function GoExternalLink() {
     const extLink = base64.decode(searchParams.get('u'));
 
     return (
-        <Box>
+        <Box minHeight={'100vh'}>
             <Container maxWidth={'1200px'}>
                 <Box py={5} px={3} borderBottom={'1px solid'} borderBottomColor={'gray.200'}>
                     <Stack direction={'row'} alignItems={'center'} textAlign={'center'}>

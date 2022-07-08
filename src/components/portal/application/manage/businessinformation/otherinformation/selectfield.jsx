@@ -26,7 +26,7 @@ export default function SelectField(props) {
     const { data, onChange, formControl, select, errorMessage, selected } = props;
 
     useEffect(() => {
-        console.log(props);
+        // console.log(props);
     }, [props]);
     return (
         <FormControl 

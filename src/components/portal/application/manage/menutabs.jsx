@@ -1,6 +1,7 @@
-import { Container, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import { Center, Container, Skeleton, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Fragment } from "react";
+import { Loader } from "../../../loaders";
 
 export default function MenuTabs(props) {
     const { children } = props;
@@ -25,6 +26,17 @@ export default function MenuTabs(props) {
                 maxWidth={'100%'}
                 overflowX={'auto'}
                 overflowY={'hidden'}
+                css={{
+                    '&::-webkit-scrollbar': {
+                        display: 'none'
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        display: 'none'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        display: 'none'
+                    }
+                }}
             >
                 {
                     children instanceof Array ?
@@ -34,14 +46,33 @@ export default function MenuTabs(props) {
                         null
                         :
                         <Tab px={5} py={5} width={'100%'}>
-                            {props?.icon ? props?.icon: null}
-                            <Text 
-                                fontSize={13} 
-                                fontWeight={500}
-                                {...(props?.icon ? {ml: 2}: null)}
-                            >
-                                {props.title}
-                            </Text>
+                            {props?.icon ?
+                                props?.skeleton?.enable ?
+                                    props?.skeleton?.isLoaded ? props?.icon : null
+                                    :
+                                    props?.icon
+                                : 
+                                null
+                            }
+                            {props?.skeleton?.enable ?
+                                <Skeleton isLoaded={props?.skeleton?.isLoaded}>
+                                    <Text 
+                                        fontSize={13} 
+                                        fontWeight={500}
+                                        {...(props?.icon ? {ml: 2}: null)}
+                                    >
+                                        {props.title}
+                                    </Text>
+                                </Skeleton>
+                                :
+                                <Text 
+                                    fontSize={13} 
+                                    fontWeight={500}
+                                    {...(props?.icon ? {ml: 2}: null)}
+                                >
+                                    {props.title}
+                                </Text>
+                            }
                             
                         </Tab>
                         
@@ -55,8 +86,26 @@ export default function MenuTabs(props) {
                 {
                     children instanceof Array ?
                     children.map(({ props }) => (
+                        
                         <TabPanel px={0} py={0}>
-                            {props.children}
+                            
+                            {
+                                props?.skeleton?.enable ?
+                                    props?.skeleton?.isLoaded ?
+                                    props.children
+                                    :
+                                    <Center 
+                                        minHeight={'40vh'}
+                                    >
+                                        <Loader.Default 
+                                            thickness='4px'
+                                            size='lg'
+                                        />
+                                    </Center>
+                                    
+                                :
+                                props.children
+                            }                            
                             
                         </TabPanel>
                     )) :

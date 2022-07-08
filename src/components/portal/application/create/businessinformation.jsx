@@ -130,7 +130,7 @@ export default function BusinessInformation(props) {
             general: true
         });
 
-        console.log(errors);
+        // console.log(errors);
 
         values = {
             ...values,
@@ -484,6 +484,7 @@ export default function BusinessInformation(props) {
 
     const handleTinChange = (o, e) => {
         e = e?.target?.value;
+        console.log(e);
         switch (o) {
             case 1: 
                 e = ZeroPadding(e, 3);
