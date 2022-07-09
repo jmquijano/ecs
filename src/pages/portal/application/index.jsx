@@ -13,7 +13,8 @@ export default function ApplicationIndex() {
                     {
                         to: '/application/new',
                         icon: <BiPlus size={20} />,
-                        text: 'Create'
+                        text: 'Create',
+                        visible: true
                     }
                 ]
             }}

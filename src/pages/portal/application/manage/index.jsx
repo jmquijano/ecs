@@ -84,7 +84,7 @@ export default function ApplicationManage() {
                                 <Skeleton isLoaded={!loading}>
                                     <Badge 
                                         variant='solid' 
-                                        colorScheme='green'
+                                        colorScheme={(applicationData?.status?.policy?.badge_color ?? "green.300")}
                                         textTransform={'none'}
                                         py={2}
                                         px={3}

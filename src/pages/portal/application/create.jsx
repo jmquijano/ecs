@@ -125,7 +125,8 @@ export default function CreateApplication () {
                     {
                         to: '/application',
                         icon: <BiChevronLeft fontSize={25} />,
-                        text: 'Go Back'
+                        text: 'Go Back',
+                        visible: true
                     }
                 ]
             }}
