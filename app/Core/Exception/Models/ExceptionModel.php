@@ -33,7 +33,10 @@ class ExceptionModel extends Model {
      * @param bool|null $makeErrorCodeVisible
      * @return string
      */
-    public function getMessageString(string $code, ?array $replaceVars = [], ?bool $makeErrorCodeVisible = false) : string 
+    public function getMessageString(
+        string $code, 
+        ?array $replaceVars = [], 
+        ?bool $makeErrorCodeVisible = false) : string 
     {
         $findExceptionCode = $this->query()->where('code', '=', $code);
         $message = str($findExceptionCode->pluck('message')->first());

@@ -78,9 +78,12 @@ class FiledApplication extends Model {
     public function getOtherInfoAttribute($value) {
         $info = json_decode($value, true);
         try {
+
+            
+
             // Retrieve RDO info
-            if (isset($info->bir->rdo)) {
-                $info->bir->rdo = RevenueDistrictOffice::query()->findOrFail($info->bir->rdo)->makeHidden(['is_active']);
+            if (isset($info['bir']['rdo'])) {
+                $info['bir']['rdo'] = RevenueDistrictOffice::query()->findOrFail($info['bir']['rdo'])->makeHidden(['is_active']);
             }
             
         } catch (ModelNotFoundException $e) {
@@ -246,9 +249,39 @@ class FiledApplication extends Model {
      * 
      * @return mixed
      */
-    public function getPrreferredInspectionschedule($value) {
-        return json_decode($value);
+    public function getPreferredInspectionscheduleAttribute($value) {
+        return json_decode($value, true);
     }
+
+    /**
+     * Get "address" attribute.
+     * Decodes JSON value
+     * 
+     * @param mixed $value
+     * 
+     * @return mixed
+     */
+    public function getAddressAttribute($value) {
+        return json_decode($value, true);
+    }
+
+    /**
+     * Get "preferred_inspectiontype" attribute.
+     * 
+     * @param mixed $value
+     * 
+     * @return mixed
+     */
+    public function getPreferredInspectiontypeAttribute($value) {
+        // Retrieve from Basedata
+        if ($value !== null) {
+            $preferred_inspectiontype = InspectionType::query()->find($value)->makeHidden(['is_active']);
+
+            return $preferred_inspectiontype;
+        }
+        
+    }
+    
 
     #region PSGC Relationship
     /**
@@ -387,7 +420,7 @@ class FiledApplication extends Model {
             'bir' => [
                 'tin' => sprintf('%09d', $info['tin'] ?? $oldValue->other_info['bir']['tin'] ?? 0),
                 'branch_code' => sprintf('%05d', $info['branch_code'] ?? $oldValue->other_info['bir']['branch_code'] ?? null),
-                'rdo' => $info['rdo_code'] ?? $oldValue->other_info['bir']['rdo'] ?? 0, // Revenue District Code
+                'rdo' => $info['rdo_code'] ?? $oldValue->other_info['bir']['rdo']['id'] ?? 0, // Revenue District Code
                 'taxpayer_name' => $info['taxpayer_name'] ?? $oldValue->other_info['bir']['taxpayer_name'] ?? null,
                 'date_of_birth' => $info['date_of_birth'] ?? $oldValue->other_info['bir']['date_of_birth'] ?? null
             ],
@@ -591,7 +624,7 @@ class FiledApplication extends Model {
             $ids[] = $value['id'];
         }
 
-        return $asJson ? json_encode($ids) : $ids;
+        return $asJson ? (string) json_encode($ids) : (array) $ids;
     }
 
     /**
@@ -617,29 +650,50 @@ class FiledApplication extends Model {
             
             // Format Business Line
             $businessline = json_encode($data['businessline'] ?? $this->getId($update->businessline, false));
+
             // If status is integer then use findById else use findByShortname
             $status = new FiledApplicationStatus();
-            if (is_int($data['status'])) {
-                try {
-                    $status = $status->query()->findOrFail($data['status']);
-                    $status = $status->id;
-                } catch (ModelNotFoundException $e) {
-                    throw new \Exception('Invalid Status');
+            
+            if (isset($data['status'])) {
+                if (is_int($data['status'])) {
+                    try {
+                        $status = $status->query()->findOrFail($data['status']);
+                        $status = $status->id;
+                    } catch (ModelNotFoundException $e) {
+                        throw new \Exception('Invalid Status');
+                    }
+                } else {
+                    try {
+                        $status = $status->findByShortname($data['status'], true)->id;
+                    } catch (ModelNotFoundException $e) {
+                        throw new \Exception('Invalid Status');
+                    }
+                    
                 }
             } else {
-                try {
-                    $status = $status->findByShortname($data['status'], true)->id;
-                } catch (ModelNotFoundException $e) {
-                    throw new \Exception('Invalid Status');
-                }
-                
+                $status = null;
             }
-
+            
             // Restrict allowable IDs to be set to status
             $status = $status ?? $update->status->id;
+
+            // Preferred Inspection
+            try {
+                $inspectiontype = new InspectionType();
+                $inspectiontype = $inspectiontype->findById($data['preferred_inspectiontype'] ?? $update->preferred_inspectiontype->id, true)->id;
+            } catch (ModelNotFoundException $e) {
+                throw $e;
+                die();
+            }
+
+            // Inspection Schedule
+            $inspectionschedule = json_encode([
+                "day" => $data['preferred_inspectionschedule']['day'] ?? $update->preferred_inspectionschedule['day'] ?? null,
+                "time" => $data['preferred_inspectionschedule']['time'] ?? $update->preferred_inspectionschedule['time'] ?? null
+            ]);
             
             // Update in DB
-            $update = $update->update([
+            $updateData = [
                 'trade_name' => $data['trade_name'] ?? $update->trade_name,
                 'taxpayer_name' => $data['taxpayer_name'] ?? $update->taxpayer_name,
                 'business_id' => $data['business_id'] ?? $update->business_id,
@@ -650,7 +704,12 @@ class FiledApplication extends Model {
                 'certificationtype' => $data['certificationtype'] ?? $update->certificationtype->id,
                 'status' => $status,
                 'other_info' => $other_info, // json
-            ]);
+                'geomap' => $geomap, // json
+                'preferred_inspectiontype' => $inspectiontype,
+                'preferred_inspectionschedule' => $inspectionschedule, // json
+                'businessline' => $businessline, // json
+            ];
+            $update = $update->update($updateData);
             
             return $update;
         } catch (\Exception $e) {
