@@ -7,11 +7,14 @@ use App\Core\Utilities\Authentication\ApplicantAuthUtility;
 use App\Core\Utilities\Generator\Uuid;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\ApplicantAuthGuard;
+use App\Http\Requests\Applicant\Application\AddEquipment;
 use App\Http\Requests\Applicant\Application\CreateRequest;
 use App\Http\Requests\Applicant\Application\UpdateApplicationRequest;
 use App\Http\Resources\FiledApplication\GetFilesByApplicationIdResource;
 use App\Models\Basedata\DocType;
+use App\Models\Basedata\Equipments as BasedataEquipments;
 use App\Models\FiledApplication;
+use App\Models\FiledApplication\Equipments;
 use App\Models\FiledApplication\UploadedFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -533,5 +536,105 @@ class Application extends Controller {
         }
     }
 
-    
+    /**
+     * Add Equipment
+     * 
+     * @route:post /{id}/equipment
+     * 
+     * @param Request $req
+     * @param int $id
+     */
+    public function addEquipment(AddEquipment $req, ?int $application_id = 0) {
+        try {
+            // Initialize Exception
+            $exception = new ExceptionModel();
+            
+            // Initialize FiledApplicaton model
+            $filed_application = new FiledApplication();
+            
+            // Initialize Equipment model
+            $equipment = new Equipments();
+            
+            // Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
+            
+            // Fetch Filed Application
+            try {
+                $fetch = $filed_application->query()
+                ->where('id', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->firstOrFail();
+            } catch (ModelNotFoundException $applicationNotFound) {
+                return response()->error(404, 'Application not found.');
+            }
+
+            // Get Status from Shortname
+
+            // Create Equipment
+            $equipment->filedapplication = $application_id;
+            $equipment->equipment = $req->equipment;
+            $equipment->context = json_encode($req->context);
+            $equipment->status = 1;
+            $equipment->created_by = json_encode([
+                'type' => 'applicant',
+                'user_id' => $currentUser
+            ]);
+            $equipment->save();
+
+            return response()->success(200, 'Equipment has been added.', $equipment->makeHidden(['created_by']));
+        } catch (\Exception $e) {
+            return response()->error(500, 'Error while adding equipment.', $e->getMessage());
+        }
+    }
+
+    /**
+     * Get Equipment
+     * 
+     * @route:get /{id}/equipment
+     */
+    public function getEquipment(Request $req, int $application_id) {
+        try {
+            // Initialize Exception
+            $exception = new ExceptionModel();
+            
+            // Initialize FiledApplicaton model
+            $filed_application = new FiledApplication();
+            
+            // Initialize Equipment model
+            $equipment = new Equipments();
+            
+            // Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
+            
+            // Fetch Filed Application
+            try {
+                $fetch = $filed_application->query()
+                ->where('id', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->firstOrFail();
+            } catch (ModelNotFoundException $applicationNotFound) {
+                return response()->error(404, 'Application not found.');
+            }
+            
+            // Get All Equipment
+            try {
+                $equipment = $equipment->query()
+                ->where('filedapplication', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->with(['equipment', 'status'])
+                
+                ->get(['id', 'equipment', 'context', 'status', 'created_at']);
+            } catch (ModelNotFoundException $equipmentNotFound) {
+                return response()->error(404, 'Equipment not found.');
+            }
+            
+            return response()->success(200, 'Equipment', $equipment);
+        } catch (\Exception $e) {
+            return response()->error(500, 'Error while fetching equipment.');
+        }
+    }
+
 }

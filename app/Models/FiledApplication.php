@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Utilities\Account\IdentifyUser;
 use App\Models\Applicant\User as ApplicantUser;
 use App\Models\Basedata\BusinessType;
 use App\Models\Basedata\CertificateType;
@@ -112,27 +113,9 @@ class FiledApplication extends Model {
      * @return mixed
      */
     public function getCreatedByAttribute($value) {
-        $created = json_decode($value);
-        $type = strtolower($created->type);
-        $user = (
-            $type == "applicant" ?
-            ApplicantUser::query()->find($created->user_id)->makeHidden([
-                'last_password_change',
-                'password', 
-                'is_active', 
-                'emailaddress',
-                'mobilenumber',
-                'is_emailaddress_verified', 
-                'is_mobilenumber_verified',
-                'is_mfa_enabled',
-                'created_at',
-                'updated_at'
-            ])
-            :
-            null
-        );
-
-        return $user;
+        $value = json_decode($value, true);
+        
+        return (new IdentifyUser)->createdBy($value);
     }
 
     /**

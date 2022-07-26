@@ -171,6 +171,12 @@ Route::prefix('application')->middleware(['authguard.applicant'])->group(functio
 
     // Delete Uploaded File by ID
     Route::delete('/{id}/file/{file_id}', [Application::class, 'DeleteUploadedFileById']);
+
+    // Add New Equipment
+    Route::post('/{id}/equipment', [Application::class, 'AddEquipment']);
+
+    // Get Equipment
+    Route::get('{id}/equipment', [Application::class, 'GetEquipment']);
 });
 
 /**
