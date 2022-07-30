@@ -26,9 +26,22 @@ const PageRouteWithParam = (param, pathname) => {
     return _pathname;
 }
 
+const PageHashRoute = (hashValue) => {
+    // Remove hashtag sign from hashValue
+    const _hashValue = hashValue.replace('#', '');
+
+    // Remove exclamation mark from hashValue
+    const _hashValueWithoutExclamation = _hashValue.replace('!', '');
+
+    // Remove first slash from hashValue
+    const _hashValueWithoutFirstSlash = _hashValueWithoutExclamation.replace('/', '');
+
+    return _hashValueWithoutFirstSlash;
+}
+
 const ApiBaseUrl = {
     Applicant: { 
-        Base: 'http://api-dev.bfp-ecs.com/applicant/v1/',
+        Base: 'http://api-dev-vpn.bfp-ecs.com/applicant/v1/',
         Auth: {
             Login: {
                 url: 'auth/token',
@@ -339,4 +352,4 @@ const PageBaseUrl = {
     
 }
 
-export { ApiBaseUrl, PageBaseUrl, UrlWithParam, PageRouteWithParam }
+export { ApiBaseUrl, PageBaseUrl, UrlWithParam, PageRouteWithParam, PageHashRoute }

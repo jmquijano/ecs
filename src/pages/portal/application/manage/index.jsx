@@ -21,10 +21,11 @@ import TabItem from "../../../../components/portal/application/manage/tabitem";
 import PageContainer from "../../../../components/portal/reusable-layout/containers/PageContainer"
 import { RiVideoChatLine } from "react-icons/ri";
 import { fetchApplicationById } from "../../../../utils/fetch/application";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useState } from "react";
 import Documents from "../../../../components/portal/application/manage/documents";
 import { Loader } from "../../../../components/loaders";
+import { PageHashRoute } from "../../../../utils/urlbase";
 
 
 export default function ApplicationManage() {
@@ -35,6 +36,8 @@ export default function ApplicationManage() {
     const [applicationData, setApplicationData] = useState({});
 
     const { id, path } = useParams();
+
+    const { hash } = useLocation();
 
     useEffect(() => {
         fetchApplicationById(
@@ -52,6 +55,8 @@ export default function ApplicationManage() {
             
         })
         .finally(e => setLoading(false));
+
+        console.log(PageHashRoute(hash));
     }, []);
     return (
         <PageContainer
@@ -129,7 +134,9 @@ export default function ApplicationManage() {
                 
             }}
         >
-            <MenuTabs>
+            <MenuTabs
+                defaultIndex={0}
+            >
                 <TabItem 
                     title={'Business Information'} 
                     icon={<BiInfoCircle size={20} />}
@@ -137,6 +144,7 @@ export default function ApplicationManage() {
                         enable: true,
                         isLoaded: !loading
                     }}
+                    tabId={'BusinessInformation'}
                 >
                     
                     <BusinessInformation 
@@ -150,6 +158,7 @@ export default function ApplicationManage() {
                         enable: true,
                         isLoaded: !loading
                     }}
+                    tabId-={'Documents'}
                 >
                     <Documents id={id} />
                 </TabItem>
@@ -160,6 +169,7 @@ export default function ApplicationManage() {
                         enable: true,
                         isLoaded: !loading
                     }}
+                    tabId={'Equipments'}
                 >
                 </TabItem>
                 <TabItem 

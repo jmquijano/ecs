@@ -39,9 +39,7 @@ function DashboardCounterCardInfo({count, title, description, href, loading}) {
                     </Stack>
                 </Stack>
                 <Spacer  py={2}/>
-                <Button color={'brand.200'} variant={'outline'}>
-                    View
-                </Button>
+                
             </Stack>
             
         </Box>

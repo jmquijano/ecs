@@ -1,10 +1,11 @@
 import { Center, Container, Skeleton, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { Fragment } from "react";
+import { useEffect, useState } from "react";
 import { Loader } from "../../../loaders";
 
 export default function MenuTabs(props) {
     const { children } = props;
+
+    const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
         // console.log(children);
@@ -40,9 +41,8 @@ export default function MenuTabs(props) {
             >
                 {
                     children instanceof Array ?
-                    children.map(({ props }) => (
-                        
-                        (props?.hidden === true) ?
+                    children.map(({ props }, id) => {
+                        return (props?.hidden === true ?
                         null
                         :
                         <Tab px={5} py={5} width={'100%'}>
@@ -74,10 +74,10 @@ export default function MenuTabs(props) {
                                 </Text>
                             }
                             
-                        </Tab>
+                        </Tab>)
                         
                         
-                    )) :
+                    }) :
                     null
                 }
             </TabList>

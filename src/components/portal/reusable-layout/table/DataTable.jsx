@@ -8,10 +8,12 @@ import moment from "moment";
 function RenderFooter(props) {
     const limitSelector = [2, 5, 10, 15, 20, 25, 30];
     const [data, setData] = useState();
-    const [limit, setLimit] = useState(5);
+    
     const [page, setPage] = useState(1);
     const [pageCount, setPageCount] = useState(0);
     const [totalItemCount, setTotalItemCount] = useState(0);
+
+    const { limit } = props;
 
     useEffect(() => {
         console.log(props);
@@ -75,7 +77,7 @@ function RenderFooter(props) {
                             }}
                         >
                             {limitSelector?.map((d, k) => {
-                                return <option disabled={d > props?.totalItemCount ? true : false} selected={limit == d ? true : false} value={d}>{d}</option>;
+                                return <option disabled={d > props?.totalItemCount ? true : false} selected={parseInt(limit) == d ? true : false} value={d}>{d}</option>;
                             })}
                             
                         </Select>
@@ -201,6 +203,7 @@ export default function DataTable(props) {
                         onPageLimitChange={props?.pagination?.onPageLimitChange}
                         totalItemCount={props?.pagination?.totalItemCount}
                         currentPage={props?.pagination?.currentPage}
+                        limit={props?.pagination?.limit}
                     />
                 </Fragment>
                 

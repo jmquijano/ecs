@@ -144,7 +144,8 @@ export default function FiledApplication(props) {
                 onPageChange: e => setPage(e),
                 onPageLimitChange: e => setLimit(e),
                 totalItemCount: totalItemCount,
-                currentPage: page
+                currentPage: page,
+                limit: limit
             }}
         />
     )
