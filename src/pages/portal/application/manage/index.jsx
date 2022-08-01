@@ -26,6 +26,7 @@ import { useState } from "react";
 import Documents from "../../../../components/portal/application/manage/documents";
 import { Loader } from "../../../../components/loaders";
 import { PageHashRoute } from "../../../../utils/urlbase";
+import Equipments from "../../../../components/portal/application/manage/equipments";
 
 
 export default function ApplicationManage() {
@@ -171,6 +172,7 @@ export default function ApplicationManage() {
                     }}
                     tabId={'Equipments'}
                 >
+                    <Equipments />
                 </TabItem>
                 <TabItem 
                     title={'Virtual Inspection'}

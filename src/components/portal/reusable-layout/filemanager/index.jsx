@@ -43,6 +43,7 @@ export default function FileManager(props) {
                         >
                             <Box
                                 fontWeight={'800'}
+                                width={'100%'}
                             >
                                 <Text 
                                     color={ styleProps?.title?.color ?? 'gray.600'}

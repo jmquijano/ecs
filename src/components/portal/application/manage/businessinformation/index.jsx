@@ -178,8 +178,6 @@ export default function BusinessInformation(props) {
 
     // Formik Submit Handler
     const formikSubmitHandler = async (values, { setErrors, resetForm, errors }) => {
-        
-
         values = {
             ...values,
             other: {
