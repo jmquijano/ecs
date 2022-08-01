@@ -4,6 +4,7 @@ namespace App\Models\FiledApplication\Equipments;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Attachments
@@ -29,4 +30,23 @@ class Attachments extends Model
         'context',
         'created_by'
     ];
+
+    public function getContextAttribute($value) {
+        /* $value = json_decode($value);
+        return $value; */
+        $value = json_decode($value);
+        if (isset($value->path)) {
+            if (Storage::disk('s3')->exists($value->path)) {
+                $value->path = urldecode(
+                    Storage::temporaryUrl(
+                        $value->path, now()->addHours(1)
+                    )
+                );
+            } else {
+                $value->path = null;
+            }
+        }
+
+        return $value;
+    }
 }

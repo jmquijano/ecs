@@ -10,6 +10,7 @@ use App\Http\Controllers\Applicant\Application;
 use App\Http\Controllers\Basedata\BusinessType;
 use App\Http\Controllers\Basedata\CertificateType;
 use App\Http\Controllers\Basedata\DocType;
+use App\Http\Controllers\Basedata\Equipments;
 use App\Http\Controllers\Basedata\InspectionType;
 use App\Http\Controllers\Basedata\MFACommunicationChannel;
 use App\Http\Controllers\Basedata\PSIC;
@@ -68,6 +69,11 @@ Route::prefix('basedata')->group(function () {
      * Document Type
      */
     Route::get('/document-type', [DocType::class, 'getAll']);
+
+    /**
+     * Equipment Type
+     */
+    Route::get('/equipment-type', [Equipments::class, 'getAll']);
 });
 
 /**
@@ -177,6 +183,12 @@ Route::prefix('application')->middleware(['authguard.applicant'])->group(functio
 
     // Get Equipment
     Route::get('{id}/equipment', [Application::class, 'GetEquipment']);
+
+    // Add New Equipment Attachment
+    Route::post('{id}/equipment/{equipment_id}/attachment', [Application::class, 'AddEquipmentAttachment']);
+
+    // Get Equipment Attachment
+    Route::get('{id}/equipment/{equipment_id}/attachment', [Application::class, 'GetEquipmentAttachment']);
 });
 
 /**

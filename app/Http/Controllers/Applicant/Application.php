@@ -15,6 +15,7 @@ use App\Models\Basedata\DocType;
 use App\Models\Basedata\Equipments as BasedataEquipments;
 use App\Models\FiledApplication;
 use App\Models\FiledApplication\Equipments;
+use App\Models\FiledApplication\Equipments\Attachments;
 use App\Models\FiledApplication\UploadedFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -542,7 +543,7 @@ class Application extends Controller {
      * @route:post /{id}/equipment
      * 
      * @param Request $req
-     * @param int $id
+     * @param int $application_id
      */
     public function addEquipment(AddEquipment $req, ?int $application_id = 0) {
         try {
@@ -592,6 +593,9 @@ class Application extends Controller {
      * Get Equipment
      * 
      * @route:get /{id}/equipment
+     * 
+     * @param Request $req
+     * @param int $application_id
      */
     public function getEquipment(Request $req, int $application_id) {
         try {
@@ -637,4 +641,198 @@ class Application extends Controller {
         }
     }
 
+    /**
+     * Add Equipment Attachment
+     * 
+     * @route:post /{id}/equipment/{equipment_id}attachment
+     * 
+     * @param Request $req
+     * @param int $application_id
+     * @param int $equipment_id
+     */
+    public function addEquipmentAttachment(Request $req, int $application_id, int $equipment_id) {
+        try {
+            // Initialize Exception
+            $exception = new ExceptionModel();
+            
+            // Initialize FiledApplicaton model
+            $filed_application = new FiledApplication();
+            
+            // Initialize Equipment model
+            $equipment = new Equipments();
+            
+            // Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
+            
+            // Fetch Filed Application
+            try {
+                $fetch = $filed_application->query()
+                ->where('id', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->firstOrFail();
+            } catch (ModelNotFoundException $applicationNotFound) {
+                return response()->error(404, 'Application not found.');
+            }
+            
+            // Fetch Equipment
+            try {
+                $equipment = $equipment->query()
+                ->where('id', '=', $equipment_id)
+                ->where('filedapplication', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->firstOrFail();
+            } catch (ModelNotFoundException $equipmentNotFound) {
+                return response()->error(404, 'Equipment not found.');
+            }
+
+            // Check if document file was present
+            if (!$req->hasFile('document')) {
+                return response()->error(
+                    400,
+                    'No file'
+                );
+                die();
+            }
+
+            $file = $req->file('document');
+
+            // Accepted File Extension
+            $acceptableFileExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+
+            if (!in_array($file->getClientOriginalExtension(), $acceptableFileExtensions)) {
+                return response()->error(
+                    400,
+                    'Unsupported file extension.',
+                    [
+                        'document' => [
+                            $exception->getMessageString("AP002C", [
+                                'FileExt' => $file->getClientOriginalExtension()
+                            ])
+                        ]
+                    ]
+                );
+                die();
+            };
+
+            // Create File Context
+            $uuid = Uuid::create()->v4;
+            $fileContextHash = [
+                'md5' => hash('md5', file_get_contents($file)),
+                'sha1' => hash('sha1', file_get_contents($file)),
+                'sha256' => hash('sha256', file_get_contents($file)),
+            ];
+            $fileContextFolder = 'equipmentattachments/' . ($uuid ?? $fileContextHash['md5']) . '/';
+            $fileContextName = str_replace(' ', '_', urldecode($file->getClientOriginalName()));
+            $fileContextPath = $fileContextFolder . $fileContextName;
+            
+            try {
+                // Check if file exist in S3
+                $checkExist = Storage::disk('s3')->exists($fileContextPath);
+
+                if (!$checkExist) {
+                    $upload = Storage::disk('s3')->put($fileContextPath, file_get_contents($req->file('document')));
+
+                    if (!$upload) {
+                        throw new \Exception('S3 File Upload Error');
+                    }
+                }
+            } catch (\Exception $e) {
+                return response()->error(400, $e->getMessage());
+            }
+
+            try {
+                // Store File Information in Database
+                $contextInfo = [
+                    'path' => $fileContextPath,
+                    'hash' => $fileContextHash,
+                    'file' => [
+                        'mime_type' => $file->getClientMimeType(),
+                        'extension' => $file->getClientOriginalExtension(),
+                        'name' => $file->getClientOriginalName(),
+                        'size' => $file->getSize() ?? 0
+                    ]
+                ];
+
+                $storeInfo = Attachments::query()->create([
+                    'filedapplication_equipment' => $equipment_id,
+                    'context' => json_encode($contextInfo),
+                    'created_by' => (new FiledApplication())->formatCreatedByUser(['type' => 'applicant', 'user_id' => $currentUser], true)
+                ]);
+            } catch (\Exception $errorStoring) {
+                return response()->error(400, 'File Info Storing Error');
+            }
+
+            return response()->success(
+                200,
+                'File has been uploaded.',
+                $storeInfo->setVisible(['id', 'context', 'created_at', 'created_by'])
+            );
+        } catch (\Exception $e) {
+            return response()->error(500, 'Error while uploading the file attachment.');
+        }
+    }
+
+    /**
+     * Get Equipment Attachment
+     * 
+     * @route:get /{id}/equipment/{equipment_id}attachment
+     * 
+     * @param Request $req
+     * @param int $application_id
+     * @param int $equipment_id
+     */
+    public function getEquipmentAttachment(Request $req, int $application_id, int $equipment_id) {
+        try {
+            // Initialize Exception
+            $exception = new ExceptionModel();
+            
+            // Initialize FiledApplicaton model
+            $filed_application = new FiledApplication();
+            
+            // Initialize Equipment model
+            $equipment = new Equipments();
+            
+            // Current User
+            $currentUser = ApplicantAuthUtility::CurrentUser($req)->id ?? null;
+            
+            // Fetch Filed Application
+            try {
+                $fetch = $filed_application->query()
+                ->where('id', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->firstOrFail();
+            } catch (ModelNotFoundException $applicationNotFound) {
+                return response()->error(404, 'Application not found.');
+            }
+            
+            // Fetch Equipment
+            try {
+                $equipment = $equipment->query()
+                ->where('id', '=', $equipment_id)
+                ->where('filedapplication', '=', $application_id)
+                ->where('created_by->type', '=', 'applicant')
+                ->where('created_by->user_id', '=', $currentUser)
+                ->firstOrFail();
+            } catch (ModelNotFoundException $equipmentNotFound) {
+                return response()->error(404, 'Equipment not found.');
+            }
+            
+            // Fetch Attachments
+            try {
+                $attachments = Attachments::query()
+                ->where('filedapplication_equipment', '=', $equipment_id)                
+                ->get(['id', 'context', 'created_at']);
+            } catch (ModelNotFoundException $attachmentNotFound) {
+                return response()->error(404, 'Attachment not found.');
+            }
+            
+            return response()->success(200, 'Attachment', $attachments);
+        } catch (\Exception $e) {
+            return $e;
+            //return response()->error(500, 'Error while fetching equipment attachment.');
+        }
+    }
 }
